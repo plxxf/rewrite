@@ -7,6 +7,10 @@ import superjson from "superjson";
 import App from "./App";
 import { getLoginUrl } from "./const";
 import "./index.css";
+import { initErrorTracking } from "@/lib/errorTracking";
+
+// Initialize error tracking
+initErrorTracking();
 
 const queryClient = new QueryClient();
 

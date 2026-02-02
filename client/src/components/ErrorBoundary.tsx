@@ -21,6 +21,42 @@ class ErrorBoundary extends Component<Props, State> {
     return { hasError: true, error };
   }
 
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    // Log error to console
+    console.error("[ErrorBoundary] Caught error:", error, errorInfo);
+    
+    // Track error for monitoring
+    this.logError(error, errorInfo);
+  }
+
+  logError(error: Error, errorInfo: React.ErrorInfo) {
+    try {
+      // Prepare error data
+      const errorData = {
+        message: error.message,
+        stack: error.stack,
+        componentStack: errorInfo.componentStack,
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+        url: window.location.href,
+      };
+
+      // Log to localStorage for debugging
+      const errors = JSON.parse(localStorage.getItem("rewrite-errors") || "[]");
+      errors.push(errorData);
+      // Keep only last 10 errors
+      if (errors.length > 10) {
+        errors.shift();
+      }
+      localStorage.setItem("rewrite-errors", JSON.stringify(errors));
+
+      // In production, you could send this to a monitoring service
+      // Example: fetch('/api/log-error', { method: 'POST', body: JSON.stringify(errorData) });
+    } catch (e) {
+      console.error("[ErrorBoundary] Failed to log error:", e);
+    }
+  }
+
   render() {
     if (this.state.hasError) {
       return (
@@ -31,7 +67,10 @@ class ErrorBoundary extends Component<Props, State> {
               className="text-destructive mb-6 flex-shrink-0"
             />
 
-            <h2 className="text-xl mb-4">An unexpected error occurred.</h2>
+            <h2 className="text-xl mb-4">发生了意外错误</h2>
+            <p className="text-sm text-muted-foreground mb-4">
+              我们已经记录了这个错误。请尝试刷新页面或联系支持团队。
+            </p>
 
             <div className="p-4 w-full rounded bg-muted overflow-auto mb-6">
               <pre className="text-sm text-muted-foreground whitespace-break-spaces">
@@ -48,7 +87,7 @@ class ErrorBoundary extends Component<Props, State> {
               )}
             >
               <RotateCcw size={16} />
-              Reload Page
+              刷新页面
             </button>
           </div>
         </div>

@@ -31,6 +31,9 @@ import { createWriteStream } from "fs";
 import path from "path";
 import { runCleanup } from "./cleanupService";
 import { getSchedulerStatus } from "./scheduler";
+import { processConcurrently } from "./concurrencyControl";
+import { logError, logInfo } from "./errorLogger";
+import { recordConversionMetric, measureTime } from "./performanceMonitor";
 import {
   FILE_SIZE_LIMITS,
   validateFileSize,
@@ -416,78 +419,128 @@ async function processFilesInBackground(
   let completedCount = 0;
   let failedCount = 0;
 
-  for (let i = 0; i < files.length; i++) {
-    const file = files[i];
-    const item = items[i];
+  logInfo(`Starting batch conversion for job ${jobId}`, {
+    userId,
+    operation: "batch-conversion",
+    metadata: { jobId, fileCount: files.length, inputFormat, outputFormat },
+  });
 
-    if (!item) continue;
+  // Process files with concurrency control (max 3 concurrent)
+  await processConcurrently(
+    files,
+    async (file, i) => {
+      const item = items[i];
+      if (!item) return;
 
-    try {
-      await updateBatchItem(item.id, { status: "processing" });
+      const startTime = Date.now();
+      let inputSize = 0;
+      let outputSize = 0;
 
-      // Decode base64 file data
-      const fileBuffer = Buffer.from(file.fileData, "base64");
+      try {
+        await updateBatchItem(item.id, { status: "processing" });
 
-      // Upload input file to S3
-      const inputFileKey = `batch/${userId}/${jobId}/${nanoid()}-${file.fileName}`;
-      await storagePut(inputFileKey, fileBuffer, getMimeType(inputFormat));
+        // Decode base64 file data
+        const fileBuffer = Buffer.from(file.fileData, "base64");
+        inputSize = fileBuffer.length;
 
-      // Write file to temp location for pandoc
-      const tempInputPath = `/tmp/pandoc-conversions/batch-${jobId}-${i}-input.${file.fileName.split(".").pop()}`;
-      await fsWriteFile(tempInputPath, fileBuffer);
+        // Upload input file to S3
+        const inputFileKey = `batch/${userId}/${jobId}/${nanoid()}-${file.fileName}`;
+        await storagePut(inputFileKey, fileBuffer, getMimeType(inputFormat));
 
-      // Perform conversion
-      const result = await convertDocument({
-        inputFormat,
-        outputFormat,
-        inputFilePath: tempInputPath,
-      });
+        // Write file to temp location for pandoc
+        const tempInputPath = `/tmp/pandoc-conversions/batch-${jobId}-${i}-input.${file.fileName.split(".").pop()}`;
+        await fsWriteFile(tempInputPath, fileBuffer);
 
-      if (!result.success || !result.outputFilePath) {
-        throw new Error(result.error || "Conversion failed");
+        // Perform conversion
+        const result = await convertDocument({
+          inputFormat,
+          outputFormat,
+          inputFilePath: tempInputPath,
+        });
+
+        if (!result.success || !result.outputFilePath) {
+          throw new Error(result.error || "Conversion failed");
+        }
+
+        // Read output file
+        const outputBuffer = await readFile(result.outputFilePath);
+        outputSize = outputBuffer.length;
+
+        // Upload output to S3
+        const outputFileKey = `batch/${userId}/${jobId}/${nanoid()}-output-${i}.${outputFormat}`;
+        const outputUploadResult = await storagePut(outputFileKey, outputBuffer, getMimeType(outputFormat));
+
+        // Create conversion record
+        const conversion = await createConversion({
+          userId,
+          inputFormat,
+          outputFormat,
+          inputFileName: file.fileName,
+          outputFileName: `output-${i}.${outputFormat}`,
+          inputFileKey,
+          outputFileKey,
+          inputFileUrl: `https://storage.example.com/${inputFileKey}`,
+          outputFileUrl: outputUploadResult.url,
+          status: "completed",
+        });
+
+        // Update batch item
+        await updateBatchItem(item.id, {
+          status: "completed",
+          conversionId: conversion.id,
+        });
+
+        outputFiles.push(result.outputFilePath);
+        completedCount++;
+
+        // Record performance metric
+        const conversionTime = Date.now() - startTime;
+        recordConversionMetric({
+          userId,
+          inputFormat,
+          outputFormat,
+          inputSize,
+          outputSize,
+          conversionTime,
+          success: true,
+          timestamp: new Date(),
+        });
+
+        // Cleanup temp files
+        await cleanupFiles([tempInputPath]);
+      } catch (error) {
+        const conversionTime = Date.now() - startTime;
+        const errorMessage = error instanceof Error ? error.message : "Unknown error";
+        
+        logError(
+          `Batch file conversion failed: ${file.fileName}`,
+          error instanceof Error ? error : new Error(errorMessage),
+          { userId, operation: "batch-file-conversion", metadata: { jobId, fileName: file.fileName } }
+        );
+
+        await updateBatchItem(item.id, {
+          status: "failed",
+          errorMessage,
+        });
+        
+        failedCount++;
+
+        // Record failed conversion metric
+        recordConversionMetric({
+          userId,
+          inputFormat,
+          outputFormat,
+          inputSize,
+          outputSize: 0,
+          conversionTime,
+          success: false,
+          errorMessage,
+          timestamp: new Date(),
+        });
       }
-
-      // Read output file
-      const outputBuffer = await readFile(result.outputFilePath);
-
-      // Upload output to S3
-      const outputFileKey = `batch/${userId}/${jobId}/${nanoid()}-output-${i}.${outputFormat}`;
-      const outputUploadResult = await storagePut(outputFileKey, outputBuffer, getMimeType(outputFormat));
-
-      // Create conversion record
-      const conversion = await createConversion({
-        userId,
-        inputFormat,
-        outputFormat,
-        inputFileName: file.fileName,
-        outputFileName: `output-${i}.${outputFormat}`,
-        inputFileKey,
-        outputFileKey,
-        inputFileUrl: `https://storage.example.com/${inputFileKey}`,
-        outputFileUrl: outputUploadResult.url,
-        status: "completed",
-      });
-
-      // Update batch item
-      await updateBatchItem(item.id, {
-        status: "completed",
-        conversionId: conversion.id,
-      });
-
-      outputFiles.push(result.outputFilePath);
-      completedCount++;
-
-      // Cleanup temp files
-      await cleanupFiles([tempInputPath]);
-    } catch (error) {
-      console.error(`[Batch] Failed to process file ${file.fileName}:`, error);
-      await updateBatchItem(item.id, {
-        status: "failed",
-        errorMessage: error instanceof Error ? error.message : "Unknown error",
-      });
-      failedCount++;
-    }
-  }
+    },
+    3 // Max 3 concurrent conversions
+  );
 
   // Create ZIP file with all outputs
   try {
