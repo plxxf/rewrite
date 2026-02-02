@@ -9,6 +9,13 @@ import {
   getUserConversions,
   getConversionById,
   deleteConversion,
+  createBatchJob,
+  updateBatchJob,
+  getBatchJobById,
+  getUserBatchJobs,
+  createBatchItem,
+  updateBatchItem,
+  getBatchItemsByJobId,
 } from "./db";
 import {
   convertDocument,
@@ -17,8 +24,11 @@ import {
   getSupportedOutputFormats,
 } from "./pandocService";
 import { storagePut } from "./storage";
-import { readFile } from "fs/promises";
+import { readFile, writeFile as fsWriteFile } from "fs/promises";
 import { nanoid } from "nanoid";
+import archiver from "archiver";
+import { createWriteStream } from "fs";
+import path from "path";
 
 export const appRouter = router({
   system: systemRouter,
@@ -235,7 +245,221 @@ export const appRouter = router({
         return { success: true };
       }),
   }),
+
+  batch: router({
+    // Create batch conversion job
+    createJob: protectedProcedure
+      .input(
+        z.object({
+          name: z.string().optional(),
+          inputFormat: z.string(),
+          outputFormat: z.string(),
+          files: z.array(
+            z.object({
+              fileName: z.string(),
+              fileData: z.string(), // base64
+            })
+          ),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        const { name, inputFormat, outputFormat, files } = input;
+
+        // Create batch job
+        const batchJob = await createBatchJob({
+          userId: ctx.user.id,
+          name: name || `批量转换 ${new Date().toLocaleString("zh-CN")}`,
+          inputFormat,
+          outputFormat,
+          totalFiles: files.length,
+          status: "processing",
+        });
+
+        // Create batch items
+        const items = await Promise.all(
+          files.map((file) =>
+            createBatchItem({
+              batchJobId: batchJob.id,
+              fileName: file.fileName,
+              status: "pending",
+            })
+          )
+        );
+
+        // Process files asynchronously
+        processFilesInBackground(batchJob.id, files, inputFormat, outputFormat, ctx.user.id).catch(
+          (error) => {
+            console.error("[Batch] Background processing error:", error);
+          }
+        );
+
+        return {
+          jobId: batchJob.id,
+          totalFiles: files.length,
+        };
+      }),
+
+    // Get batch job status
+    getJobStatus: protectedProcedure
+      .input(z.object({ jobId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const job = await getBatchJobById(input.jobId);
+        if (!job || job.userId !== ctx.user.id) {
+          throw new Error("Batch job not found");
+        }
+
+        const items = await getBatchItemsByJobId(input.jobId);
+
+        return {
+          job,
+          items,
+        };
+      }),
+
+    // Get user's batch jobs
+    getUserJobs: protectedProcedure.query(async ({ ctx }) => {
+      return getUserBatchJobs(ctx.user.id);
+    }),
+  }),
 });
+
+// Background processing function
+async function processFilesInBackground(
+  jobId: number,
+  files: Array<{ fileName: string; fileData: string }>,
+  inputFormat: string,
+  outputFormat: string,
+  userId: number
+) {
+  const items = await getBatchItemsByJobId(jobId);
+  const outputFiles: string[] = [];
+
+  let completedCount = 0;
+  let failedCount = 0;
+
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    const item = items[i];
+
+    if (!item) continue;
+
+    try {
+      await updateBatchItem(item.id, { status: "processing" });
+
+      // Decode base64 file data
+      const fileBuffer = Buffer.from(file.fileData, "base64");
+
+      // Upload input file to S3
+      const inputFileKey = `batch/${userId}/${jobId}/${nanoid()}-${file.fileName}`;
+      await storagePut(inputFileKey, fileBuffer, getMimeType(inputFormat));
+
+      // Write file to temp location for pandoc
+      const tempInputPath = `/tmp/pandoc-conversions/batch-${jobId}-${i}-input.${file.fileName.split(".").pop()}`;
+      await fsWriteFile(tempInputPath, fileBuffer);
+
+      // Perform conversion
+      const result = await convertDocument({
+        inputFormat,
+        outputFormat,
+        inputFilePath: tempInputPath,
+      });
+
+      if (!result.success || !result.outputFilePath) {
+        throw new Error(result.error || "Conversion failed");
+      }
+
+      // Read output file
+      const outputBuffer = await readFile(result.outputFilePath);
+
+      // Upload output to S3
+      const outputFileKey = `batch/${userId}/${jobId}/${nanoid()}-output-${i}.${outputFormat}`;
+      const outputUploadResult = await storagePut(outputFileKey, outputBuffer, getMimeType(outputFormat));
+
+      // Create conversion record
+      const conversion = await createConversion({
+        userId,
+        inputFormat,
+        outputFormat,
+        inputFileName: file.fileName,
+        outputFileName: `output-${i}.${outputFormat}`,
+        inputFileKey,
+        outputFileKey,
+        inputFileUrl: `https://storage.example.com/${inputFileKey}`,
+        outputFileUrl: outputUploadResult.url,
+        status: "completed",
+      });
+
+      // Update batch item
+      await updateBatchItem(item.id, {
+        status: "completed",
+        conversionId: conversion.id,
+      });
+
+      outputFiles.push(result.outputFilePath);
+      completedCount++;
+
+      // Cleanup temp files
+      await cleanupFiles([tempInputPath]);
+    } catch (error) {
+      console.error(`[Batch] Failed to process file ${file.fileName}:`, error);
+      await updateBatchItem(item.id, {
+        status: "failed",
+        errorMessage: error instanceof Error ? error.message : "Unknown error",
+      });
+      failedCount++;
+    }
+  }
+
+  // Create ZIP file with all outputs
+  try {
+    const zipPath = `/tmp/pandoc-conversions/batch-${jobId}-output.zip`;
+    await createZipFile(outputFiles, zipPath);
+
+    // Upload ZIP to S3
+    const zipBuffer = await readFile(zipPath);
+    const zipFileKey = `batch/${userId}/${jobId}/output.zip`;
+    const zipUploadResult = await storagePut(zipFileKey, zipBuffer, "application/zip");
+
+    // Update batch job
+    await updateBatchJob(jobId, {
+      completedFiles: completedCount,
+      failedFiles: failedCount,
+      status: failedCount === files.length ? "failed" : "completed",
+      zipFileUrl: zipUploadResult.url,
+      zipFileKey,
+    });
+
+    // Cleanup
+    await cleanupFiles([zipPath, ...outputFiles]);
+  } catch (error) {
+    console.error("[Batch] Failed to create ZIP:", error);
+    await updateBatchJob(jobId, {
+      completedFiles: completedCount,
+      failedFiles: failedCount,
+      status: "failed",
+    });
+  }
+}
+
+// Helper function to create ZIP file
+function createZipFile(filePaths: string[], outputPath: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const output = createWriteStream(outputPath);
+    const archive = archiver("zip", { zlib: { level: 9 } });
+
+    output.on("close", () => resolve());
+    archive.on("error", (err) => reject(err));
+
+    archive.pipe(output);
+
+    filePaths.forEach((filePath, index) => {
+      const fileName = path.basename(filePath);
+      archive.file(filePath, { name: `file-${index + 1}-${fileName}` });
+    });
+
+    archive.finalize();
+  });
+}
 
 export type AppRouter = typeof appRouter;
 

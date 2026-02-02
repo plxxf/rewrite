@@ -1,6 +1,6 @@
 import { eq, desc } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, conversions, InsertConversion, Conversion } from "../drizzle/schema";
+import { InsertUser, users, conversions, InsertConversion, Conversion, batchJobs, InsertBatchJob, BatchJob, batchItems, InsertBatchItem, BatchItem } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -142,4 +142,86 @@ export async function deleteConversion(id: number): Promise<void> {
   }
 
   await db.delete(conversions).where(eq(conversions.id, id));
+}
+
+// Batch job queries
+export async function createBatchJob(job: InsertBatchJob): Promise<BatchJob> {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  const result = await db.insert(batchJobs).values(job);
+  const insertId = Number(result[0].insertId);
+  
+  const created = await db.select().from(batchJobs).where(eq(batchJobs.id, insertId)).limit(1);
+  if (!created[0]) {
+    throw new Error("Failed to retrieve created batch job");
+  }
+  
+  return created[0];
+}
+
+export async function updateBatchJob(id: number, updates: Partial<InsertBatchJob>): Promise<void> {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  await db.update(batchJobs).set(updates).where(eq(batchJobs.id, id));
+}
+
+export async function getBatchJobById(id: number): Promise<BatchJob | undefined> {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  const result = await db.select().from(batchJobs).where(eq(batchJobs.id, id)).limit(1);
+  return result[0];
+}
+
+export async function getUserBatchJobs(userId: number): Promise<BatchJob[]> {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  return db.select().from(batchJobs).where(eq(batchJobs.userId, userId)).orderBy(desc(batchJobs.createdAt));
+}
+
+// Batch item queries
+export async function createBatchItem(item: InsertBatchItem): Promise<BatchItem> {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  const result = await db.insert(batchItems).values(item);
+  const insertId = Number(result[0].insertId);
+  
+  const created = await db.select().from(batchItems).where(eq(batchItems.id, insertId)).limit(1);
+  if (!created[0]) {
+    throw new Error("Failed to retrieve created batch item");
+  }
+  
+  return created[0];
+}
+
+export async function updateBatchItem(id: number, updates: Partial<InsertBatchItem>): Promise<void> {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  await db.update(batchItems).set(updates).where(eq(batchItems.id, id));
+}
+
+export async function getBatchItemsByJobId(jobId: number): Promise<BatchItem[]> {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  return db.select().from(batchItems).where(eq(batchItems.batchJobId, jobId));
 }

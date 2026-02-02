@@ -152,12 +152,20 @@ export default function Home() {
           <div className="flex items-center gap-4">
             {user ? (
               <>
-                <Link href="/history">
-                  <Button variant="ghost" size="sm">
-                    <History className="h-4 w-4 mr-2" />
-                    历史记录
-                  </Button>
-                </Link>
+                <div className="flex items-center gap-2">
+                  <Link href="/batch">
+                    <Button variant="ghost" size="sm">
+                      <Upload className="h-4 w-4 mr-2" />
+                      批量转换
+                    </Button>
+                  </Link>
+                  <Link href="/history">
+                    <Button variant="ghost" size="sm">
+                      <History className="h-4 w-4 mr-2" />
+                      历史记录
+                    </Button>
+                  </Link>
+                </div>
                 <span className="text-sm text-muted-foreground">{user.name || user.email}</span>
               </>
             ) : (

@@ -15,6 +15,13 @@
       "when": 1770031379290,
       "tag": "0001_thankful_blazing_skull",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1770031799841,
+      "tag": "0002_broken_zaran",
+      "breakpoints": true
     }
   ]
 }

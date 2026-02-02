@@ -49,3 +49,42 @@ export const conversions = mysqlTable("conversions", {
 
 export type Conversion = typeof conversions.$inferSelect;
 export type InsertConversion = typeof conversions.$inferInsert;
+
+/**
+ * Batch conversion jobs table to track multiple file conversions
+ */
+export const batchJobs = mysqlTable("batch_jobs", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  name: varchar("name", { length: 255 }),
+  inputFormat: varchar("inputFormat", { length: 50 }).notNull(),
+  outputFormat: varchar("outputFormat", { length: 50 }).notNull(),
+  totalFiles: int("totalFiles").notNull().default(0),
+  completedFiles: int("completedFiles").notNull().default(0),
+  failedFiles: int("failedFiles").notNull().default(0),
+  status: mysqlEnum("status", ["pending", "processing", "completed", "failed"]).default("pending").notNull(),
+  zipFileUrl: text("zipFileUrl"),
+  zipFileKey: varchar("zipFileKey", { length: 500 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type BatchJob = typeof batchJobs.$inferSelect;
+export type InsertBatchJob = typeof batchJobs.$inferInsert;
+
+/**
+ * Batch conversion items - individual files in a batch job
+ */
+export const batchItems = mysqlTable("batch_items", {
+  id: int("id").autoincrement().primaryKey(),
+  batchJobId: int("batchJobId").notNull(),
+  conversionId: int("conversionId"),
+  fileName: varchar("fileName", { length: 255 }).notNull(),
+  status: mysqlEnum("status", ["pending", "processing", "completed", "failed"]).default("pending").notNull(),
+  errorMessage: text("errorMessage"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type BatchItem = typeof batchItems.$inferSelect;
+export type InsertBatchItem = typeof batchItems.$inferInsert;
