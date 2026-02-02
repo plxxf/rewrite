@@ -8,8 +8,15 @@ import { Badge } from "@/components/ui/badge";
 import { trpc } from "@/lib/trpc";
 import { useState, useCallback, useEffect } from "react";
 import { toast } from "sonner";
-import { FileText, Upload, Loader2, ArrowLeft, Download, X, CheckCircle, XCircle } from "lucide-react";
+import { FileText, Upload, Loader2, ArrowLeft, Download, X, CheckCircle, XCircle, AlertCircle } from "lucide-react";
 import { Link, useLocation } from "wouter";
+import {
+  FILE_SIZE_LIMITS,
+  validateFileSize,
+  validateBatchTotalSize,
+  validateFileType,
+  formatFileSize,
+} from "@shared/fileConfig";
 
 interface SelectedFile {
   file: File;
@@ -43,13 +50,50 @@ export default function Batch() {
   const handleFileSelect = useCallback((files: FileList | null) => {
     if (!files || files.length === 0) return;
 
-    const newFiles: SelectedFile[] = Array.from(files).map((file) => ({
-      file,
-      id: Math.random().toString(36).substring(7),
-    }));
+    const validFiles: SelectedFile[] = [];
+    const errors: string[] = [];
 
-    setSelectedFiles((prev) => [...prev, ...newFiles]);
-  }, []);
+    Array.from(files).forEach((file) => {
+      // Validate file size
+      const sizeValidation = validateFileSize(file.size);
+      if (!sizeValidation.valid) {
+        errors.push(`${file.name}: ${sizeValidation.error}`);
+        return;
+      }
+
+      // Validate file type
+      const typeValidation = validateFileType(file.name, inputFormat);
+      if (!typeValidation.valid) {
+        errors.push(`${file.name}: ${typeValidation.error}`);
+        return;
+      }
+
+      validFiles.push({
+        file,
+        id: Math.random().toString(36).substring(7),
+      });
+    });
+
+    if (errors.length > 0) {
+      toast.error(
+        <div>
+          <p className="font-semibold mb-1">部分文件验证失败：</p>
+          <ul className="text-sm space-y-1">
+            {errors.slice(0, 3).map((err, i) => (
+              <li key={i}>{err}</li>
+            ))}
+            {errors.length > 3 && <li>还有 {errors.length - 3} 个错误...</li>}
+          </ul>
+        </div>,
+        { duration: 5000 }
+      );
+    }
+
+    if (validFiles.length > 0) {
+      setSelectedFiles((prev) => [...prev, ...validFiles]);
+      toast.success(`成功添加 ${validFiles.length} 个文件`);
+    }
+  }, [inputFormat]);
 
   const handleRemoveFile = useCallback((id: string) => {
     setSelectedFiles((prev) => prev.filter((f) => f.id !== id));
@@ -80,6 +124,14 @@ export default function Batch() {
 
     if (selectedFiles.length === 0) {
       toast.error("请选择要转换的文件");
+      return;
+    }
+
+    // Validate total batch size
+    const totalSize = selectedFiles.reduce((sum, { file }) => sum + file.size, 0);
+    const totalValidation = validateBatchTotalSize(totalSize);
+    if (!totalValidation.valid) {
+      toast.error(totalValidation.error);
       return;
     }
 
@@ -175,6 +227,13 @@ export default function Batch() {
           <Card>
             <CardHeader>
               <CardTitle>选择转换格式</CardTitle>
+              <CardDescription className="flex items-start gap-2 mt-2">
+                <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
+                <span>
+                  批量转换限制：单文件最大 {formatFileSize(FILE_SIZE_LIMITS.SINGLE_FILE_MAX)}，
+                  所有文件总大小最大 {formatFileSize(FILE_SIZE_LIMITS.BATCH_TOTAL_MAX)}
+                </span>
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

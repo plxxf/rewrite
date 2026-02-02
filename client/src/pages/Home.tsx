@@ -9,8 +9,14 @@ import { getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { useState, useCallback, useMemo } from "react";
 import { toast } from "sonner";
-import { FileText, Download, History, ArrowRight, Upload, Loader2 } from "lucide-react";
+import { FileText, Download, History, ArrowRight, Upload, Loader2, AlertCircle } from "lucide-react";
 import { Link } from "wouter";
+import {
+  FILE_SIZE_LIMITS,
+  validateFileSize,
+  validateFileType,
+  formatFileSize,
+} from "@shared/fileConfig";
 
 export default function Home() {
   const { user, loading: authLoading } = useAuth();
@@ -33,6 +39,14 @@ export default function Home() {
 
     if (!inputText.trim()) {
       toast.error("请输入要转换的内容");
+      return;
+    }
+
+    // Validate text size
+    const textSize = new Blob([inputText]).size;
+    const sizeValidation = validateFileSize(textSize, FILE_SIZE_LIMITS.TEXT_CONVERSION_MAX);
+    if (!sizeValidation.valid) {
+      toast.error(sizeValidation.error);
       return;
     }
 
@@ -59,6 +73,20 @@ export default function Home() {
   const handleFileUpload = useCallback(async (file: File) => {
     if (!user) {
       toast.error("请先登录");
+      return;
+    }
+
+    // Validate file size
+    const sizeValidation = validateFileSize(file.size);
+    if (!sizeValidation.valid) {
+      toast.error(sizeValidation.error);
+      return;
+    }
+
+    // Validate file type
+    const typeValidation = validateFileType(file.name, inputFormat);
+    if (!typeValidation.valid) {
+      toast.error(typeValidation.error);
       return;
     }
 
@@ -202,6 +230,14 @@ export default function Home() {
             <Card>
               <CardHeader>
                 <CardTitle>选择转换格式</CardTitle>
+                <CardDescription className="flex items-start gap-2 mt-2">
+                  <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
+                  <span>
+                    文件大小限制：单文件最大 {formatFileSize(FILE_SIZE_LIMITS.SINGLE_FILE_MAX)}，
+                    文本转换最大 {formatFileSize(FILE_SIZE_LIMITS.TEXT_CONVERSION_MAX)}，
+                    批量转换总大小最大 {formatFileSize(FILE_SIZE_LIMITS.BATCH_TOTAL_MAX)}
+                  </span>
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

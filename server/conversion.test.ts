@@ -70,18 +70,34 @@ describe("conversion.convertText", () => {
     expect(result.conversionId).toBeDefined();
   });
 
-  it("handles empty input gracefully", async () => {
+  it("rejects empty input", async () => {
     const { ctx } = createAuthContext();
     const caller = appRouter.createCaller(ctx);
 
-    const result = await caller.conversion.convertText({
-      inputFormat: "markdown",
-      outputFormat: "html",
-      inputText: "",
-      saveToHistory: false,
-    });
+    await expect(
+      caller.conversion.convertText({
+        inputFormat: "markdown",
+        outputFormat: "html",
+        inputText: "",
+        saveToHistory: false,
+      })
+    ).rejects.toThrow("文件为空");
+  });
 
-    expect(result.success).toBe(true);
-    expect(result.outputText).toBeDefined();
+  it("rejects oversized input", async () => {
+    const { ctx } = createAuthContext();
+    const caller = appRouter.createCaller(ctx);
+
+    // Create a string larger than 5MB
+    const largeText = "a".repeat(6 * 1024 * 1024);
+
+    await expect(
+      caller.conversion.convertText({
+        inputFormat: "markdown",
+        outputFormat: "html",
+        inputText: largeText,
+        saveToHistory: false,
+      })
+    ).rejects.toThrow("超过限制");
   });
 });

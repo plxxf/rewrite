@@ -29,6 +29,12 @@ import { nanoid } from "nanoid";
 import archiver from "archiver";
 import { createWriteStream } from "fs";
 import path from "path";
+import {
+  FILE_SIZE_LIMITS,
+  validateFileSize,
+  validateBatchTotalSize,
+  validateFileType,
+} from "../shared/fileConfig";
 
 export const appRouter = router({
   system: systemRouter,
@@ -64,6 +70,13 @@ export const appRouter = router({
       )
       .mutation(async ({ ctx, input }) => {
         const { inputFormat, outputFormat, inputText, saveToHistory } = input;
+
+        // Validate text size
+        const textSize = Buffer.byteLength(inputText, "utf-8");
+        const sizeValidation = validateFileSize(textSize, FILE_SIZE_LIMITS.TEXT_CONVERSION_MAX);
+        if (!sizeValidation.valid) {
+          throw new Error(sizeValidation.error);
+        }
 
         // Create conversion record
         const conversion = await createConversion({
@@ -134,18 +147,34 @@ export const appRouter = router({
         }
       }),
 
-    // Upload and convert file
+    // Upload and convert fi    // Convert file
     convertFile: protectedProcedure
       .input(
         z.object({
           inputFormat: z.string(),
           outputFormat: z.string(),
-          fileData: z.string(), // base64 encoded file data
           fileName: z.string(),
+          fileData: z.string(), // base64
         })
       )
       .mutation(async ({ ctx, input }) => {
-        const { inputFormat, outputFormat, fileData, fileName } = input;
+        const { inputFormat, outputFormat, fileName, fileData } = input;
+
+        // Decode base64 to get file size
+        const fileBuffer = Buffer.from(fileData, "base64");
+        const fileSize = fileBuffer.length;
+
+        // Validate file size
+        const sizeValidation = validateFileSize(fileSize);
+        if (!sizeValidation.valid) {
+          throw new Error(sizeValidation.error);
+        }
+
+        // Validate file type
+        const typeValidation = validateFileType(fileName, inputFormat);
+        if (!typeValidation.valid) {
+          throw new Error(typeValidation.error);
+        };
 
         // Create conversion record
         const conversion = await createConversion({
@@ -264,6 +293,33 @@ export const appRouter = router({
       )
       .mutation(async ({ ctx, input }) => {
         const { name, inputFormat, outputFormat, files } = input;
+
+        // Validate total batch size
+        let totalSize = 0;
+        for (const file of files) {
+          const fileBuffer = Buffer.from(file.fileData, "base64");
+          const fileSize = fileBuffer.length;
+
+          // Validate individual file size
+          const sizeValidation = validateFileSize(fileSize);
+          if (!sizeValidation.valid) {
+            throw new Error(`${file.fileName}: ${sizeValidation.error}`);
+          }
+
+          // Validate file type
+          const typeValidation = validateFileType(file.fileName, inputFormat);
+          if (!typeValidation.valid) {
+            throw new Error(`${file.fileName}: ${typeValidation.error}`);
+          }
+
+          totalSize += fileSize;
+        }
+
+        // Validate total size
+        const totalValidation = validateBatchTotalSize(totalSize);
+        if (!totalValidation.valid) {
+          throw new Error(totalValidation.error);
+        }
 
         // Create batch job
         const batchJob = await createBatchJob({
