@@ -25,4 +25,27 @@ export const users = mysqlTable("users", {
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
-// TODO: Add your tables here
+/**
+ * Conversion history table to track user's document conversions
+ */
+export const conversions = mysqlTable("conversions", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  inputFormat: varchar("inputFormat", { length: 50 }).notNull(),
+  outputFormat: varchar("outputFormat", { length: 50 }).notNull(),
+  inputFileName: varchar("inputFileName", { length: 255 }),
+  outputFileName: varchar("outputFileName", { length: 255 }),
+  inputFileUrl: text("inputFileUrl"),
+  outputFileUrl: text("outputFileUrl"),
+  inputFileKey: varchar("inputFileKey", { length: 500 }),
+  outputFileKey: varchar("outputFileKey", { length: 500 }),
+  inputText: text("inputText"),
+  outputText: text("outputText"),
+  status: mysqlEnum("status", ["pending", "completed", "failed"]).default("pending").notNull(),
+  errorMessage: text("errorMessage"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Conversion = typeof conversions.$inferSelect;
+export type InsertConversion = typeof conversions.$inferInsert;

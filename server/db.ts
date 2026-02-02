@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
+import { InsertUser, users, conversions, InsertConversion, Conversion } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -89,4 +89,57 @@ export async function getUserByOpenId(openId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-// TODO: add feature queries here as your schema grows.
+// Conversion history queries
+export async function createConversion(conversion: InsertConversion): Promise<Conversion> {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  const result = await db.insert(conversions).values(conversion);
+  const insertId = Number(result[0].insertId);
+  
+  const created = await db.select().from(conversions).where(eq(conversions.id, insertId)).limit(1);
+  if (!created[0]) {
+    throw new Error("Failed to retrieve created conversion");
+  }
+  
+  return created[0];
+}
+
+export async function updateConversion(id: number, updates: Partial<InsertConversion>): Promise<void> {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  await db.update(conversions).set(updates).where(eq(conversions.id, id));
+}
+
+export async function getUserConversions(userId: number): Promise<Conversion[]> {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  return db.select().from(conversions).where(eq(conversions.userId, userId)).orderBy(desc(conversions.createdAt));
+}
+
+export async function getConversionById(id: number): Promise<Conversion | undefined> {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  const result = await db.select().from(conversions).where(eq(conversions.id, id)).limit(1);
+  return result[0];
+}
+
+export async function deleteConversion(id: number): Promise<void> {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  await db.delete(conversions).where(eq(conversions.id, id));
+}
