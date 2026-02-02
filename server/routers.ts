@@ -40,6 +40,11 @@ import {
   validateBatchTotalSize,
   validateFileType,
 } from "../shared/fileConfig";
+import {
+  checkRateLimit,
+  incrementRateLimit,
+  getRateLimitInfo,
+} from "./rateLimitService";
 
 export const appRouter = router({
   system: systemRouter,
@@ -96,6 +101,17 @@ export const appRouter = router({
       )
       .mutation(async ({ ctx, input }) => {
         const { inputFormat, outputFormat, inputText, saveToHistory } = input;
+
+        // Check rate limits
+        const hourlyLimit = await checkRateLimit(ctx.user.id, "conversions_hourly");
+        if (!hourlyLimit.allowed) {
+          throw new Error(hourlyLimit.message || "已达到每小时转换限制");
+        }
+
+        const dailyLimit = await checkRateLimit(ctx.user.id, "conversions_daily");
+        if (!dailyLimit.allowed) {
+          throw new Error(dailyLimit.message || "已达到每天转换限制");
+        }
 
         // Validate text size
         const textSize = Buffer.byteLength(inputText, "utf-8");
@@ -155,6 +171,10 @@ export const appRouter = router({
             status: "completed",
           });
 
+          // Increment rate limit counters
+          await incrementRateLimit(ctx.user.id, "conversions_hourly");
+          await incrementRateLimit(ctx.user.id, "conversions_daily");
+
           // Cleanup temporary files
           await cleanupFiles([result.outputFilePath]);
 
@@ -185,6 +205,17 @@ export const appRouter = router({
       )
       .mutation(async ({ ctx, input }) => {
         const { inputFormat, outputFormat, fileName, fileData } = input;
+
+        // Check rate limits
+        const hourlyLimit = await checkRateLimit(ctx.user.id, "conversions_hourly");
+        if (!hourlyLimit.allowed) {
+          throw new Error(hourlyLimit.message || "已达到每小时转换限制");
+        }
+
+        const dailyLimit = await checkRateLimit(ctx.user.id, "conversions_daily");
+        if (!dailyLimit.allowed) {
+          throw new Error(dailyLimit.message || "已达到每天转换限制");
+        }
 
         // Decode base64 to get file size
         const fileBuffer = Buffer.from(fileData, "base64");
@@ -255,6 +286,10 @@ export const appRouter = router({
             status: "completed",
           });
 
+          // Increment rate limit counters
+          await incrementRateLimit(ctx.user.id, "conversions_hourly");
+          await incrementRateLimit(ctx.user.id, "conversions_daily");
+
           // Cleanup temporary files
           await cleanupFiles([tempInputPath, result.outputFilePath]);
 
@@ -321,6 +356,17 @@ export const appRouter = router({
       )
       .mutation(async ({ ctx, input }) => {
         const { name, inputFormat, outputFormat, files } = input;
+
+        // Check rate limits
+        const hourlyLimit = await checkRateLimit(ctx.user.id, "batch_jobs_hourly");
+        if (!hourlyLimit.allowed) {
+          throw new Error(hourlyLimit.message || "已达到每小时批量转换限制");
+        }
+
+        const dailyLimit = await checkRateLimit(ctx.user.id, "batch_jobs_daily");
+        if (!dailyLimit.allowed) {
+          throw new Error(dailyLimit.message || "已达到每天批量转换限制");
+        }
 
         // Validate total batch size
         let totalSize = 0;
@@ -404,6 +450,26 @@ export const appRouter = router({
     // Get user's batch jobs
     getUserJobs: protectedProcedure.query(async ({ ctx }) => {
       return getUserBatchJobs(ctx.user.id);
+    }),
+  }),
+
+  // Rate limit information
+  rateLimit: router({
+    // Get all rate limit info for current user
+    getInfo: protectedProcedure.query(async ({ ctx }) => {
+      const [conversionsHourly, conversionsDaily, batchJobsHourly, batchJobsDaily] = await Promise.all([
+        getRateLimitInfo(ctx.user.id, "conversions_hourly"),
+        getRateLimitInfo(ctx.user.id, "conversions_daily"),
+        getRateLimitInfo(ctx.user.id, "batch_jobs_hourly"),
+        getRateLimitInfo(ctx.user.id, "batch_jobs_daily"),
+      ]);
+
+      return {
+        conversionsHourly,
+        conversionsDaily,
+        batchJobsHourly,
+        batchJobsDaily,
+      };
     }),
   }),
 });
@@ -563,6 +629,12 @@ async function processFilesInBackground(
       zipFileUrl: zipUploadResult.url,
       zipFileKey,
     });
+
+    // Increment rate limit counters (only if at least one file succeeded)
+    if (completedCount > 0) {
+      await incrementRateLimit(userId, "batch_jobs_hourly");
+      await incrementRateLimit(userId, "batch_jobs_daily");
+    }
 
     // Cleanup
     await cleanupFiles([zipPath, ...outputFiles]);

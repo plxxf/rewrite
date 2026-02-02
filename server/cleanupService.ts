@@ -1,6 +1,7 @@
 import { getDb } from "./db";
 import { conversions, batchJobs, batchItems } from "../drizzle/schema";
 import { lt } from "drizzle-orm";
+import { cleanupExpiredRateLimits } from "./rateLimitService";
 
 /**
  * Data retention policy: 7 days
@@ -107,6 +108,7 @@ export async function runCleanup(): Promise<{
   conversionHistoryDeleted: number;
   batchItemsDeleted: number;
   batchJobsDeleted: number;
+  rateLimitsDeleted: number;
   totalDeleted: number;
   timestamp: Date;
 }> {
@@ -114,12 +116,13 @@ export async function runCleanup(): Promise<{
   const startTime = Date.now();
   
   try {
-    // Clean up in order: items first, then jobs, then history
+    // Clean up in order: items first, then jobs, then history, then rate limits
     const batchItemsDeleted = await cleanupBatchItems();
     const batchJobsDeleted = await cleanupBatchJobs();
     const conversionHistoryDeleted = await cleanupConversionHistory();
+    const rateLimitsDeleted = await cleanupExpiredRateLimits();
     
-    const totalDeleted = conversionHistoryDeleted + batchItemsDeleted + batchJobsDeleted;
+    const totalDeleted = conversionHistoryDeleted + batchItemsDeleted + batchJobsDeleted + rateLimitsDeleted;
     const duration = Date.now() - startTime;
     
     console.log(`[Cleanup] Completed in ${duration}ms. Total records deleted: ${totalDeleted}`);
@@ -128,6 +131,7 @@ export async function runCleanup(): Promise<{
       conversionHistoryDeleted,
       batchItemsDeleted,
       batchJobsDeleted,
+      rateLimitsDeleted,
       totalDeleted,
       timestamp: new Date(),
     };

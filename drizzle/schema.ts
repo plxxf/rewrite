@@ -1,4 +1,4 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, index } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -88,3 +88,21 @@ export const batchItems = mysqlTable("batch_items", {
 
 export type BatchItem = typeof batchItems.$inferSelect;
 export type InsertBatchItem = typeof batchItems.$inferInsert;
+
+/**
+ * Rate limits table to track user operation counts for rate limiting
+ */
+export const rateLimits = mysqlTable("rate_limits", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  limitType: varchar("limitType", { length: 64 }).notNull(), // conversions_hourly, conversions_daily, etc.
+  count: int("count").notNull().default(0),
+  resetAt: timestamp("resetAt").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({
+  userLimitTypeIdx: index("user_limit_type_idx").on(table.userId, table.limitType),
+}));
+
+export type RateLimit = typeof rateLimits.$inferSelect;
+export type InsertRateLimit = typeof rateLimits.$inferInsert;
