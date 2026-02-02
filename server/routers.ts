@@ -29,6 +29,8 @@ import { nanoid } from "nanoid";
 import archiver from "archiver";
 import { createWriteStream } from "fs";
 import path from "path";
+import { runCleanup } from "./cleanupService";
+import { getSchedulerStatus } from "./scheduler";
 import {
   FILE_SIZE_LIMITS,
   validateFileSize,
@@ -38,6 +40,27 @@ import {
 
 export const appRouter = router({
   system: systemRouter,
+  
+  // Cleanup management (admin only)
+  cleanup: router({
+    // Manually trigger cleanup (admin only)
+    runNow: protectedProcedure.mutation(async ({ ctx }) => {
+      if (ctx.user.role !== "admin") {
+        throw new Error("Only admins can trigger cleanup");
+      }
+      const result = await runCleanup();
+      return result;
+    }),
+    
+    // Get scheduler status
+    getStatus: protectedProcedure.query(async ({ ctx }) => {
+      if (ctx.user.role !== "admin") {
+        throw new Error("Only admins can view cleanup status");
+      }
+      return getSchedulerStatus();
+    }),
+  }),
+  
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
     logout: publicProcedure.mutation(({ ctx }) => {

@@ -70,11 +70,18 @@ function buildAuthHeaders(apiKey: string): HeadersInit {
 export async function storagePut(
   relKey: string,
   data: Buffer | Uint8Array | string,
-  contentType = "application/octet-stream"
+  contentType = "application/octet-stream",
+  expiresInDays = 7
 ): Promise<{ key: string; url: string }> {
   const { baseUrl, apiKey } = getStorageConfig();
   const key = normalizeKey(relKey);
   const uploadUrl = buildUploadUrl(baseUrl, key);
+  
+  // Add expiration parameter to URL
+  if (expiresInDays > 0) {
+    uploadUrl.searchParams.set("expiresInDays", expiresInDays.toString());
+  }
+  
   const formData = toFormData(data, contentType, key.split("/").pop() ?? key);
   const response = await fetch(uploadUrl, {
     method: "POST",
