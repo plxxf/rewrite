@@ -10,6 +10,8 @@ import { trpc } from "@/lib/trpc";
 import { useState, useCallback, useMemo } from "react";
 import { toast } from "sonner";
 import { FileText, Download, History, ArrowRight, Upload, Loader2, AlertCircle } from "lucide-react";
+import { ErrorMessage } from "@/components/ErrorMessage";
+import { useAutoRetry } from "@/hooks/useAutoRetry";
 import { Link } from "wouter";
 import {
   FILE_SIZE_LIMITS,
@@ -26,6 +28,18 @@ export default function Home() {
   const [outputFormat, setOutputFormat] = useState("html");
   const [isConverting, setIsConverting] = useState(false);
   const [dragActive, setDragActive] = useState(false);
+  const [conversionError, setConversionError] = useState<Error | null>(null);
+  
+  const { execute: executeWithRetry, isRetrying, retryCount } = useAutoRetry({
+    maxRetries: 3,
+    retryDelay: 1000,
+    onRetry: (attempt) => {
+      toast.info(`正在重试... (${attempt}/3)`);
+    },
+    onMaxRetriesReached: () => {
+      toast.error("已达到最大重试次数");
+    },
+  });
 
   const { data: formats } = trpc.conversion.getSupportedFormats.useQuery();
   const convertTextMutation = trpc.conversion.convertText.useMutation();
@@ -52,23 +66,28 @@ export default function Home() {
 
     setIsConverting(true);
     setOutputText("");
+    setConversionError(null);
 
     try {
-      const result = await convertTextMutation.mutateAsync({
-        inputFormat,
-        outputFormat,
-        inputText,
-        saveToHistory: true,
+      const result = await executeWithRetry(async () => {
+        return await convertTextMutation.mutateAsync({
+          inputFormat,
+          outputFormat,
+          inputText,
+          saveToHistory: true,
+        });
       });
 
-      setOutputText(result.outputText || "");
+      setOutputText((result as any).outputText || "");
       toast.success("转换成功！");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "转换失败");
+      const err = error instanceof Error ? error : new Error("转换失败");
+      setConversionError(err);
+      toast.error(err.message);
     } finally {
       setIsConverting(false);
     }
-  }, [user, inputText, inputFormat, outputFormat, convertTextMutation]);
+  }, [user, inputText, inputFormat, outputFormat, convertTextMutation, executeWithRetry]);
 
   const handleFileUpload = useCallback(async (file: File) => {
     if (!user) {
@@ -298,6 +317,14 @@ export default function Home() {
                     </CardContent>
                   </Card>
 
+                  {conversionError && (
+                    <ErrorMessage
+                      error={conversionError}
+                      onRetry={handleConvert}
+                      className="mb-4"
+                    />
+                  )}
+                  
                   <Card>
                     <CardHeader>
                       <CardTitle className="flex items-center justify-between">
@@ -330,7 +357,7 @@ export default function Home() {
                     {isConverting ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        转换中...
+                        {isRetrying ? `重试中 (${retryCount}/3)...` : "转换中..."}
                       </>
                     ) : (
                       <>
