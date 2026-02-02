@@ -158,6 +158,11 @@ export default function Batch() {
               <FileText className="h-6 w-6 text-primary" />
               <h1 className="text-2xl font-bold text-foreground">批量转换</h1>
             </div>
+            <Link href="/batch-history">
+              <Button variant="outline" size="sm">
+                查看历史
+              </Button>
+            </Link>
           </div>
           <span className="text-sm text-muted-foreground">{user.name || user.email}</span>
         </div>
