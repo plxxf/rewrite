@@ -1,4 +1,4 @@
-import { eq, desc } from "drizzle-orm";
+import { eq, and, desc } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { InsertUser, users, conversions, InsertConversion, Conversion, batchJobs, InsertBatchJob, BatchJob, batchItems, InsertBatchItem, BatchItem } from "../drizzle/schema";
 import { ENV } from './_core/env';
@@ -125,13 +125,24 @@ export async function getUserConversions(userId: number): Promise<Conversion[]> 
   return db.select().from(conversions).where(eq(conversions.userId, userId)).orderBy(desc(conversions.createdAt));
 }
 
-export async function getConversionById(id: number): Promise<Conversion | undefined> {
+export async function getConversionById(id: number, userId?: number): Promise<Conversion | undefined> {
   const db = await getDb();
   if (!db) {
     throw new Error("Database not available");
   }
-
-  const result = await db.select().from(conversions).where(eq(conversions.id, id)).limit(1);
+  
+  // Build where conditions
+  const conditions = [eq(conversions.id, id)];
+  if (userId !== undefined) {
+    conditions.push(eq(conversions.userId, userId));
+  }
+  
+  const result = await db
+    .select()
+    .from(conversions)
+    .where(and(...conditions))
+    .limit(1);
+    
   return result[0];
 }
 
@@ -171,13 +182,24 @@ export async function updateBatchJob(id: number, updates: Partial<InsertBatchJob
   await db.update(batchJobs).set(updates).where(eq(batchJobs.id, id));
 }
 
-export async function getBatchJobById(id: number): Promise<BatchJob | undefined> {
+export async function getBatchJobById(id: number, userId?: number): Promise<BatchJob | undefined> {
   const db = await getDb();
   if (!db) {
     throw new Error("Database not available");
   }
-
-  const result = await db.select().from(batchJobs).where(eq(batchJobs.id, id)).limit(1);
+  
+  // Build where conditions
+  const conditions = [eq(batchJobs.id, id)];
+  if (userId !== undefined) {
+    conditions.push(eq(batchJobs.userId, userId));
+  }
+  
+  const result = await db
+    .select()
+    .from(batchJobs)
+    .where(and(...conditions))
+    .limit(1);
+    
   return result[0];
 }
 

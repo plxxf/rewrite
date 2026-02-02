@@ -281,9 +281,10 @@ export const appRouter = router({
     getById: protectedProcedure
       .input(z.object({ id: z.number() }))
       .query(async ({ ctx, input }) => {
-        const conversion = await getConversionById(input.id);
-        if (!conversion || conversion.userId !== ctx.user.id) {
-          throw new Error("Conversion not found");
+        // Use userId parameter for permission check
+        const conversion = await getConversionById(input.id, ctx.user.id);
+        if (!conversion) {
+          throw new Error("Conversion not found or access denied");
         }
         return conversion;
       }),
@@ -292,9 +293,10 @@ export const appRouter = router({
     delete: protectedProcedure
       .input(z.object({ id: z.number() }))
       .mutation(async ({ ctx, input }) => {
-        const conversion = await getConversionById(input.id);
-        if (!conversion || conversion.userId !== ctx.user.id) {
-          throw new Error("Conversion not found");
+        // Use userId parameter for permission check
+        const conversion = await getConversionById(input.id, ctx.user.id);
+        if (!conversion) {
+          throw new Error("Conversion not found or access denied");
         }
         await deleteConversion(input.id);
         return { success: true };
@@ -385,9 +387,10 @@ export const appRouter = router({
     getJobStatus: protectedProcedure
       .input(z.object({ jobId: z.number() }))
       .query(async ({ ctx, input }) => {
-        const job = await getBatchJobById(input.jobId);
-        if (!job || job.userId !== ctx.user.id) {
-          throw new Error("Batch job not found");
+        // Use userId parameter for permission check
+        const job = await getBatchJobById(input.jobId, ctx.user.id);
+        if (!job) {
+          throw new Error("Batch job not found or access denied");
         }
 
         const items = await getBatchItemsByJobId(input.jobId);
