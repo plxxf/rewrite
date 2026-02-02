@@ -4,10 +4,13 @@ import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import CookieConsent from "./components/CookieConsent";
 import Home from "./pages/Home";
 import History from "./pages/History";
 import Batch from "./pages/Batch";
 import BatchHistory from "./pages/BatchHistory";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -17,6 +20,8 @@ function Router() {
       <Route path="/history" component={History} />
       <Route path="/batch" component={Batch} />
       <Route path="/batch-history" component={BatchHistory} />
+      <Route path="/privacy" component={PrivacyPolicy} />
+      <Route path="/terms" component={TermsOfService} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
@@ -39,6 +44,7 @@ function App() {
         <TooltipProvider>
           <Toaster />
           <Router />
+          <CookieConsent />
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>

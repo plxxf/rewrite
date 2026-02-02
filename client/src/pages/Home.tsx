@@ -393,6 +393,21 @@ export default function Home() {
           </div>
         )}
       </main>
+
+      {/* Footer */}
+      <footer className="border-t bg-white/80 backdrop-blur-sm py-6 mt-8">
+        <div className="container text-center text-sm text-muted-foreground">
+          <p>© 2026 Rewrite. 保留所有权利。</p>
+          <div className="flex justify-center gap-4 mt-2">
+            <Link href="/privacy" className="hover:text-primary">
+              隐私政策
+            </Link>
+            <Link href="/terms" className="hover:text-primary">
+              服务条款
+            </Link>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
