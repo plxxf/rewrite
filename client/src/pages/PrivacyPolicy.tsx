@@ -302,19 +302,21 @@ export default function PrivacyPolicy() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t bg-white/80 backdrop-blur-sm py-6 mt-8">
-        <div className="container text-center text-sm text-muted-foreground">
-          <p>© 2026 Rewrite. 由邻里Neighbor创建和维护。</p>
-          <div className="flex justify-center gap-4 mt-2">
-            <Link href="/privacy" className="hover:text-primary">
-              隐私政策
-            </Link>
-            <Link href="/terms" className="hover:text-primary">
-              服务条款
-            </Link>
-            <a href="mailto:plxxf514@gmail.com" className="hover:text-primary">
-              联系我们
-            </a>
+      <footer className="border-t bg-gradient-to-r from-blue-50 to-white py-8 mt-12">
+        <div className="container">
+          <div className="border-t pt-6 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
+            <p>© 2026 Rewrite. 由邻里Neighbor创建和维护。</p>
+            <div className="flex gap-4">
+              <Link href="/privacy-policy" className="hover:text-primary transition-colors">
+                隐私政策
+              </Link>
+              <Link href="/terms-of-service" className="hover:text-primary transition-colors">
+                服务条款
+              </Link>
+              <a href="mailto:plxxf514@gmail.com" className="hover:text-primary transition-colors">
+                联系我们
+              </a>
+            </div>
           </div>
         </div>
       </footer>

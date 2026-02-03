@@ -485,19 +485,86 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t bg-white/80 backdrop-blur-sm py-6 mt-8">
-        <div className="container text-center text-sm text-muted-foreground">
-          <p>© 2026 Rewrite. 由邻里Neighbor创建和维护。</p>
-          <div className="flex justify-center gap-4 mt-2">
-            <Link href="/privacy" className="hover:text-primary">
-              隐私政策
-            </Link>
-            <Link href="/terms" className="hover:text-primary">
-              服务条款
-            </Link>
-            <a href="mailto:plxxf514@gmail.com" className="hover:text-primary">
-              联系我们
-            </a>
+      <footer className="border-t bg-gradient-to-r from-blue-50 to-white py-8 mt-12">
+        <div className="container">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-6">
+            {/* About Section */}
+            <div>
+              <h3 className="font-semibold text-foreground mb-3">关于 Rewrite</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Rewrite 是一个强大的在线文档格式转换工具，支持 15+ 种格式互转，由 Pandoc 引擎驱动，为您提供快速、准确的转换服务。
+              </p>
+            </div>
+
+            {/* Quick Links */}
+            <div>
+              <h3 className="font-semibold text-foreground mb-3">快速链接</h3>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <Link href="/help" className="text-muted-foreground hover:text-primary transition-colors">
+                    帮助中心
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/history" className="text-muted-foreground hover:text-primary transition-colors">
+                    转换历史
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/batch" className="text-muted-foreground hover:text-primary transition-colors">
+                    批量转换
+                  </Link>
+                </li>
+                <li>
+                  <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+                    GitHub 仓库
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Contact & Legal */}
+            <div>
+              <h3 className="font-semibold text-foreground mb-3">联系与法律</h3>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <a href="mailto:plxxf514@gmail.com" className="text-muted-foreground hover:text-primary transition-colors">
+                    联系我们
+                  </a>
+                </li>
+                <li>
+                  <Link href="/privacy-policy" className="text-muted-foreground hover:text-primary transition-colors">
+                    隐私政策
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/terms-of-service" className="text-muted-foreground hover:text-primary transition-colors">
+                    服务条款
+                  </Link>
+                </li>
+                <li>
+                  <a href="https://help.manus.im" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+                    提交反馈
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Bottom Bar */}
+          <div className="border-t pt-6 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
+            <p>© 2026 Rewrite. 由邻里Neighbor创建和维护。</p>
+            <div className="flex gap-4">
+              <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+                GitHub
+              </a>
+              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+                Twitter
+              </a>
+              <a href="mailto:plxxf514@gmail.com" className="hover:text-primary transition-colors">
+                Email
+              </a>
+            </div>
           </div>
         </div>
       </footer>
