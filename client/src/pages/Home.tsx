@@ -9,7 +9,7 @@ import { getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { useState, useCallback, useMemo } from "react";
 import { toast } from "sonner";
-import { FileText, Download, History, ArrowRight, Upload, Loader2, AlertCircle, HelpCircle } from "lucide-react";
+import { FileText, Download, History, ArrowRight, Upload, Loader2, AlertCircle, HelpCircle, Settings } from "lucide-react";
 import { ErrorMessage } from "@/components/ErrorMessage";
 import { useAutoRetry } from "@/hooks/useAutoRetry";
 import { QuotaDisplay } from "@/components/QuotaDisplay";
@@ -217,6 +217,12 @@ export default function Home() {
                     <Button variant="ghost" size="sm">
                       <HelpCircle className="h-4 w-4 mr-2" />
                       帮助
+                    </Button>
+                  </Link>
+                  <Link href="/settings">
+                    <Button variant="ghost" size="sm">
+                      <Settings className="h-4 w-4 mr-2" />
+                      设置
                     </Button>
                   </Link>
                 </div>

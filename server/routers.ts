@@ -28,6 +28,7 @@ import { readFile, writeFile as fsWriteFile } from "fs/promises";
 import { nanoid } from "nanoid";
 import archiver from "archiver";
 import { createWriteStream } from "fs";
+import { getUserStats, getUserFavoriteFormats } from "./userStatsService";
 import path from "path";
 import { runCleanup } from "./cleanupService";
 import { getSchedulerStatus } from "./scheduler";
@@ -470,6 +471,21 @@ export const appRouter = router({
         batchJobsHourly,
         batchJobsDaily,
       };
+    }),
+  }),
+
+  // User settings and stats
+  user: router({
+    // Get user statistics
+    getStats: protectedProcedure.query(async ({ ctx }) => {
+      const stats = await getUserStats(ctx.user.id);
+      return stats;
+    }),
+
+    // Get user's favorite formats
+    getFavoriteFormats: protectedProcedure.query(async ({ ctx }) => {
+      const formats = await getUserFavoriteFormats(ctx.user.id);
+      return formats;
     }),
   }),
 });
