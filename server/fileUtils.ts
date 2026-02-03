@@ -10,14 +10,14 @@ export function getFileExtension(format: string): string {
     latex: "tex",
     rst: "rst",
     textile: "textile",
-    asciidoc: "adoc",
+    // asciidoc: "adoc", // Not supported
     org: "org",
     mediawiki: "wiki",
     epub: "epub",
     odt: "odt",
     rtf: "rtf",
     plain: "txt",
-    json: "json",
+    // json: "json", // Not supported for general use
     ipynb: "ipynb",
     pptx: "pptx",
   };

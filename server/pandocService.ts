@@ -53,7 +53,14 @@ export async function convertDocument(options: ConversionOptions): Promise<Conve
 
     // Build pandoc command with UTF-8 encoding support
     // Add --from and --to with explicit encoding, and set proper metadata for DOCX
-    const command = `pandoc -f ${inputFormat} -t ${outputFormat} --metadata lang=zh-CN "${inputFile}" -o "${outputFile}"`;
+    let command = `pandoc -f ${inputFormat} -t ${outputFormat} --metadata lang=zh-CN`;
+    
+    // Add PDF engine if converting to PDF (use weasyprint which is pre-installed)
+    if (outputFormat === "pdf") {
+      command += " --pdf-engine=weasyprint";
+    }
+    
+    command += ` "${inputFile}" -o "${outputFile}"`;
 
     // Execute pandoc
     const { stderr } = await execAsync(command, {
@@ -124,12 +131,12 @@ export function getSupportedInputFormats(): string[] {
     "latex",
     "rst",
     "textile",
-    "asciidoc",
+    // "asciidoc", // Not supported by Pandoc
     "org",
     "mediawiki",
     "epub",
     "odt",
-    "json",
+    // "json", // Requires Pandoc AST format, not suitable for general use
     "ipynb",
   ];
 }
@@ -146,14 +153,14 @@ export function getSupportedOutputFormats(): string[] {
     "latex",
     "rst",
     "textile",
-    "asciidoc",
+    // "asciidoc", // Not supported by Pandoc
     "org",
     "mediawiki",
     "epub",
     "odt",
     "rtf",
     "plain",
-    "json",
+    // "json", // Pandoc AST format, not suitable for general use
     "ipynb",
     "pptx",
   ];
