@@ -285,9 +285,9 @@ export default function PrivacyPolicy() {
             </p>
 
             <p>
-              <strong>电子邮件</strong>：privacy@rewrite.example.com
+              <strong>电子邮件</strong>：plxxf514@gmail.com
               <br />
-              <strong>网站</strong>：https://rewrite.example.com
+              <strong>创始组织</strong>：邻里Neighbor
             </p>
 
             <p>我们会尽力在合理期限内回复您的询问和请求。</p>
@@ -304,7 +304,7 @@ export default function PrivacyPolicy() {
       {/* Footer */}
       <footer className="border-t bg-white/80 backdrop-blur-sm py-6 mt-8">
         <div className="container text-center text-sm text-muted-foreground">
-          <p>© 2026 Rewrite. 保留所有权利。</p>
+          <p>© 2026 Rewrite. 由邻里Neighbor创建和维护。</p>
           <div className="flex justify-center gap-4 mt-2">
             <Link href="/privacy" className="hover:text-primary">
               隐私政策
@@ -312,6 +312,9 @@ export default function PrivacyPolicy() {
             <Link href="/terms" className="hover:text-primary">
               服务条款
             </Link>
+            <a href="mailto:plxxf514@gmail.com" className="hover:text-primary">
+              联系我们
+            </a>
           </div>
         </div>
       </footer>

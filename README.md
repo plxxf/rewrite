@@ -341,9 +341,11 @@ pm2 start npm --name "rewrite" -- start
 如有任何问题或建议，请通过以下方式联系我们：
 
 - **Issue Tracker**：在 GitHub 上提交 Issue
-- **Email**：support@manus.im
-- **官方网站**：https://manus.im
+- **Email**：plxxf514@gmail.com
+- **创始组织**：邻里Neighbor
 
 ---
 
 **Rewrite** - 让文档格式转换变得简单高效 🚀
+
+由 **邻里Neighbor** 创建和维护
