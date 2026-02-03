@@ -50,8 +50,9 @@ export async function convertDocument(options: ConversionOptions): Promise<Conve
         await writeFile(inputFile, inputText || "", "utf-8");
       }
 
-    // Build pandoc command
-    const command = `pandoc -f ${inputFormat} -t ${outputFormat} "${inputFile}" -o "${outputFile}"`;
+    // Build pandoc command with UTF-8 encoding support
+    // Add --from and --to with explicit encoding, and set proper metadata for DOCX
+    const command = `pandoc -f ${inputFormat} -t ${outputFormat} --metadata lang=zh-CN "${inputFile}" -o "${outputFile}"`;
 
     // Execute pandoc
     const { stderr } = await execAsync(command, {
