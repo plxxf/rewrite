@@ -212,3 +212,7 @@
 - [x] 修复所有页面的链接路径（/privacy → /privacy-policy, /terms → /terms-of-service）
 - [x] 统一所有页面的页脚样式
 - [x] 测试验证链接可正常跳转
+
+## 删除 Pandoc 引擎描述和 Twitter 链接
+- [x] 删除首页页脚“关于 Rewrite”中的“由 Pandoc 引擎驱动”描述
+- [x] 删除首页页脚底部的 Twitter 链接

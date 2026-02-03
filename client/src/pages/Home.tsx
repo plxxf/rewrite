@@ -492,7 +492,7 @@ export default function Home() {
             <div>
               <h3 className="font-semibold text-foreground mb-3">关于 Rewrite</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Rewrite 是一个强大的在线文档格式转换工具，支持 15+ 种格式互转，由 Pandoc 引擎驱动，为您提供快速、准确的转换服务。
+                Rewrite 是一个强大的在线文档格式转换工具，支持 15+ 种格式互转，为您提供快速、准确的转换服务。
               </p>
             </div>
 
@@ -557,9 +557,6 @@ export default function Home() {
             <div className="flex gap-4">
               <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
                 GitHub
-              </a>
-              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
-                Twitter
               </a>
               <a href="mailto:plxxf514@gmail.com" className="hover:text-primary transition-colors">
                 Email
