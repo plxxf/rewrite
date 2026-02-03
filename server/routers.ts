@@ -23,6 +23,7 @@ import {
   getSupportedInputFormats,
   getSupportedOutputFormats,
 } from "./pandocService";
+import { getFileExtension } from "./fileUtils";
 import { storagePut } from "./storage";
 import { readFile, writeFile as fsWriteFile } from "fs/promises";
 import { nanoid } from "nanoid";
@@ -252,7 +253,9 @@ export const appRouter = router({
           const inputUploadResult = await storagePut(inputFileKey, fileBuffer, getMimeType(inputFormat));
 
           // Write file to temp location for pandoc
-          const tempInputPath = `/tmp/pandoc-conversions/input-${nanoid()}.${fileName.split(".").pop()}`;
+          // Use inputFormat to determine correct file extension, not the original filename
+          const fileExtension = getFileExtension(inputFormat);
+          const tempInputPath = `/tmp/pandoc-conversions/input-${nanoid()}.${fileExtension}`;
           await require("fs/promises").writeFile(tempInputPath, fileBuffer);
 
           // Perform conversion

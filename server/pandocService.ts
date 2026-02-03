@@ -4,6 +4,7 @@ import { writeFile, unlink, mkdir } from "fs/promises";
 import { existsSync } from "fs";
 import path from "path";
 import { nanoid } from "nanoid";
+import { getFileExtension } from "./fileUtils";
 
 const execAsync = promisify(exec);
 
@@ -110,32 +111,7 @@ export async function cleanupFiles(filePaths: string[]): Promise<void> {
   }
 }
 
-/**
- * Get file extension for a given format
- */
-function getFileExtension(format: string): string {
-  const extensionMap: Record<string, string> = {
-    markdown: "md",
-    html: "html",
-    docx: "docx",
-    pdf: "pdf",
-    latex: "tex",
-    rst: "rst",
-    textile: "textile",
-    asciidoc: "adoc",
-    org: "org",
-    mediawiki: "wiki",
-    epub: "epub",
-    odt: "odt",
-    rtf: "rtf",
-    plain: "txt",
-    json: "json",
-    ipynb: "ipynb",
-    pptx: "pptx",
-  };
-
-  return extensionMap[format] || "txt";
-}
+// getFileExtension moved to fileUtils.ts for reusability
 
 /**
  * Get list of supported input formats
