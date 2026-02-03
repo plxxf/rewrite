@@ -25,6 +25,7 @@ export default function Home() {
   const { user, loading: authLoading } = useAuth();
   const [inputText, setInputText] = useState("");
   const [outputText, setOutputText] = useState("");
+  const [outputFileUrl, setOutputFileUrl] = useState<string | null>(null);
   const [inputFormat, setInputFormat] = useState("markdown");
   const [outputFormat, setOutputFormat] = useState("html");
   const [isConverting, setIsConverting] = useState(false);
@@ -67,6 +68,7 @@ export default function Home() {
 
     setIsConverting(true);
     setOutputText("");
+    setOutputFileUrl(null);
     setConversionError(null);
 
     try {
@@ -79,8 +81,18 @@ export default function Home() {
         });
       });
 
-      setOutputText((result as any).outputText || "");
-      toast.success("转换成功！");
+      const response = result as any;
+      
+      // Check if output is a binary format (file URL provided)
+      if (response.outputFileUrl) {
+        setOutputFileUrl(response.outputFileUrl);
+        setOutputText(""); // Don't show binary content in text area
+        toast.success("转换成功！请点击下载按钮获取文件");
+      } else {
+        setOutputText(response.outputText || "");
+        setOutputFileUrl(null);
+        toast.success("转换成功！");
+      }
     } catch (error) {
       const err = error instanceof Error ? error : new Error("转换失败");
       setConversionError(err);
@@ -164,6 +176,19 @@ export default function Home() {
   }, [handleFileUpload]);
 
   const handleDownload = useCallback(() => {
+    // If we have a file URL (binary format), download from URL
+    if (outputFileUrl) {
+      const a = document.createElement("a");
+      a.href = outputFileUrl;
+      a.download = `output.${outputFormat}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      toast.success("开始下载...");
+      return;
+    }
+    
+    // Otherwise download text content
     if (!outputText) {
       toast.error("没有可下载的内容");
       return;
@@ -178,7 +203,8 @@ export default function Home() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-  }, [outputText, outputFormat]);
+    toast.success("开始下载...");
+  }, [outputText, outputFileUrl, outputFormat]);
 
   if (authLoading) {
     return (
@@ -344,7 +370,7 @@ export default function Home() {
                     <CardHeader>
                       <CardTitle className="flex items-center justify-between">
                         <span>输出结果</span>
-                        {outputText && (
+                        {(outputText || outputFileUrl) && (
                           <Button size="sm" variant="outline" onClick={handleDownload}>
                             <Download className="h-4 w-4 mr-2" />
                             下载
@@ -353,12 +379,28 @@ export default function Home() {
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <Textarea
-                        value={outputText}
-                        readOnly
-                        placeholder="转换结果将显示在这里..."
-                        className="min-h-[400px] font-mono text-sm bg-muted"
-                      />
+                      {outputFileUrl ? (
+                        <div className="min-h-[400px] flex flex-col items-center justify-center gap-4 bg-muted rounded-lg border-2 border-dashed">
+                          <FileText className="h-16 w-16 text-muted-foreground" />
+                          <div className="text-center">
+                            <p className="text-lg font-medium">文件已准备就绪</p>
+                            <p className="text-sm text-muted-foreground mt-2">
+                              输出格式为二进制文件（{outputFormat.toUpperCase()}），请点击上方下载按钮获取
+                            </p>
+                          </div>
+                          <Button onClick={handleDownload} size="lg">
+                            <Download className="h-4 w-4 mr-2" />
+                            立即下载
+                          </Button>
+                        </div>
+                      ) : (
+                        <Textarea
+                          value={outputText}
+                          readOnly
+                          placeholder="转换结果将显示在这里..."
+                          className="min-h-[400px] font-mono text-sm bg-muted"
+                        />
+                      )}
                     </CardContent>
                   </Card>
                 </div>
