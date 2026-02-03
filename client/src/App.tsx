@@ -11,6 +11,7 @@ import Batch from "./pages/Batch";
 import BatchHistory from "./pages/BatchHistory";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
+import Help from "./pages/Help";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -20,8 +21,9 @@ function Router() {
       <Route path="/history" component={History} />
       <Route path="/batch" component={Batch} />
       <Route path="/batch-history" component={BatchHistory} />
-      <Route path="/privacy" component={PrivacyPolicy} />
-      <Route path="/terms" component={TermsOfService} />
+      <Route path="/privacy-policy" component={PrivacyPolicy} />
+      <Route path="/terms-of-service" component={TermsOfService} />
+      <Route path="/help" component={Help} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
