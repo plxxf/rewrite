@@ -165,6 +165,10 @@ h2 { font-size: 15px; font-weight: 700; }
 @keyframes celePop { from { transform: scale(.8); opacity: 0; } }
 @keyframes celeRing { 0% { transform: scale(1); opacity: .6; } 100% { transform: scale(1.9); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .celebrate, .cele-card, .cele-burst i { animation: none; } }
+.block-line { display: flex; gap: 8px; align-items: flex-start; color: var(--bad); line-height: 1.6; }
+.block-line .ic { width: 16px; height: 16px; margin-top: 4px; }
+.guardian { display: flex; gap: 8px; align-items: flex-start; margin-top: 6px; font-size: 13px; color: var(--ink); }
+.guardian input { margin: 3px 0 0; accent-color: var(--accent); width: 16px; height: 16px; }
 .save-bar { display: flex; flex-direction: column; gap: 8px; border-top: 1px solid var(--line); padding-top: 12px; }
 .save-bar .hint { margin: 0; text-align: left; }
 .cap-note { display: flex; gap: 8px; align-items: flex-start; text-align: left; font-size: 13px; color: var(--accent-strong); background: var(--accent-soft); border-radius: 12px; padding: 8px 12px; margin: 0; }
@@ -502,20 +506,20 @@ button.row:first-child { border-top: 0; }
   /* ---------- scoring model ---------- */
   var COLORS = {
     brown:  { name: "棕色",   hex: "#7A4A26", pts: 25, note: "健康的正常颜色" },
-    yellow: { name: "黄色",   hex: "#C99A2E", pts: 18, note: "可能与高脂饮食或肠道通过较快有关" },
-    green:  { name: "绿色",   hex: "#5F7B2C", pts: 16, note: "常见于绿叶菜摄入多或肠道通过过快" },
-    black:  { name: "黑色",   hex: "#241C18", pts: 4,  note: "可能提示上消化道出血；补铁剂、铋剂也会导致发黑" },
-    red:    { name: "带血/红色", hex: "#A3291F", pts: 0,  note: "可能提示下消化道出血或痔疮；红心火龙果、甜菜也会染红" },
-    pale:   { name: "灰白色", hex: "#D3CAB3", pts: 4,  note: "可能与胆汁排出受阻有关" }
+    yellow: { name: "黄色",   hex: "#C99A2E", pts: 18, note: "常与饮食有关，比如吃得比较油腻" },
+    green:  { name: "绿色",   hex: "#5F7B2C", pts: 16, note: "常与饮食有关，比如吃了较多绿叶菜" },
+    black:  { name: "黑色",   hex: "#241C18", pts: 4,  note: "颜色发黑需要留意；服用铁剂、铋剂或吃了深色食物也可能发黑" },
+    red:    { name: "带血/红色", hex: "#A3291F", pts: 0,  note: "颜色发红需要留意；吃了红心火龙果、甜菜等也可能发红" },
+    pale:   { name: "灰白色", hex: "#D3CAB3", pts: 4,  note: "颜色发白需要留意" }
   };
   var TYPES = [null,
-    { name: "分离硬块",   tag: "严重便秘", desc: "像坚果一样一颗颗的硬块，很难排出", pts: 10 },
-    { name: "块状腊肠",   tag: "轻度便秘", desc: "香肠状，但表面凹凸成块",           pts: 24 },
+    { name: "分离硬块",   tag: "很硬", desc: "像坚果一样一颗颗的硬块，很难排出", pts: 10 },
+    { name: "块状腊肠",   tag: "偏硬", desc: "香肠状，但表面凹凸成块",           pts: 24 },
     { name: "有裂纹的腊肠", tag: "正常",   desc: "香肠状，表面有些裂纹",             pts: 37 },
     { name: "光滑软条",   tag: "理想",     desc: "像香蕉一样光滑、柔软",             pts: 40 },
     { name: "软团块",     tag: "偏软",     desc: "边缘清楚的软块，很容易排出",       pts: 30 },
-    { name: "糊状",       tag: "轻度腹泻", desc: "边缘蓬松、不成形的糊状",           pts: 16 },
-    { name: "水样",       tag: "腹泻",     desc: "完全是液体，没有固体",             pts: 6 }
+    { name: "糊状",       tag: "偏稀", desc: "边缘蓬松、不成形的糊状",           pts: 16 },
+    { name: "水样",       tag: "很稀",     desc: "完全是液体，没有固体",             pts: 6 }
   ];
   var EFFORT = {
     easy:  { name: "很轻松",   pts: 20, icon: "smile" },
@@ -547,7 +551,7 @@ button.row:first-child { border-top: 0; }
     if (rawScore(r) <= c.cap) return "";
     return c.why === "freq"
       ? "这是今天第 " + c.n + " 次排便，一天次数偏多，即使这次状态不错，评分最高也只有 " + c.cap + " 分。"
-      : "今天早些时候有 " + c.looseBefore + " 次稀便，肠道还在恢复，这次评分最高 " + c.cap + " 分。";
+      : "今天早些时候有 " + c.looseBefore + " 次稀便，这次评分最高 " + c.cap + " 分。";
   }
   function rawScore(r) {
     // backend only: symptoms take a few points off, never shown as a rule to the user
@@ -654,42 +658,42 @@ button.row:first-child { border-top: 0; }
     var recentLatest = latest && latest.ts > addDays(today, -2).getTime();
     var explained = latest && (latest.color === "black" ? (has(latest, "meds", "铁剂") || has(latest, "meds", "铋剂")) : latest.color === "red" ? has(latest, "diet", "红心火龙果/甜菜") : false);
     if (latest && explained) {
-      alerts.push({ level: "info", title: "颜色变化可能与" + (latest.color === "black" ? "药物" : "饮食") + "有关",
-        text: (latest.color === "black" ? "你记录了服用铁剂或铋剂，大便发黑通常是正常现象，停药后会恢复。" : "你记录了吃红心火龙果或甜菜，大便发红通常是食物染色，一两天内会恢复。") + "如果大便呈柏油样、有腥臭味，或伴随头晕乏力，仍需尽快就医。", doctor: false });
+      alerts.push({ level: "info", title: "你记录了" + (latest.color === "black" ? "相关用药" : "相关饮食"),
+        text: (latest.color === "black" ? "你记录了正在服用铁剂或铋剂，服用期间大便发黑较常见。" : "你记录了吃过红心火龙果或甜菜，这类食物可能让大便发红。") + "如果颜色持续不退、呈柏油样，或伴随头晕乏力，请尽快就医。", doctor: false });
     } else if (latest && (latest.color === "red" || latest.color === "black")) {
-      alerts.push({ level: "urgent", title: "建议尽快就医", text: "这次大便颜色为" + COLORS[latest.color].name + "，" + COLORS[latest.color].note + "。如果近期没有吃过相关食物或药物，请尽快到消化内科就诊；若伴随头晕、乏力、腹痛，请立即就医。", doctor: true });
+      alerts.push({ level: "urgent", title: "建议尽快就医", text: "这次记录的大便颜色为" + COLORS[latest.color].name + "。" + COLORS[latest.color].note + "。如果近期没有吃过相关食物或药物，建议尽快到医院就诊；如果同时感到头晕、乏力或腹痛，请立即就医。", doctor: true });
     }
     var recentPale = all.filter(function (r) { return r.color === "pale" && r.ts > addDays(today, -3).getTime(); });
     if (recentPale.length) {
-      alerts.push({ level: "urgent", title: "建议就医检查", text: "近 3 天出现灰白色大便，可能与肝胆问题有关。如同时有皮肤或眼白发黄、尿色变深，请尽快就医。", doctor: true });
+      alerts.push({ level: "urgent", title: "建议尽快就医", text: "近 3 天记录到灰白色大便，这种颜色需要医生进一步判断，建议尽快就诊；如果同时出现皮肤或眼白发黄、尿色变深，请立即就医。", doctor: true });
     }
     if (recentLatest && has(latest, "symptoms", "便血") && latest.color !== "red") {
-      alerts.push({ level: "urgent", title: "记录到便血，建议就医", text: "少量鲜红色血可能来自痔疮或肛裂，但也可能是肠道出血。请尽快到消化内科或肛肠科就诊。", doctor: true });
+      alerts.push({ level: "urgent", title: "记录到便血，建议就医", text: "大便中带血的原因有很多，需要医生检查后才能判断，建议尽快到医院就诊。", doctor: true });
     }
     if (recentLatest && has(latest, "symptoms", "发热") && latest.type >= 6) {
-      alerts.push({ level: "urgent", title: "腹泻伴发热，建议就医", text: "腹泻同时发热可能是肠道感染。请多补水，尽快就医，不要自行服用止泻药。", doctor: true });
+      alerts.push({ level: "urgent", title: "稀便同时发热，建议就医", text: "你记录了稀便并伴有发热，请注意补充水分，并尽快就医。", doctor: true });
     }
     if (recentLatest && has(latest, "symptoms", "黏液")) {
-      alerts.push({ level: "warn", title: "大便带黏液", text: "偶尔少量黏液可能与饮食有关。如果反复出现，或伴随腹痛、便血，请就医检查。", doctor: false });
+      alerts.push({ level: "warn", title: "大便带黏液", text: "如果反复出现，或同时有腹痛、便血，建议咨询医生。", doctor: false });
     }
     if (recentLatest && latest.type >= 6 && has(latest, "meds", "泻药")) {
-      alerts.push({ level: "info", title: "稀便可能与泻药有关", text: "你记录了服用泻药，大便变稀是常见反应。如果次数很多或腹痛明显，请减量并咨询医生。", doctor: false });
+      alerts.push({ level: "info", title: "你记录了正在服用泻药", text: "服用泻药期间大便变稀较常见。如果次数很多或腹痛明显，请咨询医生或药师。", doctor: false });
     }
     if (all.length && state.settings.noBm) {
       var gap = Math.round((today - startOfDay(new Date(all[all.length - 1].ts))) / 864e5);
       if (gap >= 3) {
-        alerts.push({ level: gap >= 7 ? "urgent" : "warn", title: "已经 " + gap + " 天没有排便记录", text: gap >= 7 ? "超过一周没有排便，建议就医，避免粪便嵌塞。" : "如果确实没有排便，可以多喝温水、吃些富含膳食纤维的食物，饭后散步，早上固定时间如厕。如果只是忘了记录，可以补记。", doctor: gap >= 7 });
+        alerts.push({ level: gap >= 7 ? "urgent" : "warn", title: "已经 " + gap + " 天没有排便记录", text: gap >= 7 ? "超过一周没有排便，建议咨询医生。" : "如果确实没有排便，可以多喝温水、吃些富含膳食纤维的食物，饭后散步，早上固定时间如厕。如果只是忘了记录，可以补记。", doctor: gap >= 7 });
       }
     }
     var tl = days[dayKey(today)] || [], loose = looseCount(tl);
     if (loose >= 6) {
-      alerts.push({ level: "urgent", title: "今天已腹泻 " + loose + " 次，建议就医", text: "一天内多次稀便容易脱水。请尽快就医，尤其是出现发热、便血、口干、尿少或头晕时。", doctor: true });
+      alerts.push({ level: "urgent", title: "今天已有 " + loose + " 次稀便，建议就医", text: "一天内多次稀便会流失较多水分，建议尽快就医，尤其是出现发热、便血、口干、尿少或头晕时。", doctor: true });
     } else if (tl.length >= 8) {
-      alerts.push({ level: "urgent", title: "今天已排便 " + tl.length + " 次，建议就医", text: "一天排便次数过多，即使大便成形，也可能提示肠道感染或其他问题，并有脱水风险。请尽快就医。", doctor: true });
+      alerts.push({ level: "urgent", title: "今天已排便 " + tl.length + " 次，建议就医", text: "今天的排便次数明显偏多，建议尽快就医，同时注意补充水分。", doctor: true });
     } else if (tl.length >= 5 && loose < 3) {
       alerts.push({ level: "warn", title: "今天已排便 " + tl.length + " 次，次数偏多", text: "一天超过 3 次排便需要留意，今天的评分会因此封顶。注意补水、饮食清淡；如果明天仍然这么多，或出现腹痛、发热、便血，请就医。", doctor: false });
     } else if (loose >= 3) {
-      alerts.push({ level: "warn", title: "今天已腹泻 " + loose + " 次", text: "一天 3 次及以上稀便属于腹泻。请少量多次补水，最好喝口服补液盐，饮食清淡。若次数继续增加、超过 2 天，或出现发热、便血、口干尿少，请就医。", doctor: false });
+      alerts.push({ level: "warn", title: "今天已有 " + loose + " 次稀便", text: "一天 3 次及以上稀便需要留意。请少量多次补充水分，饮食清淡。如果次数继续增加、超过 2 天，或出现发热、便血、口干尿少，请就医。", doctor: false });
     }
     var watery = 0;
     for (var i = 0; i < 3; i++) {
@@ -697,7 +701,7 @@ button.row:first-child { border-top: 0; }
       if (l && l.some(function (r) { return r.type >= 6; })) watery++;
     }
     if (watery >= 3) {
-      alerts.push({ level: "urgent", title: "腹泻已持续 3 天", text: "连续多天出现糊状或水样便，注意补充水分和电解质。若伴随发热、便血或明显脱水，请及时就医。", doctor: true });
+      alerts.push({ level: "urgent", title: "稀便已持续 3 天", text: "连续多天记录到糊状或水样便，请注意补充水分。如果同时有发热、便血，或明显口干、尿少，请及时就医。", doctor: true });
     }
     var hardDays = 0;
     for (var j = 0; j < 7; j++) {
@@ -705,7 +709,7 @@ button.row:first-child { border-top: 0; }
       if (l2 && l2.some(function (r) { return r.type <= 2; })) hardDays++;
     }
     if (hardDays >= 3) {
-      alerts.push({ level: "warn", title: "近期有便秘倾向", text: "过去 7 天里有 " + hardDays + " 天大便偏硬。建议每天喝够 8 杯水、多吃蔬菜和全谷物。如果持续超过 2 周、或出现便血和体重下降，请就医。", doctor: false });
+      alerts.push({ level: "warn", title: "近期大便偏硬", text: "过去 7 天里有 " + hardDays + " 天大便偏硬。建议每天喝够 8 杯水、多吃蔬菜和全谷物。如果持续超过 2 周、或出现便血和体重下降，请就医。", doctor: false });
     }
     var low = 0;
     for (var k = 0; k < 3; k++) {
@@ -713,7 +717,7 @@ button.row:first-child { border-top: 0; }
       if (l3 && dayScore(l3) < 40) low++;
     }
     if (low >= 3) {
-      alerts.push({ level: "warn", title: "连续 3 天评分偏低", text: "肠道状态持续不佳，建议调整饮食和作息；如果没有改善，请咨询医生。", doctor: true });
+      alerts.push({ level: "warn", title: "连续 3 天评分偏低", text: "最近几天的记录都不太理想，建议调整饮食和作息；如果没有改善，请咨询医生。", doctor: true });
     }
     return alerts;
   }
@@ -781,7 +785,7 @@ button.row:first-child { border-top: 0; }
   }
   function alertHtml(a) {
     return '<div class="alert ' + a.level + '" role="' + (a.level === "urgent" ? "alert" : "status") + '"><div class="alert-title">' + (a.doctor ? HOSP : a.level === "info" ? ic("info") : a.level === "urgent" ? ic("triangle-alert") : BELL) + esc(a.title) + '</div><p>' + esc(a.text) + '</p>' +
-      (a.doctor ? '<p class="small"><b>就医时可以告诉医生：</b></p><ul class="doctor"><li>异常开始的时间和持续天数</li><li>大便的颜色、形状、每天次数</li><li>是否伴随腹痛、发热、体重下降</li><li>近期饮食、服用的药物或补充剂</li></ul><button class="btn ghost block" data-action="report-month">生成就医报告</button>' : '') + '</div>';
+      (a.doctor && !(doctorListShown++) ? '<p class="small"><b>就医时可以告诉医生：</b></p><ul class="doctor"><li>情况开始的时间和持续天数</li><li>大便的颜色、形状、每天次数</li><li>是否伴随腹痛、发热、体重下降</li><li>近期饮食、服用的药物或补充剂</li></ul><button class="btn ghost block" data-action="report-month">整理就诊参考记录</button>' : '') + '</div>';
   }
 
   /* ---------- views ---------- */
@@ -874,7 +878,7 @@ button.row:first-child { border-top: 0; }
         html += '<button class="btn primary block" data-nav="record">记录今天这一次</button>';
       }
     } else {
-      html += '<div class="empty-hero"><h2>还没有记录</h2><p class="muted small">拍一张照片，回答两个小问题，就能得到这一次的肠道评分。</p><button class="btn primary" data-nav="record">开始第一次记录</button></div>';
+      html += '<div class="empty-hero"><h2>还没有记录</h2><p class="muted small">拍一张照片，回答两个小问题，就能得到这一次的排便评分。</p><button class="btn primary" data-nav="record">开始第一次记录</button></div>';
     }
     html += '</section></div>';
 
@@ -912,7 +916,7 @@ button.row:first-child { border-top: 0; }
     // tips at the bottom
     html += '<div class="group"><div class="sec-title"><h2>提示</h2></div>';
     if (alerts.length) alerts.forEach(function (a) { html += alertHtml(a); });
-    else html += '<section class="card ok-note">' + CHECK + '<span>最近没有发现异常，继续保持规律饮水和作息。</span></section>';
+    else html += '<section class="card ok-note">' + CHECK + '<span>最近的记录没有需要特别留意的情况，继续保持规律饮水和作息。</span></section>';
     if (hasExample) {
       html += '<div class="banner example"><div class="grow">现在显示的是<b>示例数据</b>，方便你预览各个功能。开始记录前可以清除它们。</div><button class="link" data-action="clear-examples">清除示例</button></div>';
     }
@@ -963,13 +967,13 @@ button.row:first-child { border-top: 0; }
       '<div class="goal-eval" id="goal-eval" aria-live="polite">' + goalEvalHtml(sb) + '</div>' +
       '<div class="save-bar" id="save-bar"><p class="hint">' + (sb.dirty ? "有未保存的修改" : "修改后点保存才会生效") + '</p><div class="row-btns">' +
       '<button class="btn ghost" data-action="info-discard"' + (sb.dirty ? "" : " disabled") + '>放弃修改</button>' +
-      '<button class="btn primary" data-action="info-save"' + (sb.dirty ? "" : " disabled") + '>' + (sb.confirmOdd ? "确认无误并保存" : "保存") + '</button></div></div></section>';
+      '<button class="btn primary" data-action="info-save"' + (sb.dirty && gateOk(sb) ? "" : " disabled") + '>' + (sb.confirmOdd ? "确认无误并保存" : "保存") + '</button></div></div></section>';
 
     var bd = badges();
     html += '<section class="card"><div class="card-head"><h2>成就</h2><button class="link" data-action="open-badges">已获得 ' + bd.filter(function (x) { return x.on; }).length + ' / ' + bd.length + ' · 查看全部</button></div><div class="badges">' +
       bd.map(function (x) { return '<div class="badge' + (x.on ? " on" : "") + '"><span class="medal">' + x.mark + '</span>' + x.name + '</div>'; }).join("") + '</div></section>';
 
-    html += '<section class="card"><h2>报告</h2><div><button class="list-row" data-action="report-week"><span>周报</span>' + CHEV + '</button><button class="list-row" data-action="report-month"><span>月报 / 就医报告</span>' + CHEV + '</button></div></section>';
+    html += '<section class="card"><h2>报告</h2><div><button class="list-row" data-action="report-week"><span>周报</span>' + CHEV + '</button><button class="list-row" data-action="report-month"><span>月报 / 就诊参考</span>' + CHEV + '</button></div></section>';
 
     // reminders (moved from home)
     var st = state.settings;
@@ -979,7 +983,7 @@ button.row:first-child { border-top: 0; }
       '<div class="setting"><div><div class="small"><b>喝水提醒</b></div><div class="muted small">白天每 2 小时提醒喝一杯水</div></div>' +
       '<label class="switch"><input type="checkbox" id="water-on" ' + (st.water ? "checked" : "") + ' aria-label="喝水提醒"><span></span></label></div>' +
       toggleRow("nobm-on", st.noBm, "多日未排便提醒", "连续 3 天没有记录时提醒你") +
-      toggleRow("weekly-on", st.weekly, "每周报告", "每周一早上推送上周的肠道报告") + '</section>';
+      toggleRow("weekly-on", st.weekly, "每周报告", "每周一早上推送上周的排便记录总结") + '</section>';
 
     html += '<section class="card"><h2>健康数据</h2>' +
       toggleRow("hread-on", st.healthRead, "从健康 App 读取喝水量", "记录时自动带入今天的饮水数据") +
@@ -1167,11 +1171,11 @@ button.row:first-child { border-top: 0; }
   function adviceFor(r) {
     var tips = [];
     if (r.type <= 2) tips.push("大便偏硬：今天多喝 2～3 杯温水，多吃燕麦、红薯、绿叶菜等富含膳食纤维的食物。");
-    if (r.type >= 6) tips.push("大便偏稀：注意补充水分和电解质，暂时少吃辛辣、油腻和生冷食物。");
+    if (r.type >= 6) tips.push("大便偏稀：注意少量多次补充水分，暂时少吃辛辣、油腻和生冷食物。");
     if (r.type === 3 || r.type === 4) tips.push("形状很理想，保持现在的饮食和作息。");
     if (r.water < goal()) tips.push("今天喝水还没达标（" + r.water * CUP_ML + " ml），建议再补充 " + (goal() - r.water) * CUP_ML + " ml 左右。");
     if (r.effort === "hard" || r.effort === "vhard") tips.push("排便费力时不要久蹲或用力屏气，可以试试脚下垫小凳，保持膝盖高于臀部。");
-    if (r.color === "yellow" || r.color === "green") tips.push("颜色" + COLORS[r.color].note + "，通常一两天内会恢复，持续异常请留意。");
+    if (r.color === "yellow" || r.color === "green") tips.push("这次颜色偏" + COLORS[r.color].name.charAt(0) + "，" + COLORS[r.color].note + "，通常一两天内会变回正常；如果持续出现，请留意。");
     tips.push("饭后散步 20 分钟、固定时间如厕，有助于养成规律排便。");
     return tips;
   }
@@ -1247,8 +1251,8 @@ button.row:first-child { border-top: 0; }
     html += '<section class="card"><h2>颜色</h2><div class="chips">' + (Object.keys(colorCount).length ? Object.keys(colorCount).map(function (k) {
       return '<span class="tag" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;padding:4px 10px"><span class="swatch" style="background:' + COLORS[k].hex + ';width:12px;height:12px"></span>' + COLORS[k].name + ' ' + colorCount[k] + ' 次</span>';
     }).join("") : '<span class="muted small">没有记录</span>') + '</div></section>';
-    html += '<section class="card"><div class="card-head"><h2>异常记录</h2><span class="muted small">' + abn.length + ' 条</span></div>' +
-      (abn.length ? '<div class="rows">' + abn.slice(0, 6).map(recordRow).join("") + '</div>' : '<p class="muted small">这段时间没有异常记录。</p>') + '</section>';
+    html += '<section class="card"><div class="card-head"><h2>需留意的记录</h2><span class="muted small">' + abn.length + ' 条</span></div>' +
+      (abn.length ? '<div class="rows">' + abn.slice(0, 6).map(recordRow).join("") + '</div>' : '<p class="muted small">这段时间没有需要留意的记录。</p>') + '</section>';
     var tagHtml = [["不舒服", "symptoms"], ["饮食", "diet"], ["用药", "meds"]].map(function (x) {
       var o = tagCount[x[1]], ks = Object.keys(o);
       return '<div class="tagline"><b>' + x[0] + '</b><span class="' + (ks.length ? "" : "muted") + '">' + (ks.length ? ks.map(function (k) { return esc(k) + " " + o[k] + " 次"; }).join("、") : "没有记录") + '</span></div>';
@@ -1264,7 +1268,7 @@ button.row:first-child { border-top: 0; }
     var isWeek = state.reportRange !== "month", n = isWeek ? 7 : 30, today = startOfDay(new Date()), from = addDays(today, -(n - 1));
     var ser = series(from, today, function () { return ""; }), av = avgOf(ser);
     var recs = state.records.filter(function (r) { return r.ts >= from.getTime(); }).sort(function (a, b) { return a.ts - b.ts; });
-    var lines = ["顺畅 · 肠道健康" + (isWeek ? "周报" : "月报"), (from.getMonth() + 1) + "月" + from.getDate() + "日 – " + (today.getMonth() + 1) + "月" + today.getDate() + "日",
+    var lines = ["顺畅 · 排便记录" + (isWeek ? "周报" : "月报"), (from.getMonth() + 1) + "月" + from.getDate() + "日 – " + (today.getMonth() + 1) + "月" + today.getDate() + "日",
       "记录天数：" + av.n + " / " + n + "，排便次数：" + recs.length + "，日均评分：" + (av.avg != null ? av.avg : "–"), "", "明细："];
     recs.forEach(function (r) {
       var extra = [].concat(r.symptoms || [], r.diet || [], r.meds || []);
@@ -1275,9 +1279,9 @@ button.row:first-child { border-top: 0; }
   }
 
   var DOCS = {
-    terms: { title: "用户协议", body: [["服务内容", "顺畅帮助你记录排便情况、生成评分和健康提醒。评分和提醒基于你填写的内容和照片颜色识别，仅用于日常健康管理。"], ["账号", "你可以使用手机号、微信或 Apple 账号登录。请妥善保管账号，不要转借他人使用。"], ["使用规范", "请如实记录。不要上传与排便记录无关的照片或他人隐私内容。"], ["服务变更", "我们可能会调整或升级功能，重大变更会提前在 App 内通知。"], ["联系我们", "如有疑问，可在「我的」页面反馈。"]] },
-    privacy: { title: "隐私政策", body: [["我们收集什么", "你填写的排便记录（时间、颜色、形状、喝水量、症状、饮食、用药）、账号信息（手机号或第三方账号标识、昵称、性别、出生年份）。"], ["照片怎么处理", "照片只在手机上用来识别颜色，识别完成后立即丢弃，不会上传，也不会保存在记录里。"], ["数据存在哪里", "未登录时数据只保存在你的手机上；登录后会加密同步到云端，方便换机。"], ["健康 App", "只有在你开启并授权后，我们才会读取饮水量或写入排便记录。你可以随时在设置里关闭。"], ["你的权利", "你可以随时清除全部记录或注销账号，注销后数据会被永久删除。"]] },
-    medical: { title: "医疗免责声明", body: [["不是医疗诊断", "顺畅的评分、分析和提醒只用于日常健康记录，不能替代医生的诊断和治疗。"], ["出现这些情况请就医", "便血或黑色柏油样便、灰白色大便、持续腹泻超过 2 天、腹泻伴发热、剧烈腹痛、超过一周没有排便、不明原因的体重下降。"], ["紧急情况", "如果出现大量出血、晕厥、严重脱水等紧急情况，请立即拨打 120 或前往急诊。"], ["儿童与特殊人群", "婴幼儿、孕妇、老人及慢性病患者的判断标准可能不同，请以医生意见为准。"]] }
+    terms: { title: "用户协议", body: [["适用人群", "本产品面向年满 14 周岁的用户。14 至 18 周岁的用户需在监护人同意下使用。"], ["服务内容", "顺畅帮助你记录排便情况、生成评分和健康提醒。评分和提醒基于你填写的内容和照片颜色识别，仅用于日常健康管理。"], ["账号", "你可以使用手机号、微信或 Apple 账号登录。请妥善保管账号，不要转借他人使用。"], ["使用规范", "请如实记录。不要上传与排便记录无关的照片或他人隐私内容。"], ["服务变更", "我们可能会调整或升级功能，重大变更会提前在 App 内通知。"], ["联系我们", "如有疑问，可在「我的」页面反馈。"]] },
+    privacy: { title: "隐私政策", body: [["我们收集什么", "你填写的排便记录（时间、颜色、形状、喝水量、症状、饮食、用药）、账号信息（手机号或第三方账号标识）、你填写的昵称、性别、年龄、身高、体重。"], ["照片怎么处理", "照片只在手机上用来识别颜色，识别完成后立即丢弃，不会上传，也不会保存在记录里。"], ["数据存在哪里", "未登录时数据只保存在你的手机上；登录后会加密同步到云端，方便换机。"], ["健康 App", "只有在你开启并授权后，我们才会读取饮水量或写入排便记录。你可以随时在设置里关闭。"], ["你的权利", "你可以随时清除全部记录或注销账号，注销后数据会被永久删除。"]] },
+    medical: { title: "医疗免责声明", body: [["不是医疗诊断", "顺畅的评分、分析和提醒只用于日常健康记录，不能替代医生的诊断和治疗。"], ["出现这些情况请就医", "便血或黑色柏油样便、灰白色大便、稀便持续超过 2 天、稀便同时发热、剧烈腹痛、超过一周没有排便、不明原因的体重下降。"], ["紧急情况", "如果出现大量出血、晕厥、严重脱水等紧急情况，请立即拨打 120 或前往急诊。"], ["适用人群", "本产品不面向 14 周岁以下儿童。14 至 18 周岁的用户需在监护人同意下使用。孕妇、老人及有慢性疾病的人群，评分和提醒可能不适用，请以医生意见为准。"]] }
   };
   function viewDoc() {
     var doc = DOCS[state.doc] || DOCS.terms;
@@ -1329,15 +1333,15 @@ button.row:first-child { border-top: 0; }
   function goalEval(b) {
     var cups = b.waterGoal, rec = suggestedCups(b), basis = "按你的体重估算";
     if (!rec) {
-      if (b.age < 18) return { cls: "", label: "仅供参考", text: "未成年人的喝水量和年龄、活动量关系很大，建议按儿科医生的建议设置。" };
+      if (b.age < 18) return { cls: "", label: "仅供参考", text: "未满 18 岁时，合适的喝水量和年龄、活动量关系较大，建议参考医生的建议设置。" };
       rec = 8; basis = "按成年人通常的量";
     }
     var r = cups / rec, lv;
-    if (r < 0.6) lv = { cls: "bad", label: "明显偏少", tip: "喝水太少容易便秘，建议调高。" };
+    if (r < 0.6) lv = { cls: "bad", label: "明显偏少", tip: "喝水偏少可能让大便变硬，建议调高。" };
     else if (r < 0.85) lv = { cls: "ok", label: "略少", tip: "可以再多喝一两杯。" };
     else if (r <= 1.15) lv = { cls: "perfect", label: "刚刚好", tip: "这个目标很合适。" };
     else if (r <= 1.4) lv = { cls: "fine", label: "略多", tip: "运动量大或天热时没问题，平时可以适当减少。" };
-    else lv = { cls: "bad", label: "偏多", tip: "喝得过多会加重肾脏负担，尽量分多次少量喝，有心、肾疾病请先问医生。" };
+    else lv = { cls: "bad", label: "偏多", tip: "喝太多也不一定更好，建议分多次少量喝；如有特殊健康情况，请遵医嘱。" };
     lv.text = basis + "约 " + rec + " 杯（" + rec * CUP_ML + " ml），你设置了 " + cups + " 杯（约 " + cups * CUP_ML + " ml）。" + lv.tip;
     return lv;
   }
@@ -1353,28 +1357,37 @@ button.row:first-child { border-top: 0; }
     var ml = b.weight * 30 * (b.age >= 65 ? 0.9 : 1);
     return Math.min(12, Math.max(5, Math.round(ml / CUP_ML)));
   }
+  var MIN_AGE = 14;
+  function gateOk(b) { return b.age >= MIN_AGE && (b.age >= 18 || !!b.guardian); }
   function basicSummary(b) {
+    var ctx = b === state.basic ? "onb" : "set";
+    if (b.age < MIN_AGE) {
+      return '<span class="block-line">' + ic("info") + '<span><b>本产品暂不面向 14 岁以下儿童</b><br>如果孩子的排便情况让你担心，请咨询儿科医生。如果是年龄选错了，请重新选择。</span></span>';
+    }
     var g = ageGroup(b.age), odd = oddity(b), bmi = odd.length ? null : bmiInfo(b), cups = suggestedCups(b);
     var lines = ['<b>' + (g || "") + (b.gender ? " · " + b.gender : "") + '</b>'];
+    if (b.age < 18) {
+      lines.push('<label class="guardian"><input type="checkbox" id="' + ctx + '-guardian"' + (b.guardian ? " checked" : "") + '><span>我未满 18 周岁，已获得监护人同意使用本产品</span></label>');
+    }
     if (odd.length) {
       lines.push('<span class="warn-line">' + ic("triangle-alert") + '<span>你填写的' + odd.join("、") + '和 ' + (b.age === 0 ? "不到 1 岁" : b.age + " 岁") + '的常见范围差距较大。请确认没有填错；如果确实如此，BMI 和喝水建议可能不准确，我们暂不自动推荐，建议咨询医生。</span></span>');
       if (b.confirmOdd) lines.push('<span class="warn-line strong">' + ic("info") + '<span>' + (b === state.basic ? "确认数值无误后，点「确认无误」继续。" : "确认数值无误后，再点一次保存。") + '</span></span>');
-    } else if (b.age < 12 || b.age >= 75) {
+    } else if (b.age >= 75) {
       lines.push('<span class="muted">这个年龄段个体差异较大，以下建议仅供参考。</span>');
     }
     if (bmi) lines.push('<span>BMI ' + bmi.v + '，' + bmi.cat + '</span>');
     if (cups) lines.push('<span>建议每天喝 ' + cups + ' 杯水（约 ' + cups * CUP_ML + ' ml）</span>');
-    if (g && g !== "成人") lines.push('<span class="muted">' + g + '的专属判断标准还在完善中，目前评分按成人标准计算，结果仅供参考。</span>');
+    if (g === "老年人" || g === "青少年") lines.push('<span class="muted">评分和提醒按一般成年人的情况设计，' + g + '的情况可能不同，结果仅供参考。</span>');
     return lines.join("");
   }
   function basicFromProfile() {
     var p = state.profile;
     return { name: p.name || "", age: p.age != null && p.age !== "" ? p.age : WHEELS.age.def, height: p.height || WHEELS.height.def, weight: p.weight || WHEELS.weight.def, gender: p.gender || "",
-      waterGoal: goal(), goalAuto: p.goalAuto !== false, touched: false, dirty: false, confirmOdd: false };
+      waterGoal: goal(), goalAuto: p.goalAuto !== false, guardian: !!p.guardian, touched: false, dirty: false, confirmOdd: false };
   }
   function saveBasic(b) {
     var p = state.profile;
-    p.age = b.age; p.height = b.height; p.weight = b.weight; if (b.gender) p.gender = b.gender; if (b.name) p.name = b.name;
+    p.age = b.age; p.height = b.height; p.weight = b.weight; p.guardian = b.age < 18 ? !!b.guardian : false; if (b.gender) p.gender = b.gender; if (b.name) p.name = b.name;
     var cups = suggestedCups(b);
     if (cups && p.goalAuto !== false) p.waterGoal = cups;
     saveProfile();
@@ -1382,14 +1395,15 @@ button.row:first-child { border-top: 0; }
   function syncSaveBar() {
     var b = state.setBasic, bar = document.getElementById("save-bar");
     if (!bar || !b) return;
-    bar.querySelector('[data-action="info-save"]').disabled = !b.dirty;
+    bar.querySelector('[data-action="info-save"]').disabled = !b.dirty || !gateOk(b);
     bar.querySelector('[data-action="info-discard"]').disabled = !b.dirty;
     bar.querySelector(".hint").textContent = b.dirty ? "有未保存的修改" : "修改后点保存才会生效";
   }
   function applySettingsInfo() {
     var b = state.setBasic, p = state.profile;
+    if (!gateOk(b)) { toast(b.age < MIN_AGE ? "本产品暂不面向 14 岁以下儿童" : "请先勾选已获得监护人同意"); return; }
     if (oddity(b).length && !b.confirmOdd) { b.confirmOdd = true; render(true); toast("数值不太常见，请确认后再点一次保存"); return; }
-    p.name = b.name; p.gender = b.gender; p.age = b.age; p.height = b.height; p.weight = b.weight;
+    p.name = b.name; p.gender = b.gender; p.age = b.age; p.height = b.height; p.weight = b.weight; p.guardian = b.age < 18 ? !!b.guardian : false;
     p.waterGoal = b.waterGoal; p.goalAuto = b.goalAuto;
     saveProfile();
     state.setBasic = basicFromProfile();
@@ -1419,7 +1433,7 @@ button.row:first-child { border-top: 0; }
     }
     var sum = document.getElementById(ctx + "-sum");
     if (sum) sum.innerHTML = basicSummary(b);
-    var ob = document.querySelector('[data-action="onb-basic-save"]'); if (ob && ctx === "onb") ob.textContent = "下一步";
+    var ob = document.querySelector('[data-action="onb-basic-save"]'); if (ob && ctx === "onb") { ob.textContent = onbBtnLabel(b); ob.disabled = !gateOk(b); }
   }, true);
   document.addEventListener("keydown", function (e) {
     var w = document.activeElement;
@@ -1434,22 +1448,22 @@ button.row:first-child { border-top: 0; }
   function onbHtml(step) {
     if (state.onb === 1 && document.getElementById("onb-name")) state.basic.name = document.getElementById("onb-name").value.trim();
     var steps = [
-      { art: '<div class="art-circle">' + LOGO + '</div>', h: "欢迎使用顺畅", p: "每次排便后拍一张照片，再回答两个小问题，30 秒就能记下肠道状况。" },
+      { art: '<div class="art-circle">' + LOGO + '</div>', h: "欢迎使用顺畅", p: "每次排便后拍一张照片，再回答两个小问题，30 秒就能记下这一次的排便情况。" },
       { form: true },
-      { art: ring(88, "xl"), h: "看懂你的评分", p: "分数越高越好。圆环的颜色代表等级，出现异常时我们会提醒你，必要时建议就医。",
+      { art: ring(88, "xl"), h: "看懂你的评分", p: "分数越高越好。圆环的颜色代表等级，出现需要留意的情况时会提醒你，必要时建议就医。",
         extra: '<div class="legend"><span><i style="background:var(--perfect)"></i>完美</span><span><i style="background:var(--good)"></i>优秀</span><span><i style="background:var(--fine)"></i>良好</span><span><i style="background:var(--ok)"></i>一般</span><span><i style="background:var(--bad)"></i>需关注</span></div>' },
       { art: '<div class="art-circle">' + LOCK + '</div>', h: "隐私与提醒", p: "照片只用来识别颜色，预览会自动模糊，识别完就丢弃。开启通知后，我们会按时提醒你记录和喝水。" }
     ], st = steps[step], last = step === steps.length - 1;
     var dots = '<div class="dots">' + steps.map(function (_, i) { return '<i class="' + (i === step ? "on" : "") + '"></i>'; }).join("") + '</div>';
     if (st.form) {
       var b = state.basic;
-      return '<button class="onb-skip" data-action="onb-done">跳过</button><div class="onb-slide ' + (state.onbAnim || "") + '"><div class="onb-form">' +
-        '<div style="display:flex;flex-direction:column;gap:8px"><h1>先了解一下你</h1><p>用来估算你每天该喝多少水，并按年龄调整健康提醒。可以随时在「我的」里修改。</p></div>' +
+      return '<div class="onb-slide ' + (state.onbAnim || "") + '" style="padding-top:34px"><div class="onb-form">' +
+        '<div style="display:flex;flex-direction:column;gap:8px"><h1>先了解一下你</h1><p>用来估算你每天该喝多少水。年龄为必填，本产品面向年满 14 周岁的用户。可以随时在「我的」里修改。</p></div>' +
         '<div class="field"><label class="sub-h" for="onb-name">怎么称呼你</label><label class="input" style="background:var(--surface)"><input id="onb-name" maxlength="12" placeholder="' + DEFAULT_NAME + '" value="' + esc(b.name || "") + '"></label></div>' +
         '<div class="field"><span class="sub-h">性别</span>' + genderChips(b.gender, "data-bgender") + '</div>' +
         '<div class="wheels">' + wheelHtml("age", "onb", b.age) + wheelHtml("height", "onb", b.height) + wheelHtml("weight", "onb", b.weight) + '</div>' +
         '<div class="basic-sum" id="onb-sum" aria-live="polite">' + basicSummary(b) + '</div></div></div>' + dots +
-        '<div class="row-btns"><button class="btn ghost" data-action="onb-next">稍后填写</button><button class="btn primary" data-action="onb-basic-save">' + (b.confirmOdd ? "确认无误" : "下一步") + '</button></div>';
+        '<button class="btn primary block" data-action="onb-basic-save"' + (gateOk(b) ? "" : " disabled") + '>' + onbBtnLabel(b) + '</button>';
     }
     return '<button class="onb-skip" data-action="onb-done">跳过</button><div class="onb-slide ' + (state.onbAnim || "") + '"><div class="onb-art">' + st.art + '</div>' +
       '<div style="display:flex;flex-direction:column;gap:10px"><h1>' + st.h + '</h1><p>' + st.p + '</p>' + (st.extra || '') + '</div></div>' +
@@ -1476,7 +1490,7 @@ button.row:first-child { border-top: 0; }
       '<button class="icon-btn" data-action="next-month" aria-label="下个月"' + (isCurrent ? " disabled style=\"opacity:.35\"" : "") + ' ><span style="transform:scaleX(-1);display:grid">' + BACK + '</span></button></div>';
     html += '<div class="stats"><div class="stat"><span class="num">' + scores.length + '</span><span>记录天数</span></div>' +
       '<div class="stat"><span class="num" style="color:' + (avg != null ? band(avg).color : "inherit") + '">' + (avg != null ? avg : "–") + '</span><span>平均分</span></div>' +
-      '<div class="stat"><span class="num" style="color:' + (abnormalDays ? "var(--bad)" : "inherit") + '">' + abnormalDays + '</span><span>异常天数</span></div></div>';
+      '<div class="stat"><span class="num" style="color:' + (abnormalDays ? "var(--bad)" : "inherit") + '">' + abnormalDays + '</span><span>需留意天数</span></div></div>';
     var lastDay = isCurrent ? today.getDate() : total;
     if (!(new Date(y, mo, 1) > today)) {
       html += '<section class="card"><div class="cap"><span class="cap-label">' + LOGO + '评分走势</span><span class="muted">虚线为月平均</span></div>' +
@@ -1492,12 +1506,12 @@ button.row:first-child { border-top: 0; }
       var style = "", inner = '<span class="d">' + dd + '</span>';
       if (list) {
         var sc = dayScore(list);
-        inner += miniRing(sc, 32) + (list.length > 1 ? '<span class="cnt">' + list.length + '次</span>' : '') + (list.some(isAbnormal) ? '<span class="flag" title="有异常"></span>' : '');
+        inner += miniRing(sc, 32) + (list.length > 1 ? '<span class="cnt">' + list.length + '次</span>' : '') + (list.some(isAbnormal) ? '<span class="flag" title="需留意"></span>' : '');
       }
       if (!list && !future) { cls += " none"; inner += '<span class="mring" style="width:32px;height:32px"><svg viewBox="0 0 36 36"><circle class="mt" cx="18" cy="18" r="15" stroke-width="3.4"/></svg></span>'; }
       html += '<button class="' + cls + '"' + style + ' data-day="' + k + '"' + (future ? " disabled" : "") + ' aria-label="' + (mo + 1) + '月' + dd + '日' + (list ? "，" + dayScore(list) + " 分" : "，无记录") + '">' + inner + '</button>';
     }
-    html += '</div><div class="legend"><span><i style="background:var(--perfect)"></i>95+ 完美</span><span><i style="background:var(--good)"></i>80–94 优秀</span><span><i style="background:var(--fine)"></i>60–79 良好</span><span><i style="background:var(--ok)"></i>40–59 一般</span><span><i style="background:var(--bad)"></i>&lt;40 需关注</span><span><i style="background:var(--bad);border-radius:50%"></i>有异常</span></div></section>';
+    html += '</div><div class="legend"><span><i style="background:var(--perfect)"></i>95+ 完美</span><span><i style="background:var(--good)"></i>80–94 优秀</span><span><i style="background:var(--fine)"></i>60–79 良好</span><span><i style="background:var(--ok)"></i>40–59 一般</span><span><i style="background:var(--bad)"></i>&lt;40 需关注</span><span><i style="background:var(--bad);border-radius:50%"></i>需留意</span></div></section>';
 
     var sel = state.selDay || (isCurrent && days[dayKey(today)] ? dayKey(today) : null);
     if (!sel) {
@@ -1520,7 +1534,9 @@ button.row:first-child { border-top: 0; }
 
   /* ---------- render ---------- */
   var screen = document.getElementById("screen"), phone = document.getElementById("phone");
+  var doctorListShown = 0; // the "tell your doctor" checklist appears once per screen
   function render(keepScroll) {
+    doctorListShown = 0;
     var top = screen.scrollTop;
     var v = state.view;
     screen.innerHTML = v === "record" ? viewRecord() : v === "result" ? viewResult() : v === "calendar" ? viewCalendar() : v === "settings" ? viewSettings() : v === "report" ? viewReport() : v === "badges" ? viewBadges() : v === "doc" ? viewDoc() : viewHome();
@@ -1670,8 +1686,14 @@ button.row:first-child { border-top: 0; }
   }
   /* onboarding swipe: finger right-to-left = next step, left-to-right = previous step */
   var ONB_STEPS = 4, swipe = null;
+  function onbBtnLabel(b) { return b.age < MIN_AGE ? "暂不支持 14 岁以下" : !gateOk(b) ? "请先勾选监护人同意" : b.confirmOdd ? "确认无误" : "下一步"; }
   function onbGo(dir) {
     var next = state.onb + dir;
+    if (state.onb === 1 && dir > 0 && !(state.basic && state.basic.saved && gateOk(state.basic))) {
+      var sl0 = document.querySelector(".onb-slide"); if (sl0) { sl0.className = "onb-slide settle"; sl0.style.transform = ""; sl0.style.opacity = ""; }
+      toast(state.basic && state.basic.age < MIN_AGE ? "本产品暂不面向 14 岁以下儿童" : "请先确认年龄等信息，再点下一步");
+      return;
+    }
     if (next < 0 || next >= ONB_STEPS) { var sl = document.querySelector(".onb-slide"); if (sl) { sl.className = "onb-slide settle"; sl.style.transform = ""; sl.style.opacity = ""; } return; }
     if (state.onb === 1 && state.basic && state.basic.touched) saveBasic(state.basic);
     state.onb = next; state.onbAnim = dir > 0 ? "in-next" : "in-prev";
@@ -1709,6 +1731,7 @@ button.row:first-child { border-top: 0; }
     if (e.key === "ArrowRight") onbGo(1);
     if (e.key === "ArrowLeft") onbGo(-1);
   });
+  function ageConfirmed() { var p = state.profile; return p.age != null && p.age !== "" && p.age >= MIN_AGE && (p.age >= 18 || !!p.guardian); }
   function finishOnb(notify) {
     state.onb = -1; state.settings.onboarded = true;
     if (notify) { state.settings.daily = true; state.settings.water = true; }
@@ -1787,12 +1810,15 @@ button.row:first-child { border-top: 0; }
         } catch (err) { state.reportText = txt; render(true); }
         break;
       case "onb-next": onbGo(1); break;
-      case "onb-done": finishOnb(false); break;
-      case "onb-notify": finishOnb(true); break;
+      case "onb-done":
+        if (!ageConfirmed()) { state.onb = 1; state.onbAnim = "in-next"; render(true); state.onbAnim = ""; toast("请先填写年龄"); break; }
+        finishOnb(false); break;
+      case "onb-notify": if (!ageConfirmed()) { state.onb = 1; render(true); break; } finishOnb(true); break;
       case "onb-replay": state.onb = 0; state.basic = basicFromProfile(); render(true); break;
       case "onb-basic-save":
+        if (!gateOk(state.basic)) break;
         if (oddity(state.basic).length && !state.basic.confirmOdd) { state.basic.confirmOdd = true; render(true); break; }
-        state.basic.touched = true; onbGo(1); toast("已保存，可在「我的」里修改"); break;
+        state.basic.touched = true; state.basic.saved = true; saveBasic(state.basic); onbGo(1); toast("已保存，可在「我的」里修改"); break;
       case "acct-ask": state.confirmAcct = true; render(true); break;
       case "acct-cancel": state.confirmAcct = false; render(true); break;
       case "acct-confirm":
@@ -1827,6 +1853,8 @@ button.row:first-child { border-top: 0; }
     else if (id === "water-on") { st.water = e.target.checked; toast(st.water ? "已开启喝水提醒" : "已关闭喝水提醒"); }
     else if (id === "daily-time") { st.dailyTime = e.target.value || "08:30"; toast("提醒时间改为 " + st.dailyTime); }
     else if (id === "login-agree") { state.login.agree = e.target.checked; return; }
+    else if (id === "onb-guardian") { state.basic.guardian = e.target.checked; render(true); return; }
+    else if (id === "set-guardian") { state.setBasic.guardian = e.target.checked; state.setBasic.dirty = true; render(true); return; }
     else if (id === "rec-time") {
       var v = new Date(e.target.value).getTime(), min = addDays(startOfDay(new Date()), -7).getTime();
       if (!isNaN(v)) { state.draft.ts = Math.min(Date.now(), Math.max(min, v)); render(true); }
@@ -1892,6 +1920,7 @@ button.row:first-child { border-top: 0; }
   state.basic = basicFromProfile();
   state.setBasic = basicFromProfile();
   claimBadges();
+  if (!ageConfirmed()) state.onb = state.settings.onboarded ? 1 : 0;
   render(false);
 })();
 </script>
