@@ -766,11 +766,11 @@ button.row:first-child { border-top: 0; }
     ];
   }
   function contribs(r, full) {
-    var col = band(scoreOf(r)).color;
+    // each item is coloured by its own level, using the same five-level palette as the score
     return '<div class="contribs' + (full ? " full" : "") + '">' + partsOf(r).map(function (p) {
-      var pct = p.v / p.max;
-      return '<div class="contrib"><div class="c-top"><span>' + p.name + '</span><span class="c-lvl">' + band(pct * 100).label + '</span></div>' +
-        '<div class="c-bar"><i style="width:' + Math.max(3, pct * 100).toFixed(0) + '%;background:' + col + '"></i></div>' +
+      var pct = p.v / p.max, lb = band(pct * 100);
+      return '<div class="contrib"><div class="c-top"><span>' + p.name + '</span><span class="pill ' + lb.cls + '" style="font-size:12px">' + lb.label + '</span></div>' +
+        '<div class="c-bar"><i style="width:' + Math.max(3, pct * 100).toFixed(0) + '%;background:linear-gradient(90deg,' + lb.c2 + ',' + lb.color + ')"></i></div>' +
         '<div class="c-sub"><span>' + esc(p.note) + '</span></div></div>';
     }).join("") + '</div>';
   }
