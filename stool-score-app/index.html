@@ -104,7 +104,6 @@ h2 { font-size: 15px; font-weight: 700; }
 .kpi-unit { font-size: 15px; color: var(--muted); font-weight: 600; }
 .score-row { display: grid; grid-template-columns: auto 1fr; gap: 18px; align-items: center; }
 .score-text { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
-.ring .segv { fill: none; transition: stroke-dasharray .9s cubic-bezier(.2,.8,.2,1); }
 .ring.xl { width: 184px; height: 184px; }
 .ring.xl .big { font-size: 60px; }
 .ring .of { font-size: 12px; font-weight: 600; }
@@ -112,7 +111,7 @@ h2 { font-size: 15px; font-weight: 700; }
 .contribs.full { grid-template-columns: 1fr; }
 .contrib { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
 .c-top { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; font-size: 14px; font-weight: 600; }
-.c-lvl { font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.c-lvl { font-size: 12px; font-weight: 500; color: var(--muted); }
 .c-w { font-size: 11px; font-weight: 400; color: var(--muted); }
 .c-bar { height: 6px; border-radius: 999px; background: var(--fill); overflow: hidden; }
 .c-bar i { display: block; height: 100%; border-radius: inherit; }
@@ -334,7 +333,7 @@ h2 { font-size: 15px; font-weight: 700; }
 .disclaimer { font-size: 11px; color: var(--muted); text-align: center; line-height: 1.5; }
 
 @media (prefers-reduced-motion: reduce) {
-  .ring .val, .ring .segv { transition: none; }
+  .ring .val { transition: none; }
   .scan::after { animation: none; top: 50%; }
 }
 </style>
@@ -530,17 +529,16 @@ h2 { font-size: 15px; font-weight: 700; }
   var HOSP = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="4"/><path d="M12 8v8M8 12h8"/></svg>';
   var LOGO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 7c4-3 10-3 14 0M5 12c4-3 10-3 14 0M5 17c4-3 10-3 14 0"/></svg>';
 
-  function ring(score, size) {
+  function ring(score, cls) {
     var r = 52, C = 2 * Math.PI * r, b = band(score);
-    return '<div class="ring" role="img" aria-label="评分 ' + score + ' 分，' + b.label + '"><svg viewBox="0 0 120 120"><circle class="track" cx="60" cy="60" r="' + r + '" stroke-width="10"/>' +
-      '<circle class="val" cx="60" cy="60" r="' + r + '" stroke-width="10" stroke="' + b.color + '" stroke-dasharray="' + C.toFixed(1) + '" stroke-dashoffset="' + C.toFixed(1) + '" data-target="' + (C * (1 - score / 100)).toFixed(1) + '"/></svg>' +
-      '<div class="center"><span class="big" style="color:' + b.color + '">' + score + '</span><span class="of">/ 100</span></div></div>';
+    return '<div class="ring ' + (cls || "") + '" role="img" aria-label="评分 ' + score + ' 分，' + b.label + '"><svg viewBox="0 0 120 120"><circle class="track" cx="60" cy="60" r="' + r + '" stroke-width="11"/>' +
+      '<circle class="val" cx="60" cy="60" r="' + r + '" stroke-width="11" stroke="' + b.color + '" stroke-dasharray="' + C.toFixed(1) + '" stroke-dashoffset="' + C.toFixed(1) + '" data-target="' + (C * (1 - score / 100)).toFixed(1) + '"/></svg>' +
+      '<div class="center"><span class="big" style="color:' + b.color + '">' + score + '</span><span class="of" style="color:' + b.color + '">' + b.label + '</span></div></div>';
   }
   function animateRings() {
     requestAnimationFrame(function () {
       requestAnimationFrame(function () {
         document.querySelectorAll(".ring .val").forEach(function (el) { el.style.strokeDashoffset = el.getAttribute("data-target"); });
-        document.querySelectorAll(".ring .segv").forEach(function (el) { el.style.strokeDasharray = el.getAttribute("data-dash"); });
       });
     });
   }
@@ -566,25 +564,13 @@ h2 { font-size: 15px; font-weight: 700; }
       { name: "饮水", v: waterPts(r.water), max: 15, note: r.water + " / " + goal() + " 杯" }
     ];
   }
-  // Ring split into one arc per contributor (arc length = its share of 100 points).
-  function segRing(r, cls) {
-    var R = 52, C = 2 * Math.PI * R, gap = C * 0.022, usable = C - gap * 4, s = scoreOf(r), b = band(s), start = gap / 2, out = "";
-    partsOf(r).forEach(function (p) {
-      var len = usable * p.max / 100, pct = p.v / p.max, col = b.color;
-      out += '<circle class="track" cx="60" cy="60" r="' + R + '" stroke-width="11" stroke-dasharray="' + len.toFixed(2) + ' ' + C.toFixed(2) + '" stroke-dashoffset="' + (-start).toFixed(2) + '"/>' +
-        '<circle class="segv" cx="60" cy="60" r="' + R + '" stroke-width="11" stroke="' + col + '" stroke-dasharray="0 ' + C.toFixed(2) + '" data-dash="' + (len * pct).toFixed(2) + ' ' + C.toFixed(2) + '" stroke-dashoffset="' + (-start).toFixed(2) + '"/>';
-      start += len + gap;
-    });
-    return '<div class="ring ' + (cls || "") + '" role="img" aria-label="评分 ' + s + ' 分，' + b.label + '"><svg viewBox="0 0 120 120">' + out + '</svg>' +
-      '<div class="center"><span class="big" style="color:' + b.color + '">' + s + '</span><span class="of" style="color:' + b.color + '">' + b.label + '</span></div></div>';
-  }
   function contribs(r, full) {
     var col = band(scoreOf(r)).color;
     return '<div class="contribs' + (full ? " full" : "") + '">' + partsOf(r).map(function (p) {
       var pct = p.v / p.max;
-      return '<div class="contrib"><div class="c-top"><span>' + p.name + ' <span class="c-w">占 ' + p.max + '%</span></span><span class="c-lvl" style="color:' + col + '">' + Math.round(pct * 100) + '%</span></div>' +
+      return '<div class="contrib"><div class="c-top"><span>' + p.name + '</span><span class="c-lvl">' + band(pct * 100).label + '</span></div>' +
         '<div class="c-bar"><i style="width:' + Math.max(3, pct * 100).toFixed(0) + '%;background:' + col + '"></i></div>' +
-        '<div class="c-sub"><span>' + esc(p.note) + '</span><span class="num">' + p.v + '/' + p.max + '</span></div></div>';
+        '<div class="c-sub"><span>' + esc(p.note) + '</span></div></div>';
     }).join("") + '</div>';
   }
   function series(from, to, labelFn) {
@@ -646,8 +632,8 @@ h2 { font-size: 15px; font-weight: 700; }
     if (latest) {
       var s = scoreOf(latest), b = band(s);
       html += '<div class="cap"><span class="cap-label">' + LOGO + (todayList ? "今天" : "最近一次") + '</span><span class="muted">' + relDay(latest.ts) + ' ' + fmtTime(latest.ts) + '</span></div>' +
-        '<div class="score-row">' + segRing(latest) + '<div class="score-text"><span class="pill ' + b.cls + '" style="align-self:flex-start">' + b.label + '</span>' +
-        '<p class="small"><b>第 ' + latest.type + ' 型 · ' + TYPES[latest.type].name + '</b></p><p class="muted small">' + COLORS[latest.color].name + ' · ' + EFFORT[latest.effort].name + ' · 喝水 ' + latest.water + ' 杯</p><p class="muted small">总分 = 形状 40% + 颜色 25% + 顺畅度 20% + 饮水 15%</p></div></div>' +
+        '<div class="score-row">' + ring(scoreOf(latest)) + '<div class="score-text"><span class="pill ' + b.cls + '" style="align-self:flex-start">' + b.label + '</span>' +
+        '<p class="small"><b>第 ' + latest.type + ' 型 · ' + TYPES[latest.type].name + '</b></p><p class="muted small">' + COLORS[latest.color].name + ' · ' + EFFORT[latest.effort].name + ' · 喝水 ' + latest.water + ' 杯</p></div></div>' +
         contribs(latest, false);
       if (!todayList) html += '<button class="btn primary block" data-nav="record">记录今天这一次</button>';
     } else {
@@ -820,9 +806,9 @@ h2 { font-size: 15px; font-weight: 700; }
     if (!r) { state.view = "home"; return viewHome(); }
     var s = scoreOf(r), b = band(s), alerts = evaluateAlerts(r);
     var html = '<div class="pad"><div class="topbar"><button class="icon-btn" data-nav="home" aria-label="返回首页">' + BACK + '</button><h1>本次评分</h1></div>';
-    html += '<section class="card result-hero">' + segRing(r, "xl") +
+    html += '<section class="card result-hero">' + ring(s, "xl") +
       '<p class="muted small">' + relDay(r.ts) + ' ' + fmtTime(r.ts) + ' · 第 ' + r.type + ' 型 · ' + TYPES[r.type].tag + '</p></section>';
-    html += '<div class="group"><div class="sec-title"><h2>得分构成</h2><span class="muted small">形状 40 · 颜色 25 · 顺畅度 20 · 饮水 15</span></div><section class="card">' + contribs(r, true).replace('class="contribs full"', 'class="contribs full" style="border-top:0;padding-top:0"') + '</section></div>';
+    html += '<div class="group"><div class="sec-title"><h2>各项表现</h2></div><section class="card">' + contribs(r, true).replace('class="contribs full"', 'class="contribs full" style="border-top:0;padding-top:0"') + '</section></div>';
     html += '<div class="group"><div class="sec-title"><h2>给你的建议</h2></div><section class="card"><ul class="tips">';
     adviceFor(r).forEach(function (t) { html += '<li>' + esc(t) + '</li>'; });
     html += '</ul></section></div>';
