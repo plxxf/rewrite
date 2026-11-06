@@ -134,6 +134,11 @@ h2 { font-size: 15px; font-weight: 700; }
 .lchart .area { fill: var(--good); opacity: .1; }
 .lchart .avg { stroke: var(--muted); stroke-dasharray: 3 3; stroke-width: 1; }
 .lchart .dot { stroke: var(--surface); stroke-width: 1.5; }
+.warn-line { display: flex; gap: 6px; align-items: flex-start; color: var(--ok); margin-top: 4px; }
+.warn-line .ic { width: 15px; height: 15px; margin-top: 3px; }
+.warn-line.strong { font-weight: 600; }
+.save-bar { display: flex; flex-direction: column; gap: 8px; border-top: 1px solid var(--line); padding-top: 12px; }
+.save-bar .hint { margin: 0; text-align: left; }
 .cap-note { display: flex; gap: 8px; align-items: flex-start; text-align: left; font-size: 13px; color: var(--accent-strong); background: var(--accent-soft); border-radius: 12px; padding: 8px 12px; margin: 0; }
 .cap-note .ic { width: 16px; height: 16px; margin-top: 2px; }
 .today-strip { display: flex; flex-direction: column; gap: 8px; border-top: 1px solid var(--line); padding-top: 12px; }
@@ -917,15 +922,19 @@ button.row:first-child { border-top: 0; }
         '<p class="muted small" style="text-align:center">演示版不会真的发送短信，输入任意 6 位数字即可登录。</p></section>';
     }
 
-    state.setBasic = basicFromProfile();
-    html += '<section class="card"><h2>基本信息</h2>' +
-      '<div class="setting"><label for="pf-name" class="small"><b>昵称</b></label><input class="inline-input" id="pf-name" maxlength="12" placeholder="' + DEFAULT_NAME + '" value="' + esc(p.name) + '"></div>' +
-      '<div class="setting"><span class="small"><b>性别</b></span>' + genderChips(p.gender, "data-gender") + '</div>' +
+    if (!state.setBasic || !state.setBasic.dirty) state.setBasic = basicFromProfile();
+    var sb = state.setBasic;
+    html += '<section class="card"><h2>我的信息</h2>' +
+      '<div class="setting"><label for="pf-name" class="small"><b>昵称</b></label><input class="inline-input" id="pf-name" maxlength="12" placeholder="' + DEFAULT_NAME + '" value="' + esc(sb.name) + '"></div>' +
+      '<div class="setting"><span class="small"><b>性别</b></span>' + genderChips(sb.gender, "data-gender") + '</div>' +
       '<div class="field" style="border-top:1px solid var(--line);padding-top:12px"><span class="small"><b>身体数据</b><span class="muted">　上下滑动选择</span></span>' +
-      '<div class="wheels">' + wheelHtml("age", "set", state.setBasic.age) + wheelHtml("height", "set", state.setBasic.height) + wheelHtml("weight", "set", state.setBasic.weight) + '</div>' +
-      '<div class="basic-sum" id="set-sum" aria-live="polite">' + basicSummary(state.setBasic) + '</div></div>' +
-      '<div class="setting"><div><div class="small"><b>每日喝水目标</b></div><div class="muted small">' + (p.goalAuto === false ? "已手动设置" : "根据体重自动推荐") + '，用于计算饮水得分</div></div>' +
-      '<div class="stepper"><button class="icon-btn sm" data-action="goal-minus" aria-label="少一杯">−</button><span class="num" id="goal-num">' + goal() + '</span><button class="icon-btn sm" data-action="goal-plus" aria-label="多一杯">+</button><span class="muted small">杯</span></div></div></section>';
+      '<div class="wheels">' + wheelHtml("age", "set", sb.age) + wheelHtml("height", "set", sb.height) + wheelHtml("weight", "set", sb.weight) + '</div>' +
+      '<div class="basic-sum" id="set-sum" aria-live="polite">' + basicSummary(sb) + '</div></div>' +
+      '<div class="setting"><div><div class="small"><b>每日喝水目标</b></div><div class="muted small" id="goal-src">' + (sb.goalAuto && !oddity(sb).length ? "根据体重自动推荐" : "手动设置") + '，用于计算饮水得分</div></div>' +
+      '<div class="stepper"><button class="icon-btn sm" data-action="goal-minus" aria-label="少一杯">' + ic("minus") + '</button><span class="num" id="goal-num">' + sb.waterGoal + '</span><button class="icon-btn sm" data-action="goal-plus" aria-label="多一杯">' + ic("plus") + '</button><span class="muted small">杯</span></div></div>' +
+      '<div class="save-bar" id="save-bar"><p class="hint">' + (sb.dirty ? "有未保存的修改" : "修改后点保存才会生效") + '</p><div class="row-btns">' +
+      '<button class="btn ghost" data-action="info-discard"' + (sb.dirty ? "" : " disabled") + '>放弃修改</button>' +
+      '<button class="btn primary" data-action="info-save"' + (sb.dirty ? "" : " disabled") + '>' + (sb.confirmOdd ? "确认无误并保存" : "保存") + '</button></div></div></section>';
 
     var bd = badges();
     html += '<section class="card"><div class="card-head"><h2>成就</h2><span class="muted small">已获得 ' + bd.filter(function (x) { return x.on; }).length + ' / ' + bd.length + '</span></div><div class="badges">' +
@@ -1234,14 +1243,35 @@ button.row:first-child { border-top: 0; }
     var v = b.weight / Math.pow(b.height / 100, 2);
     return { v: v.toFixed(1), cat: v < 18.5 ? "偏瘦" : v < 24 ? "正常" : v < 28 ? "超重" : "肥胖" };
   }
+  // Rough reference ranges (about 3rd–97th percentile) by age: [height min, max, weight min, max]
+  var REF = [[45, 80, 2, 12], [70, 92, 7.5, 15], [80, 100, 9.5, 17.5], [88, 108, 11, 20], [94, 115, 12.5, 23], [100, 122, 14, 26],
+    [105, 129, 15.5, 30], [110, 135, 17, 34], [115, 141, 19, 39], [119, 147, 21, 45], [123, 153, 23, 51], [127, 160, 25, 58],
+    [133, 167, 28, 64], [138, 175, 31, 70], [143, 181, 35, 75], [146, 185, 38, 80], [147, 187, 40, 85], [147, 188, 41, 90]];
+  function refFor(age) { return age >= 65 ? [135, 195, 35, 120] : age >= 18 ? [140, 200, 38, 130] : REF[age]; }
+  function oddity(b) {
+    var r = refFor(b.age), out = [];
+    if (b.height < r[0] || b.height > r[1]) out.push("身高");
+    if (b.weight < r[2] || b.weight > r[3]) out.push("体重");
+    if (!out.length && b.age >= 18) {
+      var bmi = b.weight / Math.pow(b.height / 100, 2);
+      if (bmi < 15 || bmi > 40) out.push("身高和体重的比例");
+    }
+    return out;
+  }
   function suggestedCups(b) {
-    if (!b.weight || b.age < 18) return null;
+    if (!b.weight || b.age < 18 || oddity(b).length) return null;
     var ml = b.weight * 30 * (b.age >= 65 ? 0.9 : 1);
     return Math.min(12, Math.max(5, Math.round(ml / CUP_ML)));
   }
   function basicSummary(b) {
-    var g = ageGroup(b.age), bmi = bmiInfo(b), cups = suggestedCups(b);
+    var g = ageGroup(b.age), odd = oddity(b), bmi = odd.length ? null : bmiInfo(b), cups = suggestedCups(b);
     var lines = ['<b>' + (g || "") + (b.gender ? " · " + b.gender : "") + '</b>'];
+    if (odd.length) {
+      lines.push('<span class="warn-line">' + ic("triangle-alert") + '<span>你填写的' + odd.join("、") + '和 ' + (b.age === 0 ? "不到 1 岁" : b.age + " 岁") + '的常见范围差距较大。请确认没有填错；如果确实如此，BMI 和喝水建议可能不准确，我们暂不自动推荐，建议咨询医生。</span></span>');
+      if (b.confirmOdd) lines.push('<span class="warn-line strong">' + ic("info") + '<span>' + (b === state.basic ? "确认数值无误后，点「确认无误」继续。" : "确认数值无误后，再点一次保存。") + '</span></span>');
+    } else if (b.age < 12 || b.age >= 75) {
+      lines.push('<span class="muted">这个年龄段个体差异较大，以下建议仅供参考。</span>');
+    }
     if (bmi) lines.push('<span>BMI ' + bmi.v + '，' + bmi.cat + '</span>');
     if (cups) lines.push('<span>建议每天喝 ' + cups + ' 杯水（约 ' + cups * CUP_ML + ' ml）</span>');
     if (g && g !== "成人") lines.push('<span class="muted">' + g + '的专属判断标准还在完善中，目前评分按成人标准计算，结果仅供参考。</span>');
@@ -1249,7 +1279,8 @@ button.row:first-child { border-top: 0; }
   }
   function basicFromProfile() {
     var p = state.profile;
-    return { name: p.name || "", age: p.age != null && p.age !== "" ? p.age : WHEELS.age.def, height: p.height || WHEELS.height.def, weight: p.weight || WHEELS.weight.def, gender: p.gender || "", touched: false };
+    return { name: p.name || "", age: p.age != null && p.age !== "" ? p.age : WHEELS.age.def, height: p.height || WHEELS.height.def, weight: p.weight || WHEELS.weight.def, gender: p.gender || "",
+      waterGoal: goal(), goalAuto: p.goalAuto !== false, touched: false, dirty: false, confirmOdd: false };
   }
   function saveBasic(b) {
     var p = state.profile;
@@ -1257,6 +1288,22 @@ button.row:first-child { border-top: 0; }
     var cups = suggestedCups(b);
     if (cups && p.goalAuto !== false) p.waterGoal = cups;
     saveProfile();
+  }
+  function syncSaveBar() {
+    var b = state.setBasic, bar = document.getElementById("save-bar");
+    if (!bar || !b) return;
+    bar.querySelector('[data-action="info-save"]').disabled = !b.dirty;
+    bar.querySelector('[data-action="info-discard"]').disabled = !b.dirty;
+    bar.querySelector(".hint").textContent = b.dirty ? "有未保存的修改" : "修改后点保存才会生效";
+  }
+  function applySettingsInfo() {
+    var b = state.setBasic, p = state.profile;
+    if (oddity(b).length && !b.confirmOdd) { b.confirmOdd = true; render(true); toast("数值不太常见，请确认后再点一次保存"); return; }
+    p.name = b.name; p.gender = b.gender; p.age = b.age; p.height = b.height; p.weight = b.weight;
+    p.waterGoal = b.waterGoal; p.goalAuto = b.goalAuto;
+    saveProfile();
+    state.setBasic = basicFromProfile();
+    render(true); toast("已保存");
   }
   function restoreWheels() {
     state.wheelLock = Date.now();
@@ -1270,13 +1317,18 @@ button.row:first-child { border-top: 0; }
     var i = Math.max(0, Math.min(vs.length - 1, Math.round(w.scrollTop / WI)));
     w.setAttribute("data-idx", i);
     var b = ctx === "onb" ? state.basic : state.setBasic;
-    b[key] = vs[i]; b.touched = true;
+    if (b[key] === vs[i]) return;
+    b[key] = vs[i]; b.touched = true; b.confirmOdd = false;
+    if (ctx === "set") {
+      b.dirty = true;
+      if (b.goalAuto) { var cups = suggestedCups(b); if (cups) b.waterGoal = cups; }
+      var gl = document.getElementById("goal-num"); if (gl) gl.textContent = b.waterGoal;
+      var gs = document.getElementById("goal-src"); if (gs) gs.textContent = (b.goalAuto && !oddity(b).length ? "根据体重自动推荐" : "手动设置") + "，用于计算饮水得分";
+      syncSaveBar();
+    }
     var sum = document.getElementById(ctx + "-sum");
     if (sum) sum.innerHTML = basicSummary(b);
-    if (ctx === "set") {
-      clearTimeout(wheelTimer);
-      wheelTimer = setTimeout(function () { saveBasic(b); var gl = document.getElementById("goal-num"); if (gl) gl.textContent = goal(); }, 300);
-    }
+    var ob = document.querySelector('[data-action="onb-basic-save"]'); if (ob && ctx === "onb") ob.textContent = "下一步";
   }, true);
   document.addEventListener("keydown", function (e) {
     var w = document.activeElement;
@@ -1306,7 +1358,7 @@ button.row:first-child { border-top: 0; }
         '<div class="field"><span class="sub-h">性别</span>' + genderChips(b.gender, "data-bgender") + '</div>' +
         '<div class="wheels">' + wheelHtml("age", "onb", b.age) + wheelHtml("height", "onb", b.height) + wheelHtml("weight", "onb", b.weight) + '</div>' +
         '<div class="basic-sum" id="onb-sum" aria-live="polite">' + basicSummary(b) + '</div></div></div>' + dots +
-        '<div class="row-btns"><button class="btn ghost" data-action="onb-next">稍后填写</button><button class="btn primary" data-action="onb-basic-save">下一步</button></div>';
+        '<div class="row-btns"><button class="btn ghost" data-action="onb-next">稍后填写</button><button class="btn primary" data-action="onb-basic-save">' + (b.confirmOdd ? "确认无误" : "下一步") + '</button></div>';
     }
     return '<button class="onb-skip" data-action="onb-done">跳过</button><div class="onb-slide ' + (state.onbAnim || "") + '"><div class="onb-art">' + st.art + '</div>' +
       '<div style="display:flex;flex-direction:column;gap:10px"><h1>' + st.h + '</h1><p>' + st.p + '</p>' + (st.extra || '') + '</div></div>' +
@@ -1397,7 +1449,12 @@ button.row:first-child { border-top: 0; }
   function go(view) {
     if (view === "record" && (state.view !== "record" || !state.draft)) state.draft = newDraft();
     if (view === "calendar" && state.view !== "calendar") { state.selDay = null; }
-    if (view === "settings") { state.confirmClear = false; state.confirmAcct = false; }
+    if (state.view === "settings" && view !== "settings" && state.setBasic && state.setBasic.dirty) {
+      toast("「我的信息」有未保存的修改，请先保存或放弃");
+      var bar = document.getElementById("save-bar"); if (bar) bar.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+    if (view === "settings") { state.confirmClear = false; state.confirmAcct = false; if (state.view !== "settings") state.setBasic = basicFromProfile(); }
     if (view === "home" || view === "calendar") state.prevView = view;
     state.view = view;
     render(false);
@@ -1600,7 +1657,7 @@ button.row:first-child { border-top: 0; }
       document.querySelectorAll(".wheel").forEach(function (w, i) { w.scrollTop = sv[i]; });
       return;
     }
-    if (el.hasAttribute("data-gender")) { state.profile.gender = el.getAttribute("data-gender"); saveProfile(); return render(true); }
+    if (el.hasAttribute("data-gender")) { state.setBasic.gender = el.getAttribute("data-gender"); state.setBasic.dirty = true; return render(true); }
     switch (el.getAttribute("data-action")) {
       case "sample": samplePhoto(); break;
       case "water-minus": d.water = Math.max(0, d.water - 1); render(true); break;
@@ -1636,7 +1693,9 @@ button.row:first-child { border-top: 0; }
       case "onb-done": finishOnb(false); break;
       case "onb-notify": finishOnb(true); break;
       case "onb-replay": state.onb = 0; state.basic = basicFromProfile(); render(true); break;
-      case "onb-basic-save": state.basic.touched = true; onbGo(1); toast("已保存，可在「我的」里修改"); break;
+      case "onb-basic-save":
+        if (oddity(state.basic).length && !state.basic.confirmOdd) { state.basic.confirmOdd = true; render(true); break; }
+        state.basic.touched = true; onbGo(1); toast("已保存，可在「我的」里修改"); break;
       case "acct-ask": state.confirmAcct = true; render(true); break;
       case "acct-cancel": state.confirmAcct = false; render(true); break;
       case "acct-confirm":
@@ -1654,8 +1713,10 @@ button.row:first-child { border-top: 0; }
       case "login-wechat": loginVia("微信"); break;
       case "login-apple": loginVia("Apple"); break;
       case "logout": state.profile.loggedIn = false; state.profile.phone = ""; state.profile.via = ""; saveProfile(); render(true); toast("已退出登录"); break;
-      case "goal-minus": state.profile.waterGoal = Math.max(4, goal() - 1); state.profile.goalAuto = false; saveProfile(); render(true); break;
-      case "goal-plus": state.profile.waterGoal = Math.min(16, goal() + 1); state.profile.goalAuto = false; saveProfile(); render(true); break;
+      case "goal-minus": state.setBasic.waterGoal = Math.max(4, state.setBasic.waterGoal - 1); state.setBasic.goalAuto = false; state.setBasic.dirty = true; render(true); break;
+      case "goal-plus": state.setBasic.waterGoal = Math.min(16, state.setBasic.waterGoal + 1); state.setBasic.goalAuto = false; state.setBasic.dirty = true; render(true); break;
+      case "info-save": applySettingsInfo(); break;
+      case "info-discard": state.setBasic = basicFromProfile(); render(true); toast("已放弃修改"); break;
       case "clear-ask": state.confirmClear = true; render(true); break;
       case "clear-cancel": state.confirmClear = false; render(true); break;
       case "clear-all": state.records = []; persist(); state.confirmClear = false; render(true); toast("全部记录已删除"); break;
@@ -1668,7 +1729,6 @@ button.row:first-child { border-top: 0; }
     if (id === "daily-on") { st.daily = e.target.checked; toast(st.daily ? "每天 " + st.dailyTime + " 提醒你记录" : "已关闭每日提醒"); }
     else if (id === "water-on") { st.water = e.target.checked; toast(st.water ? "已开启喝水提醒" : "已关闭喝水提醒"); }
     else if (id === "daily-time") { st.dailyTime = e.target.value || "08:30"; toast("提醒时间改为 " + st.dailyTime); }
-    else if (id === "pf-name") { state.profile.name = e.target.value.trim(); saveProfile(); toast("昵称已保存"); return; }
     else if (id === "login-agree") { state.login.agree = e.target.checked; return; }
     else if (id === "rec-time") {
       var v = new Date(e.target.value).getTime(), min = addDays(startOfDay(new Date()), -7).getTime();
@@ -1684,6 +1744,7 @@ button.row:first-child { border-top: 0; }
     save(SKEY, st);
   });
   document.addEventListener("input", function (e) {
+    if (e.target.id === "pf-name") { state.setBasic.name = e.target.value.trim(); state.setBasic.dirty = true; syncSaveBar(); }
     if (e.target.id === "onb-name") { state.basic.name = e.target.value.trim(); state.basic.touched = true; }
     if (e.target.id === "login-phone") state.login.phone = e.target.value.replace(/\D/g, "");
     if (e.target.id === "login-code") state.login.code = e.target.value.replace(/\D/g, "");
