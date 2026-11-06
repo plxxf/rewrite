@@ -21,10 +21,12 @@
   --accent-ink: #FFFFFF;
   --accent-soft: #DCEFE8;
   --good: #2C9A5D;
-  --ok: #B98516;
+  --perfect: #2F6BD8;
+  --fine: #7DA526;
+  --ok: #E07A1F;
   --bad: #C4433A;
   --bad-soft: #FBE8E5;
-  --warn-soft: #FAF0DA;
+  --warn-soft: #FDEEDF;
   --stool: #7A4A26;
   --shadow: 0 20px 60px rgba(20, 48, 42, .16);
   --f-display: "Bricolage Grotesque", "Noto Sans SC", system-ui, sans-serif;
@@ -34,14 +36,14 @@
   :root:not([data-theme="light"]) {
     --bg: #0B1311; --frame: #111B18; --surface: #18241F; --ink: #E3EDE9; --muted: #92A69F;
     --line: #283631; --accent: #4CC2A3; --accent-ink: #08201A; --accent-soft: #173A31;
-    --good: #55C585; --ok: #E2B24E; --bad: #F0706A; --bad-soft: #3A1E1C; --warn-soft: #34290F;
+    --perfect: #78A6F7; --fine: #A9CF57; --good: #55C585; --ok: #F2994E; --bad: #F0706A; --bad-soft: #3A1E1C; --warn-soft: #3A2615;
     --stool: #B27B4F; --shadow: 0 20px 60px rgba(0, 0, 0, .5); color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #0B1311; --frame: #111B18; --surface: #18241F; --ink: #E3EDE9; --muted: #92A69F;
   --line: #283631; --accent: #4CC2A3; --accent-ink: #08201A; --accent-soft: #173A31;
-  --good: #55C585; --ok: #E2B24E; --bad: #F0706A; --bad-soft: #3A1E1C; --warn-soft: #34290F;
+  --perfect: #78A6F7; --fine: #A9CF57; --good: #55C585; --ok: #F2994E; --bad: #F0706A; --bad-soft: #3A1E1C; --warn-soft: #3A2615;
   --stool: #B27B4F; --shadow: 0 20px 60px rgba(0, 0, 0, .5); color-scheme: dark;
 }
 * { box-sizing: border-box; }
@@ -85,6 +87,36 @@ h2 { font-size: 15px; font-weight: 700; }
 .card-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
 .link { background: none; border: 0; padding: 0; color: var(--accent); font-size: 13px; font-weight: 500; }
 
+/* avatar + settings */
+.hello-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.avatar { width: 42px; height: 42px; border-radius: 15px; border: 0; background: var(--surface); color: var(--accent); display: grid; place-items: center; font-weight: 700; font-size: 17px; flex: none; padding: 0; }
+.avatar svg { width: 22px; height: 22px; }
+.avatar.lg { width: 54px; height: 54px; border-radius: 18px; background: var(--accent-soft); font-size: 22px; }
+.profile { flex-direction: row; align-items: center; gap: 14px; }
+.grow { flex: 1; min-width: 0; }
+.input { display: flex; align-items: center; gap: 8px; border: 1.5px solid var(--line); border-radius: 14px; padding: 0 12px; background: var(--frame); flex: 1; min-width: 0; }
+.input:focus-within { border-color: var(--accent); }
+.input span { color: var(--muted); font-size: 14px; }
+.input input { border: 0; background: none; padding: 12px 0; width: 100%; min-width: 0; outline: none; }
+.code-row { display: flex; gap: 8px; }
+.code-row .btn { flex: none; padding: 0 14px; font-size: 14px; font-weight: 500; }
+.agree { display: flex; gap: 8px; align-items: flex-start; font-size: 12px; color: var(--muted); }
+.agree input { margin: 3px 0 0; accent-color: var(--accent); }
+.err { color: var(--bad); }
+.or { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--muted); }
+.or::before, .or::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.inline-input { border: 1px solid var(--line); background: var(--frame); border-radius: 10px; padding: 6px 10px; font-size: 14px; width: 150px; max-width: 55%; text-align: right; }
+.mini-seg { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.chip { border: 1.5px solid var(--line); background: var(--surface); border-radius: 999px; padding: 3px 12px; font-size: 13px; }
+.chip[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); font-weight: 700; }
+.stepper { display: flex; align-items: center; gap: 10px; flex: none; }
+.stepper .num { font-size: 18px; font-weight: 800; min-width: 22px; text-align: center; }
+.icon-btn.sm { width: 32px; height: 32px; border-radius: 10px; background: var(--frame); font-size: 18px; font-weight: 700; }
+.btn.danger { background: var(--bad); color: var(--surface); }
+.btn.danger-text { color: var(--bad); }
+.confirm { display: flex; flex-direction: column; gap: 10px; }
+.thumb.type { font-size: 12px; font-weight: 700; }
+
 /* banners */
 .banner { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 16px; font-size: 13px; }
 .banner.example { background: var(--accent-soft); }
@@ -100,7 +132,8 @@ h2 { font-size: 15px; font-weight: 700; }
 .alert p { font-size: 13px; }
 .pill { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 500; padding: 2px 10px; border-radius: 999px; white-space: nowrap; }
 .pill.good { background: color-mix(in srgb, var(--good) 16%, transparent); color: var(--good); }
-.pill.fine { background: var(--accent-soft); color: var(--accent); }
+.pill.perfect { background: color-mix(in srgb, var(--perfect) 16%, transparent); color: var(--perfect); }
+.pill.fine { background: color-mix(in srgb, var(--fine) 18%, transparent); color: var(--fine); }
 .pill.ok { background: color-mix(in srgb, var(--ok) 18%, transparent); color: var(--ok); }
 .pill.bad { background: color-mix(in srgb, var(--bad) 16%, transparent); color: var(--bad); }
 
@@ -310,13 +343,15 @@ h2 { font-size: 15px; font-weight: 700; }
     vhard: { name: "非常费劲", pts: 3,  face: "pain" }
   };
   var CUP_ML = 250;
-  function waterPts(c) { return c >= 8 ? 15 : c >= 6 ? 12 : c >= 4 ? 8 : 3; }
+  function goal() { return (state && state.profile && state.profile.waterGoal) || 8; }
+  function waterPts(c) { var g = goal(); return c >= g ? 15 : c >= g * 0.75 ? 12 : c >= g * 0.5 ? 8 : 3; }
   function scoreOf(r) {
     return TYPES[r.type].pts + COLORS[r.color].pts + EFFORT[r.effort].pts + waterPts(r.water);
   }
   function band(s) {
+    if (s >= 95) return { label: "完美", cls: "perfect", color: "var(--perfect)" };
     if (s >= 80) return { label: "优秀", cls: "good", color: "var(--good)" };
-    if (s >= 60) return { label: "良好", cls: "fine", color: "var(--accent)" };
+    if (s >= 60) return { label: "良好", cls: "fine", color: "var(--fine)" };
     if (s >= 40) return { label: "一般", cls: "ok", color: "var(--ok)" };
     return { label: "需关注", cls: "bad", color: "var(--bad)" };
   }
@@ -337,7 +372,7 @@ h2 { font-size: 15px; font-weight: 700; }
   }
 
   /* ---------- storage ---------- */
-  var KEY = "shunchang.records.v1", SKEY = "shunchang.settings.v1";
+  var KEY = "shunchang.records.v1", SKEY = "shunchang.settings.v1", PKEY = "shunchang.profile.v1";
   function load(k) { try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch (e) { return null; } }
   function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* storage unavailable: keep in memory */ } }
 
@@ -363,6 +398,9 @@ h2 { font-size: 15px; font-weight: 700; }
   var state = {
     records: stored || seedExamples(),
     settings: load(SKEY) || { daily: true, dailyTime: "08:30", water: true },
+    profile: load(PKEY) || { loggedIn: false, phone: "", via: "", name: "", gender: "", birthYear: "", waterGoal: 8 },
+    login: { phone: "", code: "", agree: false, countdown: 0 },
+    confirmClear: false,
     view: "home",
     draft: null,
     lastId: null,
@@ -461,12 +499,9 @@ h2 { font-size: 15px; font-weight: 700; }
     });
   }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
-  function thumbHtml(r) {
-    return r.thumb ? '<img class="thumb" src="' + esc(r.thumb) + '" alt="">' : '<span class="thumb">' + bristolSvg(r.type) + '</span>';
-  }
   function recordRow(r) {
     var s = scoreOf(r), b = band(s);
-    return '<div class="row">' + thumbHtml(r) +
+    return '<div class="row"><span class="thumb type" style="background:color-mix(in srgb, ' + b.color + ' 16%, var(--surface));color:' + b.color + '">' + b.label + '</span>' +
       '<div class="row-main"><div class="row-title">' + relDay(r.ts) + ' ' + fmtTime(r.ts) + ' · 第 ' + r.type + ' 型</div>' +
       '<div class="row-sub">' + COLORS[r.color].name + ' · ' + EFFORT[r.effort].name + ' · 喝水 ' + r.water + ' 杯</div></div>' +
       '<span class="score-badge" style="color:' + b.color + '">' + s + '</span></div>';
@@ -484,7 +519,8 @@ h2 { font-size: 15px; font-weight: 700; }
     var alerts = evaluateAlerts();
     var days = byDay(), todayList = days[dayKey(now)];
     var html = '<div class="pad">';
-    html += '<div class="hello"><div><p class="eyebrow">' + (now.getMonth() + 1) + '月' + now.getDate() + '日 · 星期' + WEEK[now.getDay()] + '</p><h1>' + greet + '</h1></div><span class="brand">' + LOGO + '顺畅</span></div>';
+    var pname = state.profile.loggedIn && state.profile.name ? "，" + esc(state.profile.name) : "";
+    html += '<div class="hello"><div class="hello-left"><button class="avatar" data-nav="settings" aria-label="我的：登录和设置">' + avatarInner() + '</button><div><p class="eyebrow">' + (now.getMonth() + 1) + '月' + now.getDate() + '日 · 星期' + WEEK[now.getDay()] + '</p><h1>' + greet + pname + '</h1></div></div><span class="brand">' + LOGO + '顺畅</span></div>';
     if (hasExample) {
       html += '<div class="banner example"><div class="grow">现在显示的是<b>示例数据</b>，方便你预览各个功能。开始记录前可以清除它们。</div><button class="link" data-action="clear-examples">清除示例</button></div>';
     }
@@ -521,7 +557,46 @@ h2 { font-size: 15px; font-weight: 700; }
       html += '</div></section>';
     }
 
-    // reminders
+    html += '<p class="disclaimer">评分仅用于日常健康记录，不能替代医生的诊断。</p></div>';
+    return html;
+  }
+
+  var PERSON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c1.2-3.8 4-5.5 7.5-5.5s6.3 1.7 7.5 5.5"/></svg>';
+  function avatarInner() {
+    var p = state.profile;
+    return p.loggedIn && p.name ? esc(p.name.charAt(0)) : PERSON;
+  }
+  function maskPhone(ph) { return ph.slice(0, 3) + "****" + ph.slice(7); }
+
+  function viewSettings() {
+    var p = state.profile, L = state.login, html = '<div class="pad">';
+    html += '<div class="topbar"><button class="icon-btn" data-nav="home" aria-label="返回首页">' + BACK + '</button><h1>我的</h1></div>';
+    if (p.loggedIn) {
+      html += '<section class="card profile"><span class="avatar lg">' + avatarInner() + '</span><div class="grow"><b>' + esc(p.name || "顺畅用户") + '</b>' +
+        '<div class="muted small">' + (p.phone ? maskPhone(p.phone) : p.via + " 账号") + ' · 已登录，记录会同步</div></div>' +
+        '<button class="link" data-action="logout">退出登录</button></section>';
+    } else {
+      html += '<section class="card field"><h2>登录 / 注册</h2><p class="muted small">登录后记录会同步到云端，换手机也不会丢。</p>' +
+        '<label class="input"><span>+86</span><input id="login-phone" type="tel" inputmode="numeric" maxlength="11" placeholder="手机号" autocomplete="tel" value="' + esc(L.phone) + '"></label>' +
+        '<div class="code-row"><label class="input"><input id="login-code" inputmode="numeric" maxlength="6" placeholder="6 位验证码" autocomplete="one-time-code" value="' + esc(L.code) + '"></label>' +
+        '<button class="btn ghost" id="send-code" data-action="send-code"' + (L.countdown ? " disabled" : "") + '>' + (L.countdown ? L.countdown + " 秒后重发" : "获取验证码") + '</button></div>' +
+        '<label class="agree"><input type="checkbox" id="login-agree"' + (L.agree ? " checked" : "") + '>我已阅读并同意《用户协议》和《隐私政策》</label>' +
+        '<p class="err small" id="login-err" hidden></p>' +
+        '<button class="btn primary block" data-action="login">登录</button>' +
+        '<div class="or">其他方式</div><div class="row-btns"><button class="btn ghost" data-action="login-wechat">微信登录</button><button class="btn ghost" data-action="login-apple">Apple 登录</button></div>' +
+        '<p class="muted small" style="text-align:center">演示版不会真的发送短信，输入任意 6 位数字即可登录。</p></section>';
+    }
+
+    var years = '<option value="">请选择</option>';
+    for (var y = new Date().getFullYear() - 10; y >= 1940; y--) years += '<option value="' + y + '"' + (String(p.birthYear) === String(y) ? " selected" : "") + '>' + y + '</option>';
+    html += '<section class="card"><h2>基本信息</h2>' +
+      '<div class="setting"><label for="pf-name" class="small"><b>昵称</b></label><input class="inline-input" id="pf-name" maxlength="12" placeholder="给自己起个名字" value="' + esc(p.name) + '"></div>' +
+      '<div class="setting"><span class="small"><b>性别</b></span><div class="mini-seg">' + ["男", "女", "不透露"].map(function (g) { return '<button class="chip" data-gender="' + g + '" aria-pressed="' + (p.gender === g) + '">' + g + '</button>'; }).join("") + '</div></div>' +
+      '<div class="setting"><label for="pf-year" class="small"><b>出生年份</b></label><select class="inline-input" id="pf-year">' + years + '</select></div>' +
+      '<div class="setting"><div><div class="small"><b>每日喝水目标</b></div><div class="muted small">约 ' + goal() * CUP_ML + ' ml，用于计算饮水得分</div></div>' +
+      '<div class="stepper"><button class="icon-btn sm" data-action="goal-minus" aria-label="少一杯">−</button><span class="num">' + goal() + '</span><button class="icon-btn sm" data-action="goal-plus" aria-label="多一杯">+</button><span class="muted small">杯</span></div></div></section>';
+
+    // reminders (moved from home)
     var st = state.settings;
     html += '<section class="card"><h2>提醒</h2>' +
       '<div class="setting"><div><div class="small"><b>每日记录提醒</b></div><div class="muted small">每天 <input type="time" id="daily-time" value="' + esc(st.dailyTime) + '" aria-label="提醒时间"> 提醒我记录</div></div>' +
@@ -529,7 +604,11 @@ h2 { font-size: 15px; font-weight: 700; }
       '<div class="setting"><div><div class="small"><b>喝水提醒</b></div><div class="muted small">白天每 2 小时提醒喝一杯水</div></div>' +
       '<label class="switch"><input type="checkbox" id="water-on" ' + (st.water ? "checked" : "") + ' aria-label="喝水提醒"><span></span></label></div></section>';
 
-    html += '<p class="disclaimer">评分仅用于日常健康记录，不能替代医生的诊断。</p></div>';
+    html += '<section class="card"><h2>数据与隐私</h2><p class="muted small">拍的照片只用来识别颜色，识别完不会保存；记录里只保留评分和你填写的内容。</p>' +
+      (state.confirmClear
+        ? '<div class="confirm"><span class="small">确定删除全部 ' + state.records.length + ' 条记录吗？删除后无法恢复。</span><div class="row-btns"><button class="btn ghost" data-action="clear-cancel">取消</button><button class="btn danger" data-action="clear-all">确认删除</button></div></div>'
+        : '<button class="btn ghost block danger-text" data-action="clear-ask"' + (state.records.length ? "" : " disabled") + '>清除全部记录</button>') + '</section>';
+    html += '<p class="disclaimer">顺畅 v0.2 · 评分仅用于日常健康记录，不能替代医生的诊断。</p></div>';
     return html;
   }
 
@@ -548,7 +627,7 @@ h2 { font-size: 15px; font-weight: 700; }
         '<label for="photo-input" class="retake" style="min-height:0;padding:6px 12px">重新拍</label>';
     } else {
       html += '<label for="photo-input"><span class="cam"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.5"/></svg></span>' +
-        '<b>拍照或从相册选择</b><span class="muted small">照片只用于识别颜色和形态，保存在你的手机上</span></label>';
+        '<b>拍照或从相册选择</b><span class="muted small">照片只用来识别颜色，识别完不会保存</span></label>';
     }
     html += '<input class="sr" type="file" id="photo-input" accept="image/*" capture="environment"></section>';
     if (!d.photo) html += '<button class="link sample-link" data-action="sample">手边没有照片？用示例照片试试</button>';
@@ -569,7 +648,7 @@ h2 { font-size: 15px; font-weight: 700; }
     for (var g = 1; g <= 12; g++) {
       html += '<button class="glass' + (g <= d.water ? " on" : "") + '" data-water="' + g + '" aria-label="' + g + ' 杯">' + GLASS + '</button>';
     }
-    html += '</div><p class="muted small">点第几杯就记为几杯，再点一次同一杯可减少。建议每天 8 杯（约 2000 ml）。</p></section>';
+    html += '</div><p class="muted small">点第几杯就记为几杯，再点一次同一杯可减少。你的目标是每天 ' + goal() + ' 杯（约 ' + goal() * CUP_ML + ' ml），可在「我的」里修改。</p></section>';
 
     html += '<section class="card field"><h2>这次排便感觉怎么样</h2><div class="seg">';
     Object.keys(EFFORT).forEach(function (k) {
@@ -592,7 +671,7 @@ h2 { font-size: 15px; font-weight: 700; }
     if (r.type <= 2) tips.push("大便偏硬：今天多喝 2～3 杯温水，多吃燕麦、红薯、绿叶菜等富含膳食纤维的食物。");
     if (r.type >= 6) tips.push("大便偏稀：注意补充水分和电解质，暂时少吃辛辣、油腻和生冷食物。");
     if (r.type === 3 || r.type === 4) tips.push("形状很理想，保持现在的饮食和作息。");
-    if (r.water < 6) tips.push("今天喝水偏少（" + r.water * CUP_ML + " ml），建议再补充 " + (8 - r.water) * CUP_ML + " ml 左右。");
+    if (r.water < goal()) tips.push("今天喝水还没达标（" + r.water * CUP_ML + " ml），建议再补充 " + (goal() - r.water) * CUP_ML + " ml 左右。");
     if (r.effort === "hard" || r.effort === "vhard") tips.push("排便费力时不要久蹲或用力屏气，可以试试脚下垫小凳，保持膝盖高于臀部。");
     if (r.color === "yellow" || r.color === "green") tips.push("颜色" + COLORS[r.color].note + "，通常一两天内会恢复，持续异常请留意。");
     tips.push("饭后散步 20 分钟、固定时间如厕，有助于养成规律排便。");
@@ -661,7 +740,7 @@ h2 { font-size: 15px; font-weight: 700; }
       }
       html += '<button class="' + cls + '"' + style + ' data-day="' + k + '"' + (future ? " disabled" : "") + ' aria-label="' + (mo + 1) + '月' + dd + '日' + (list ? "，" + dayScore(list) + " 分" : "，无记录") + '">' + inner + '</button>';
     }
-    html += '</div><div class="legend"><span><i style="background:var(--good)"></i>80+ 优秀</span><span><i style="background:var(--accent)"></i>60–79 良好</span><span><i style="background:var(--ok)"></i>40–59 一般</span><span><i style="background:var(--bad)"></i>&lt;40 需关注</span><span><i style="background:var(--bad);border-radius:50%"></i>有异常</span></div></section>';
+    html += '</div><div class="legend"><span><i style="background:var(--perfect)"></i>95+ 完美</span><span><i style="background:var(--good)"></i>80–94 优秀</span><span><i style="background:var(--fine)"></i>60–79 良好</span><span><i style="background:var(--ok)"></i>40–59 一般</span><span><i style="background:var(--bad)"></i>&lt;40 需关注</span><span><i style="background:var(--bad);border-radius:50%"></i>有异常</span></div></section>';
 
     var sel = state.selDay || (days[dayKey(today)] ? dayKey(today) : null);
     if (!sel) {
@@ -687,8 +766,8 @@ h2 { font-size: 15px; font-weight: 700; }
   function render(keepScroll) {
     var top = screen.scrollTop;
     var v = state.view;
-    screen.innerHTML = v === "record" ? viewRecord() : v === "result" ? viewResult() : v === "calendar" ? viewCalendar() : viewHome();
-    phone.classList.toggle("no-tabs", v === "record" || v === "result");
+    screen.innerHTML = v === "record" ? viewRecord() : v === "result" ? viewResult() : v === "calendar" ? viewCalendar() : v === "settings" ? viewSettings() : viewHome();
+    phone.classList.toggle("no-tabs", v === "record" || v === "result" || v === "settings");
     document.querySelectorAll(".tab").forEach(function (t) { t.setAttribute("aria-current", t.getAttribute("data-nav") === v ? "page" : "false"); });
     screen.scrollTop = keepScroll ? top : 0;
     animateRings();
@@ -698,10 +777,12 @@ h2 { font-size: 15px; font-weight: 700; }
   function go(view) {
     if (view === "record" && (state.view !== "record" || !state.draft)) state.draft = newDraft();
     if (view === "calendar" && state.view !== "calendar") { state.selDay = null; }
+    if (view === "settings") state.confirmClear = false;
     state.view = view;
     render(false);
   }
   function toast(msg) {
+    phone.querySelectorAll(".toast").forEach(function (old) { old.remove(); });
     var t = document.createElement("div");
     t.className = "toast"; t.textContent = msg; t.setAttribute("role", "status");
     phone.appendChild(t);
@@ -786,11 +867,11 @@ h2 { font-size: 15px; font-weight: 700; }
     if (!d || !d.photo || !d.color || !d.type || !d.effort) return;
     var ov = document.createElement("div");
     ov.className = "overlay";
-    ov.innerHTML = '<div class="scan">' + bristolSvg(d.type) + '</div><b>正在分析…</b><span class="muted small">识别颜色 · 判断形状 · 计算评分</span>';
+    ov.innerHTML = '<div class="scan">' + LOGO + '</div><b>正在分析…</b><span class="muted small">识别颜色 · 判断形状 · 计算评分</span>';
     phone.appendChild(ov);
     setTimeout(function () {
       var hadExamples = state.records.some(function (r) { return r.example; });
-      var rec = { id: "r" + Date.now(), ts: Date.now(), type: d.type, color: d.color, water: d.water, effort: d.effort, thumb: d.thumb };
+      var rec = { id: "r" + Date.now(), ts: Date.now(), type: d.type, color: d.color, water: d.water, effort: d.effort };
       state.records.push(rec);
       persist();
       state.lastId = rec.id; state.draft = null;
@@ -803,7 +884,7 @@ h2 { font-size: 15px; font-weight: 700; }
 
   /* ---------- events ---------- */
   document.addEventListener("click", function (e) {
-    var el = e.target.closest("[data-nav],[data-action],[data-color],[data-type],[data-water],[data-effort],[data-day]");
+    var el = e.target.closest("[data-nav],[data-action],[data-color],[data-type],[data-water],[data-effort],[data-day],[data-gender]");
     if (!el || el.disabled) return;
     var d = state.draft;
     if (el.hasAttribute("data-nav")) return go(el.getAttribute("data-nav"));
@@ -812,12 +893,23 @@ h2 { font-size: 15px; font-weight: 700; }
     if (el.hasAttribute("data-water")) { var w = Number(el.getAttribute("data-water")); d.water = d.water === w ? w - 1 : w; return render(true); }
     if (el.hasAttribute("data-effort")) { d.effort = el.getAttribute("data-effort"); return render(true); }
     if (el.hasAttribute("data-day")) { state.selDay = el.getAttribute("data-day"); return render(true); }
+    if (el.hasAttribute("data-gender")) { state.profile.gender = el.getAttribute("data-gender"); saveProfile(); return render(true); }
     switch (el.getAttribute("data-action")) {
       case "sample": samplePhoto(); break;
       case "submit": submit(); break;
       case "clear-examples":
         state.records = state.records.filter(function (r) { return !r.example; });
         persist(); render(true); toast("示例数据已清除"); break;
+      case "send-code": sendCode(); break;
+      case "login": loginPhone(); break;
+      case "login-wechat": loginVia("微信"); break;
+      case "login-apple": loginVia("Apple"); break;
+      case "logout": state.profile.loggedIn = false; state.profile.phone = ""; state.profile.via = ""; saveProfile(); render(true); toast("已退出登录"); break;
+      case "goal-minus": state.profile.waterGoal = Math.max(4, goal() - 1); saveProfile(); render(true); break;
+      case "goal-plus": state.profile.waterGoal = Math.min(16, goal() + 1); saveProfile(); render(true); break;
+      case "clear-ask": state.confirmClear = true; render(true); break;
+      case "clear-cancel": state.confirmClear = false; render(true); break;
+      case "clear-all": state.records = []; persist(); state.confirmClear = false; render(true); toast("全部记录已删除"); break;
       case "prev-month": state.calMonth = new Date(state.calMonth.getFullYear(), state.calMonth.getMonth() - 1, 1); state.selDay = null; render(true); break;
       case "next-month": state.calMonth = new Date(state.calMonth.getFullYear(), state.calMonth.getMonth() + 1, 1); state.selDay = null; render(true); break;
     }
@@ -827,9 +919,58 @@ h2 { font-size: 15px; font-weight: 700; }
     if (id === "daily-on") { st.daily = e.target.checked; toast(st.daily ? "每天 " + st.dailyTime + " 提醒你记录" : "已关闭每日提醒"); }
     else if (id === "water-on") { st.water = e.target.checked; toast(st.water ? "已开启喝水提醒" : "已关闭喝水提醒"); }
     else if (id === "daily-time") { st.dailyTime = e.target.value || "08:30"; toast("提醒时间改为 " + st.dailyTime); }
+    else if (id === "pf-name") { state.profile.name = e.target.value.trim(); saveProfile(); toast("昵称已保存"); return; }
+    else if (id === "pf-year") { state.profile.birthYear = e.target.value; saveProfile(); return; }
+    else if (id === "login-agree") { state.login.agree = e.target.checked; return; }
     else return;
     save(SKEY, st);
   });
+  document.addEventListener("input", function (e) {
+    if (e.target.id === "login-phone") state.login.phone = e.target.value.replace(/\D/g, "");
+    if (e.target.id === "login-code") state.login.code = e.target.value.replace(/\D/g, "");
+  });
+
+  /* ---------- login (demo: no real SMS is sent) ---------- */
+  function saveProfile() { save(PKEY, state.profile); }
+  function loginError(msg) {
+    var el = document.getElementById("login-err");
+    if (el) { el.textContent = msg; el.hidden = !msg; }
+  }
+  function sendCode() {
+    var L = state.login;
+    if (!/^1\d{10}$/.test(L.phone)) return loginError("请输入 11 位手机号");
+    loginError("");
+    L.countdown = 60;
+    toast("验证码已发送（演示）");
+    var t = setInterval(function () {
+      L.countdown--;
+      var b = document.getElementById("send-code");
+      if (b) { b.disabled = L.countdown > 0; b.textContent = L.countdown > 0 ? L.countdown + " 秒后重发" : "获取验证码"; }
+      if (L.countdown <= 0) clearInterval(t);
+    }, 1000);
+    var b0 = document.getElementById("send-code");
+    if (b0) { b0.disabled = true; b0.textContent = "60 秒后重发"; }
+  }
+  function finishLogin(via, phoneNum) {
+    var p = state.profile;
+    p.loggedIn = true; p.via = via; p.phone = phoneNum || "";
+    if (!p.name) p.name = via === "手机" ? "用户" + phoneNum.slice(-4) : via + "用户";
+    saveProfile();
+    state.login = { phone: "", code: "", agree: false, countdown: 0 };
+    render(false);
+    toast("登录成功");
+  }
+  function loginPhone() {
+    var L = state.login;
+    if (!/^1\d{10}$/.test(L.phone)) return loginError("请输入 11 位手机号");
+    if (!/^\d{6}$/.test(L.code)) return loginError("请输入 6 位验证码");
+    if (!L.agree) return loginError("请先勾选同意用户协议和隐私政策");
+    finishLogin("手机", L.phone);
+  }
+  function loginVia(via) {
+    if (!state.login.agree) return loginError("请先勾选同意用户协议和隐私政策");
+    finishLogin(via, "");
+  }
 
   render(false);
 })();
