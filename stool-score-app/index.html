@@ -181,6 +181,16 @@ button.row:first-child { border-top: 0; }
 .dots i { width: 7px; height: 7px; border-radius: 4px; background: var(--line); }
 .dots i.on { background: var(--accent); width: 20px; }
 .onb .legend { justify-content: center; }
+.onb { touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+.onb-slide { flex: 1; display: flex; flex-direction: column; gap: 16px; min-height: 0; will-change: transform; }
+.onb-slide.dragging { transition: none; }
+.onb-slide.settle { transition: transform .25s ease, opacity .25s ease; }
+.onb-slide.in-next { animation: onbNext .3s ease both; }
+.onb-slide.in-prev { animation: onbPrev .3s ease both; }
+@keyframes onbNext { from { transform: translateX(48px); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes onbPrev { from { transform: translateX(-48px); opacity: 0; } to { transform: none; opacity: 1; } }
+.onb-hint { text-align: center; font-size: 12px !important; margin-top: -6px; }
+@media (prefers-reduced-motion: reduce) { .onb-slide.in-next, .onb-slide.in-prev { animation: none; } }
 
 /* avatar + settings */
 .hello-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
@@ -1124,8 +1134,9 @@ button.row:first-child { border-top: 0; }
         extra: '<div class="legend"><span><i style="background:var(--perfect)"></i>完美</span><span><i style="background:var(--good)"></i>优秀</span><span><i style="background:var(--fine)"></i>良好</span><span><i style="background:var(--ok)"></i>一般</span><span><i style="background:var(--bad)"></i>需关注</span></div>' },
       { art: '<div class="art-circle">' + LOCK + '</div>', h: "隐私与提醒", p: "照片只用来识别颜色，预览会自动模糊，识别完就丢弃。开启通知后，我们会按时提醒你记录和喝水。" }
     ], st = steps[step], last = step === steps.length - 1;
-    return '<button class="onb-skip" data-action="onb-done">跳过</button><div class="onb-art">' + st.art + '</div>' +
-      '<div style="display:flex;flex-direction:column;gap:10px"><h1>' + st.h + '</h1><p>' + st.p + '</p>' + (st.extra || '') + '</div>' +
+    return '<button class="onb-skip" data-action="onb-done">跳过</button><div class="onb-slide ' + (state.onbAnim || "") + '"><div class="onb-art">' + st.art + '</div>' +
+      '<div style="display:flex;flex-direction:column;gap:10px"><h1>' + st.h + '</h1><p>' + st.p + '</p>' + (st.extra || '') + '</div></div>' +
+      (step === 0 ? '<p class="onb-hint">向左滑动查看下一步</p>' : '') +
       '<div class="dots">' + steps.map(function (_, i) { return '<i class="' + (i === step ? "on" : "") + '"></i>'; }).join("") + '</div>' +
       (last ? '<div class="row-btns"><button class="btn ghost" data-action="onb-done">暂不开启</button><button class="btn primary" data-action="onb-notify">开启通知并开始</button></div>'
             : '<button class="btn primary block" data-action="onb-next">下一步</button>');
@@ -1332,6 +1343,46 @@ button.row:first-child { border-top: 0; }
     state.confirmDel = false; state.draft = null; state.view = state.prevView === "calendar" ? "calendar" : "home";
     render(false); toast("记录已删除");
   }
+  /* onboarding swipe: finger right-to-left = next step, left-to-right = previous step */
+  var ONB_STEPS = 3, swipe = null;
+  function onbGo(dir) {
+    var next = state.onb + dir;
+    if (next < 0 || next >= ONB_STEPS) { var sl = document.querySelector(".onb-slide"); if (sl) { sl.className = "onb-slide settle"; sl.style.transform = ""; sl.style.opacity = ""; } return; }
+    state.onb = next; state.onbAnim = dir > 0 ? "in-next" : "in-prev";
+    render(true); state.onbAnim = "";
+  }
+  phone.addEventListener("pointerdown", function (e) {
+    if (state.onb < 0 || !e.target.closest("#onb")) return;
+    swipe = { x: e.clientX, y: e.clientY, dx: 0, active: false };
+  });
+  phone.addEventListener("pointermove", function (e) {
+    if (!swipe) return;
+    swipe.dx = e.clientX - swipe.x;
+    var dy = e.clientY - swipe.y;
+    if (!swipe.active && Math.abs(swipe.dx) > 8 && Math.abs(swipe.dx) > Math.abs(dy)) swipe.active = true;
+    if (!swipe.active) return;
+    var sl = document.querySelector(".onb-slide");
+    var edge = (swipe.dx > 0 && state.onb === 0) || (swipe.dx < 0 && state.onb === ONB_STEPS - 1);
+    var dx = edge ? swipe.dx * 0.3 : swipe.dx;
+    if (sl) { sl.className = "onb-slide dragging"; sl.style.transform = "translateX(" + dx + "px)"; sl.style.opacity = String(1 - Math.min(0.5, Math.abs(dx) / 400)); }
+  });
+  function endSwipe() {
+    if (!swipe) return;
+    var s0 = swipe; swipe = null;
+    if (!s0.active) return;
+    suppressClick = true; setTimeout(function () { suppressClick = false; }, 0);
+    if (s0.dx < -50) onbGo(1);
+    else if (s0.dx > 50) onbGo(-1);
+    else onbGo(0);
+  }
+  var suppressClick = false;
+  phone.addEventListener("pointerup", endSwipe);
+  phone.addEventListener("pointercancel", function () { swipe = swipe && Object.assign(swipe, { dx: 0 }); endSwipe(); });
+  document.addEventListener("keydown", function (e) {
+    if (state.onb < 0) return;
+    if (e.key === "ArrowRight") onbGo(1);
+    if (e.key === "ArrowLeft") onbGo(-1);
+  });
   function finishOnb(notify) {
     state.onb = -1; state.settings.onboarded = true;
     if (notify) { state.settings.daily = true; state.settings.water = true; }
@@ -1341,6 +1392,7 @@ button.row:first-child { border-top: 0; }
 
   /* ---------- events ---------- */
   document.addEventListener("click", function (e) {
+    if (suppressClick) { e.preventDefault(); return; }
     var el = e.target.closest("[data-nav],[data-action],[data-color],[data-type],[data-water],[data-effort],[data-day],[data-gender],[data-tag],[data-rec],[data-doc]");
     if (!el || el.disabled) return;
     var d = state.draft;
@@ -1395,7 +1447,7 @@ button.row:first-child { border-top: 0; }
           navigator.clipboard.writeText(txt).then(function () { toast("报告已复制，可以粘贴发给医生"); }, function () { state.reportText = txt; render(true); });
         } catch (err) { state.reportText = txt; render(true); }
         break;
-      case "onb-next": state.onb++; render(true); break;
+      case "onb-next": onbGo(1); break;
       case "onb-done": finishOnb(false); break;
       case "onb-notify": finishOnb(true); break;
       case "onb-replay": state.onb = 0; render(true); break;
