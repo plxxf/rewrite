@@ -165,6 +165,10 @@ h2 { font-size: 15px; font-weight: 700; }
 @keyframes celePop { from { transform: scale(.8); opacity: 0; } }
 @keyframes celeRing { 0% { transform: scale(1); opacity: .6; } 100% { transform: scale(1.9); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .celebrate, .cele-card, .cele-burst i { animation: none; } }
+.wheel-note { font-size: 11px; color: var(--muted); text-align: center; }
+.wheel.bump { animation: wheelBump .35s ease; }
+@keyframes wheelBump { 30% { transform: translateY(6px); } }
+@media (prefers-reduced-motion: reduce) { .wheel.bump { animation: none; } }
 .block-line { display: flex; gap: 8px; align-items: flex-start; color: var(--bad); line-height: 1.6; }
 .block-line .ic { width: 16px; height: 16px; margin-top: 4px; }
 .guardian { display: flex; gap: 8px; align-items: flex-start; margin-top: 6px; font-size: 13px; color: var(--ink); }
@@ -1294,7 +1298,7 @@ button.row:first-child { border-top: 0; }
   /* ---------- body data: scroll-wheel pickers ---------- */
   function range(a, b, st) { var o = []; for (var v = a; v <= b + 1e-9; v += st || 1) o.push(Math.round(v * 10) / 10); return o; }
   var WHEELS = {
-    age:    { label: "年龄", unit: "岁", vals: range(0, 100), def: 30, fmt: function (v) { return v === 0 ? "不到 1" : String(v); } },
+    age:    { label: "年龄", unit: "岁", vals: range(14, 100), def: 30, fmt: String, note: "14 岁起" },
     height: { label: "身高", unit: "cm", vals: range(45, 210), def: 165, fmt: String },
     weight: { label: "体重", unit: "kg", vals: range(2, 150, 0.5), def: 60, fmt: function (v) { return v.toFixed(1); } }
   };
@@ -1303,8 +1307,22 @@ button.row:first-child { border-top: 0; }
   function wheelHtml(key, ctx, v) {
     var w = WHEELS[key];
     return '<div class="wcolumn"><span>' + w.label + '（' + w.unit + '）</span><div class="wheel-box"><div class="wheel" tabindex="0" role="listbox" aria-label="' + w.label + '，单位' + w.unit + '" data-wheel="' + key + '" data-ctx="' + ctx + '" data-idx="' + wheelIdx(key, v) + '">' +
-      w.vals.map(function (x) { return '<div class="wi" role="option">' + w.fmt(x) + '</div>'; }).join("") + '</div></div></div>';
+      w.vals.map(function (x) { return '<div class="wi" role="option">' + w.fmt(x) + '</div>'; }).join("") + '</div></div>' +
+      (w.note ? '<span class="wheel-note">' + w.note + '</span>' : '') + '</div>';
   }
+  // The age wheel stops at 14. Pulling past the top tells the user why.
+  var edgeToastAt = 0, touchY = null;
+  function ageEdgeHint(w) {
+    if (!w || w.getAttribute("data-wheel") !== "age" || w.scrollTop > 2) return;
+    if (Date.now() - edgeToastAt < 1500) return;
+    edgeToastAt = Date.now();
+    toast("本产品暂不支持 14 岁以下的用户");
+    w.classList.remove("bump"); void w.offsetWidth; w.classList.add("bump");
+  }
+  document.addEventListener("wheel", function (e) { var w = e.target.closest && e.target.closest(".wheel"); if (w && e.deltaY < 0) ageEdgeHint(w); }, { passive: true });
+  document.addEventListener("touchstart", function (e) { touchY = e.touches[0].clientY; }, { passive: true });
+  document.addEventListener("touchmove", function (e) { var w = e.target.closest && e.target.closest(".wheel"); if (w && touchY != null && e.touches[0].clientY - touchY > 12) ageEdgeHint(w); }, { passive: true });
+  document.addEventListener("keydown", function (e) { var w = document.activeElement; if (e.key === "ArrowUp" && w && w.classList && w.classList.contains("wheel")) ageEdgeHint(w); });
   function ageGroup(a) {
     if (a == null || a === "") return null;
     if (a < 1) return "婴儿"; if (a < 3) return "幼儿"; if (a < 12) return "儿童"; if (a < 18) return "青少年"; if (a < 65) return "成人"; return "老年人";
@@ -1382,7 +1400,7 @@ button.row:first-child { border-top: 0; }
   }
   function basicFromProfile() {
     var p = state.profile;
-    return { name: p.name || "", age: p.age != null && p.age !== "" ? p.age : WHEELS.age.def, height: p.height || WHEELS.height.def, weight: p.weight || WHEELS.weight.def, gender: p.gender || "",
+    return { name: p.name || "", age: p.age != null && p.age !== "" ? Math.max(MIN_AGE, p.age) : WHEELS.age.def, height: p.height || WHEELS.height.def, weight: p.weight || WHEELS.weight.def, gender: p.gender || "",
       waterGoal: goal(), goalAuto: p.goalAuto !== false, guardian: !!p.guardian, touched: false, dirty: false, confirmOdd: false };
   }
   function saveBasic(b) {
