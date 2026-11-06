@@ -362,7 +362,6 @@
  "照片怎么处理": "Traitement des photos",
  "照片只在手机上用来识别颜色，识别完成后立即丢弃，不会上传，也不会保存在记录里。": "Les photos servent uniquement sur votre téléphone à détecter la couleur, puis sont supprimées aussitôt. Elles ne sont jamais téléversées ni conservées.",
  "数据存在哪里": "Où sont stockées les données",
- "未登录时数据只保存在你的手机上；登录后会加密同步到云端，方便换机。": "Sans connexion, les données restent uniquement sur votre téléphone. Une fois connecté, elles sont chiffrées et synchronisées sur nos serveurs à Singapour pour changer de téléphone.",
  "健康 App": "App Santé",
  "只有在你开启并授权后，我们才会读取饮水量或写入排便记录。你可以随时在设置里关闭。": "Nous lisons l'eau bue ou écrivons vos notes seulement après activation et autorisation. Vous pouvez désactiver cela à tout moment.",
  "使用统计": "Statistiques d'utilisation",
@@ -370,7 +369,6 @@
  "你的权利": "Vos droits",
  "你可以随时清除全部记录或注销账号，注销后数据会被永久删除。": "Vous pouvez supprimer toutes vos notes ou votre compte à tout moment. La suppression du compte efface définitivement vos données.",
  "个人信息处理者": "Responsable des données",
- "Neighbor（新加坡），由公司负责个人数据保护事务。数据存储地点和跨境传输安排以正式版隐私政策为准。": "Neighbor (Singapour), responsable de la protection des renseignements personnels. Les données sont stockées sur des serveurs à Singapour; la politique finale précisera les transferts hors du pays.",
  "不会做的事": "Ce que nous ne faisons jamais",
  "我们不出售你的数据，不在 App 里接入广告，不把你的健康信息分享给广告商或数据经纪商。": "Nous ne vendons pas vos données, n'affichons pas de publicité et ne partageons pas vos renseignements de santé avec des annonceurs ou courtiers de données.",
  "不是医疗诊断": "Pas un diagnostic médical",
@@ -571,5 +569,7 @@
  "首页": "Accueil",
  "拍照记录": "Photo et note",
  "主导航": "Navigation principale",
- "语言": "Langue"
+ "语言": "Langue",
+ "未登录时数据只保存在你的手机上；登录后会加密同步到我们位于新加坡的服务器，方便换机。": "Sans connexion, les données restent uniquement sur votre téléphone. Une fois connecté, elles sont chiffrées et synchronisées sur nos serveurs à Singapour pour changer de téléphone.",
+ "Neighbor（新加坡），由公司负责个人数据保护事务。数据存储在新加坡的服务器上，跨境传输安排以正式版隐私政策为准。": "Neighbor (Singapour), responsable de la protection des renseignements personnels. Les données sont stockées sur des serveurs à Singapour; la politique finale précisera les transferts hors du pays."
 }

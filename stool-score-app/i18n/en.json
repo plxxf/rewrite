@@ -362,7 +362,6 @@
  "照片怎么处理": "How photos are handled",
  "照片只在手机上用来识别颜色，识别完成后立即丢弃，不会上传，也不会保存在记录里。": "Photos are used on your phone only to detect the colour, then discarded right away. They are never uploaded or saved in your logs.",
  "数据存在哪里": "Where data is stored",
- "未登录时数据只保存在你的手机上；登录后会加密同步到云端，方便换机。": "If you don't sign in, data stays only on your phone. If you sign in, it's encrypted and synced to our servers in Singapore so you can switch phones.",
  "健康 App": "Health app",
  "只有在你开启并授权后，我们才会读取饮水量或写入排便记录。你可以随时在设置里关闭。": "We only read water intake or write logs after you turn this on and grant permission. You can turn it off any time in settings.",
  "使用统计": "Usage statistics",
@@ -370,7 +369,6 @@
  "你的权利": "Your rights",
  "你可以随时清除全部记录或注销账号，注销后数据会被永久删除。": "You can delete all records or your account at any time. Deleting your account removes your data permanently.",
  "个人信息处理者": "Data controller",
- "Neighbor（新加坡），由公司负责个人数据保护事务。数据存储地点和跨境传输安排以正式版隐私政策为准。": "Neighbor (Singapore), which is responsible for personal data protection. Data is stored on servers in Singapore; the final privacy policy will describe cross-border transfers.",
  "不会做的事": "What we never do",
  "我们不出售你的数据，不在 App 里接入广告，不把你的健康信息分享给广告商或数据经纪商。": "We don't sell your data, show ads in the app, or share your health information with advertisers or data brokers.",
  "不是医疗诊断": "Not a medical diagnosis",
@@ -571,5 +569,7 @@
  "首页": "Home",
  "拍照记录": "Take photo and log",
  "主导航": "Main navigation",
- "语言": "Language"
+ "语言": "Language",
+ "未登录时数据只保存在你的手机上；登录后会加密同步到我们位于新加坡的服务器，方便换机。": "If you don't sign in, data stays only on your phone. If you sign in, it's encrypted and synced to our servers in Singapore so you can switch phones.",
+ "Neighbor（新加坡），由公司负责个人数据保护事务。数据存储在新加坡的服务器上，跨境传输安排以正式版隐私政策为准。": "Neighbor (Singapore), which is responsible for personal data protection. Data is stored on servers in Singapore; the final privacy policy will describe cross-border transfers."
 }

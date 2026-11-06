@@ -362,7 +362,6 @@
  "照片怎么处理": "Cara foto dikendalikan",
  "照片只在手机上用来识别颜色，识别完成后立即丢弃，不会上传，也不会保存在记录里。": "Foto hanya digunakan pada telefon anda untuk mengesan warna, kemudian dibuang serta-merta. Ia tidak pernah dimuat naik atau disimpan dalam rekod.",
  "数据存在哪里": "Di mana data disimpan",
- "未登录时数据只保存在你的手机上；登录后会加密同步到云端，方便换机。": "Jika tidak log masuk, data hanya kekal di telefon anda. Selepas log masuk, ia disulitkan dan disegerakkan ke pelayan kami di Singapura supaya anda boleh tukar telefon.",
  "健康 App": "App Kesihatan",
  "只有在你开启并授权后，我们才会读取饮水量或写入排便记录。你可以随时在设置里关闭。": "Kami hanya membaca pengambilan air atau menulis rekod selepas anda menghidupkan dan memberi kebenaran. Anda boleh mematikannya bila-bila masa.",
  "使用统计": "Statistik penggunaan",
@@ -370,7 +369,6 @@
  "你的权利": "Hak anda",
  "你可以随时清除全部记录或注销账号，注销后数据会被永久删除。": "Anda boleh memadam semua rekod atau akaun anda pada bila-bila masa. Memadam akaun akan membuang data anda secara kekal.",
  "个人信息处理者": "Pengawal data",
- "Neighbor（新加坡），由公司负责个人数据保护事务。数据存储地点和跨境传输安排以正式版隐私政策为准。": "Neighbor (Singapura), yang bertanggungjawab terhadap perlindungan data peribadi. Data disimpan pada pelayan di Singapura; dasar privasi muktamad akan menerangkan pemindahan rentas sempadan.",
  "不会做的事": "Apa yang kami tidak lakukan",
  "我们不出售你的数据，不在 App 里接入广告，不把你的健康信息分享给广告商或数据经纪商。": "Kami tidak menjual data anda, tidak memaparkan iklan dalam app, dan tidak berkongsi maklumat kesihatan anda dengan pengiklan atau broker data.",
  "不是医疗诊断": "Bukan diagnosis perubatan",
@@ -571,5 +569,7 @@
  "首页": "Utama",
  "拍照记录": "Ambil foto dan rekod",
  "主导航": "Navigasi utama",
- "语言": "Bahasa"
+ "语言": "Bahasa",
+ "未登录时数据只保存在你的手机上；登录后会加密同步到我们位于新加坡的服务器，方便换机。": "Jika tidak log masuk, data hanya kekal di telefon anda. Selepas log masuk, ia disulitkan dan disegerakkan ke pelayan kami di Singapura supaya anda boleh tukar telefon.",
+ "Neighbor（新加坡），由公司负责个人数据保护事务。数据存储在新加坡的服务器上，跨境传输安排以正式版隐私政策为准。": "Neighbor (Singapura), yang bertanggungjawab terhadap perlindungan data peribadi. Data disimpan pada pelayan di Singapura; dasar privasi muktamad akan menerangkan pemindahan rentas sempadan."
 }
