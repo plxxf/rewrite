@@ -937,7 +937,7 @@ button.row:first-child { border-top: 0; }
       var s = scoreOf(latest), b = band(s);
       html += '<div class="cap"><span class="cap-label">' + LOGO + (todayList ? (todayList.length > 1 ? T("今天第 ") + todayList.length + T(" 次") : T("今天")) : T("最近一次")) + '</span><span class="muted">' + relDay(latest.ts) + ' ' + fmtTime(latest.ts) + '</span></div>' +
         '<div class="score-row">' + ring(scoreOf(latest)) + '<div class="score-text"><span class="pill ' + b.cls + '" style="align-self:flex-start">' + b.label + '</span>' +
-        T('<p class="small"><b>第 ') + latest.type + T(' 型 · ') + TYPES[latest.type].name + '</b></p></div></div>' +
+        '<p class="muted small">' + COLORS[latest.color].name + ' · ' + EFFORT[latest.effort].name + T(' · 喝水 ') + latest.water + T(' 杯</p></div></div>') +
         contribs(latest, false);
       if (todayList) {
         var tls = todayList.slice().sort(function (a, b) { return a.ts - b.ts; }), lc = looseCount(tls);
