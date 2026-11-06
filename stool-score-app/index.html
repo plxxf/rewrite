@@ -19,9 +19,10 @@
   --ink: #1C1C1E;
   --muted: #8A8A8E;
   --line: #E5E5EA;
-  --accent: #14A085;
-  --accent-ink: #FFFFFF;
-  --accent-soft: #DDF3EE;
+  --accent: #F5A400;
+  --accent-strong: #A86300;
+  --accent-ink: #2A1A00;
+  --accent-soft: #FFF1D4;
   --perfect: #5856D6;
   --good: #3478F6;
   --fine: #2FA8DF;
@@ -37,14 +38,14 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #111113; --frame: #000000; --surface: #1C1C1E; --fill: #2C2C2E; --seg-on: #636366; --ink: #FFFFFF; --muted: #8E8E93;
-    --line: #38383A; --accent: #2FD1B0; --accent-ink: #00261E; --accent-soft: #10332C;
+    --line: #38383A; --accent: #FFB52E; --accent-strong: #FFC861; --accent-ink: #2A1A00; --accent-soft: #3A2A0C;
     --perfect: #8A87FF; --good: #4A90FF; --fine: #64D2FF; --ok: #FF9A70; --bad: #FF5A52; --bad-soft: #3A1A18; --warn-soft: #3A2219;
     --stool: #B27B4F; --shadow: 0 20px 60px rgba(0, 0, 0, .6); color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #111113; --frame: #000000; --surface: #1C1C1E; --fill: #2C2C2E; --seg-on: #636366; --ink: #FFFFFF; --muted: #8E8E93;
-  --line: #38383A; --accent: #2FD1B0; --accent-ink: #00261E; --accent-soft: #10332C;
+  --line: #38383A; --accent: #FFB52E; --accent-strong: #FFC861; --accent-ink: #2A1A00; --accent-soft: #3A2A0C;
   --perfect: #8A87FF; --good: #4A90FF; --fine: #64D2FF; --ok: #FF9A70; --bad: #FF5A52; --bad-soft: #3A1A18; --warn-soft: #3A2219;
   --stool: #B27B4F; --shadow: 0 20px 60px rgba(0, 0, 0, .6); color-scheme: dark;
 }
@@ -82,12 +83,12 @@ h2 { font-size: 15px; font-weight: 700; }
 .num { font-family: var(--f-display); font-variant-numeric: tabular-nums; }
 
 .hello { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; }
-.brand { font-family: var(--f-display); font-weight: 800; font-size: 13px; letter-spacing: .08em; color: var(--accent); display: inline-flex; align-items: center; gap: 6px; }
+.brand { font-family: var(--f-display); font-weight: 800; font-size: 13px; letter-spacing: .08em; color: var(--accent-strong); display: inline-flex; align-items: center; gap: 6px; }
 .brand svg { width: 22px; height: 22px; }
 
 .card { background: var(--surface); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
 .card-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
-.link { background: none; border: 0; padding: 0; color: var(--accent); font-size: 13px; font-weight: 500; }
+.link { background: none; border: 0; padding: 0; color: var(--accent-strong); font-size: 13px; font-weight: 500; }
 
 /* apple-health-like grouping */
 .pad.home { gap: 26px; }
@@ -96,7 +97,7 @@ h2 { font-size: 15px; font-weight: 700; }
 .sec-title h2 { font-size: 21px; font-weight: 700; letter-spacing: -.01em; }
 .hello h1 { font-size: 32px; letter-spacing: -.02em; }
 .cap { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 13px; }
-.cap-label { color: var(--accent); font-weight: 600; display: inline-flex; gap: 6px; align-items: center; }
+.cap-label { color: var(--accent-strong); font-weight: 600; display: inline-flex; gap: 6px; align-items: center; }
 .cap-label svg { width: 16px; height: 16px; }
 .cap .chev { color: var(--muted); display: inline-flex; align-items: center; gap: 2px; background: none; border: 0; padding: 0; font-size: 13px; }
 .kpi { display: flex; align-items: baseline; gap: 3px; }
@@ -138,28 +139,71 @@ h2 { font-size: 15px; font-weight: 700; }
 .ok-note { display: flex; gap: 10px; align-items: center; font-size: 13px; }
 .ok-note svg { width: 20px; height: 20px; color: var(--good); flex: none; }
 
+/* v0.3 additions */
+.streak { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; color: var(--accent-strong); background: var(--accent-soft); border-radius: 999px; padding: 2px 10px; margin-top: 6px; }
+button.row { background: none; border: 0; border-top: 1px solid var(--line); width: 100%; text-align: left; font: inherit; color: inherit; cursor: pointer; }
+button.row:first-child { border-top: 0; }
+.photo img.blurred { filter: blur(22px) saturate(.5); transform: scale(1.15); }
+.peek { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,.6); color: #fff; border: 0; border-radius: 12px; padding: 8px 14px; font-size: 13px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chips .chip { padding: 6px 12px; }
+.sub-h { font-size: 12px; color: var(--muted); }
+.time-row { display: flex; gap: 10px; align-items: center; justify-content: space-between; }
+.time-row input { border: 1px solid var(--line); background: var(--fill); border-radius: 10px; padding: 6px 8px; font-size: 14px; max-width: 58%; min-width: 0; }
+.tagline { font-size: 13px; display: flex; gap: 8px; }
+.tagline b { flex: none; min-width: 64px; }
+.badges { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.badge { background: var(--fill); border-radius: 14px; padding: 10px 6px; text-align: center; font-size: 12px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.badge .medal { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: var(--line); color: var(--muted); font-weight: 800; font-size: 14px; font-family: var(--f-display); }
+.badge.on .medal { background: var(--accent); color: var(--accent-ink); }
+.badge:not(.on) { color: var(--muted); }
+.list-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; width: 100%; background: none; border: 0; padding: 12px 0; border-top: 1px solid var(--line); font-size: 14px; text-align: left; }
+.list-row:first-of-type { border-top: 0; }
+.list-row.danger-text { color: var(--bad); }
+.list-row svg { color: var(--muted); flex: none; }
+.dist { display: flex; flex-direction: column; gap: 8px; }
+.dist-row { display: grid; grid-template-columns: 84px 1fr 34px; gap: 8px; align-items: center; font-size: 12px; }
+.dist-bar { height: 8px; border-radius: 999px; background: var(--fill); overflow: hidden; }
+.dist-bar i { display: block; height: 100%; border-radius: inherit; }
+.dist-row .num { text-align: right; }
+.delta { font-size: 13px; font-weight: 600; }
+.copybox { width: 100%; min-height: 160px; border: 1px solid var(--line); border-radius: 12px; background: var(--fill); padding: 10px; font-size: 12px; font-family: var(--f-body); resize: vertical; }
+.doc { font-size: 14px; line-height: 1.75; display: flex; flex-direction: column; gap: 10px; }
+.doc h3 { font-size: 15px; margin-top: 4px; }
+.onb { position: absolute; inset: 0; z-index: 40; background: var(--frame); display: flex; flex-direction: column; gap: 16px; padding: calc(20px + env(safe-area-inset-top, 0px)) max(24px, env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) max(24px, env(safe-area-inset-left, 0px)); }
+.onb-skip { align-self: flex-end; background: none; border: 0; color: var(--muted); font-size: 14px; padding: 6px 0; }
+.onb-art { flex: 1; display: grid; place-items: center; min-height: 0; }
+.onb h1 { font-size: 28px; }
+.onb p { color: var(--muted); font-size: 15px; }
+.art-circle { width: 176px; height: 176px; border-radius: 50%; background: var(--accent-soft); display: grid; place-items: center; color: var(--accent-strong); }
+.art-circle svg { width: 84px; height: 84px; }
+.dots { display: flex; gap: 6px; justify-content: center; }
+.dots i { width: 7px; height: 7px; border-radius: 4px; background: var(--line); }
+.dots i.on { background: var(--accent); width: 20px; }
+.onb .legend { justify-content: center; }
+
 /* avatar + settings */
 .hello-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
-.avatar { width: 42px; height: 42px; border-radius: 15px; border: 0; background: var(--surface); color: var(--accent); display: grid; place-items: center; font-weight: 700; font-size: 17px; flex: none; padding: 0; }
+.avatar { width: 42px; height: 42px; border-radius: 15px; border: 0; background: var(--surface); color: var(--accent-strong); display: grid; place-items: center; font-weight: 700; font-size: 17px; flex: none; padding: 0; }
 .avatar svg { width: 22px; height: 22px; }
 .avatar.lg { width: 54px; height: 54px; border-radius: 18px; background: var(--accent-soft); font-size: 22px; }
 .profile { flex-direction: row; align-items: center; gap: 14px; }
 .grow { flex: 1; min-width: 0; }
 .input { display: flex; align-items: center; gap: 8px; border: 1.5px solid var(--line); border-radius: 14px; padding: 0 12px; background: var(--fill); flex: 1; min-width: 0; }
-.input:focus-within { border-color: var(--accent); }
+.input:focus-within { border-color: var(--accent-strong); }
 .input span { color: var(--muted); font-size: 14px; }
 .input input { border: 0; background: none; padding: 12px 0; width: 100%; min-width: 0; outline: none; }
 .code-row { display: flex; gap: 8px; }
 .code-row .btn { flex: none; padding: 0 14px; font-size: 14px; font-weight: 500; }
 .agree { display: flex; gap: 8px; align-items: flex-start; font-size: 12px; color: var(--muted); }
-.agree input { margin: 3px 0 0; accent-color: var(--accent); }
+.agree input { margin: 3px 0 0; accent-color: var(--accent-strong); }
 .err { color: var(--bad); }
 .or { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--muted); }
 .or::before, .or::after { content: ""; flex: 1; height: 1px; background: var(--line); }
 .inline-input { border: 1px solid var(--line); background: var(--fill); border-radius: 10px; padding: 6px 10px; font-size: 14px; width: 150px; max-width: 55%; text-align: right; }
 .mini-seg { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
 .chip { border: 1.5px solid var(--line); background: var(--surface); border-radius: 999px; padding: 3px 12px; font-size: 13px; }
-.chip[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); font-weight: 700; }
+.chip[aria-pressed="true"] { border-color: var(--accent-strong); background: var(--accent-soft); color: var(--accent-strong); font-weight: 700; }
 .stepper { display: flex; align-items: center; gap: 10px; flex: none; }
 .stepper .num { font-size: 18px; font-weight: 800; min-width: 22px; text-align: center; }
 .icon-btn.sm { width: 32px; height: 32px; border-radius: 10px; background: var(--fill); font-size: 18px; font-weight: 700; }
@@ -179,7 +223,7 @@ h2 { font-size: 15px; font-weight: 700; }
 .alert-title { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; }
 .alert.urgent .alert-title { color: var(--bad); }
 .alert.warn .alert-title { color: var(--ok); }
-.alert.info .alert-title { color: var(--accent); }
+.alert.info .alert-title { color: var(--accent-strong); }
 .alert p { font-size: 13px; }
 .pill { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 500; padding: 2px 10px; border-radius: 999px; white-space: nowrap; }
 .pill.good { background: color-mix(in srgb, var(--good) 16%, transparent); color: var(--good); }
@@ -249,7 +293,7 @@ h2 { font-size: 15px; font-weight: 700; }
 .photo { position: relative; border-radius: 22px; background: var(--surface); border: 1.5px dashed color-mix(in srgb, var(--accent) 45%, var(--line)); overflow: hidden; }
 .photo label { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-height: 190px; padding: 16px; cursor: pointer; text-align: center; }
 .photo img { width: 100%; height: 220px; object-fit: cover; display: block; }
-.photo .cam { width: 58px; height: 58px; border-radius: 18px; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; }
+.photo .cam { width: 58px; height: 58px; border-radius: 18px; background: var(--accent-soft); color: var(--accent-strong); display: grid; place-items: center; }
 .photo .cam svg { width: 28px; height: 28px; }
 .photo .retake { position: absolute; right: 10px; bottom: 10px; background: rgba(0,0,0,.55); color: #fff; border: 0; border-radius: 12px; padding: 6px 12px; font-size: 13px; }
 .photo .detect { position: absolute; left: 10px; top: 10px; background: rgba(0,0,0,.55); color: #fff; border-radius: 10px; padding: 4px 10px; font-size: 12px; }
@@ -260,7 +304,7 @@ h2 { font-size: 15px; font-weight: 700; }
 .field-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
 .colors { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .opt { border: 1.5px solid var(--line); background: var(--surface); border-radius: 14px; padding: 9px 10px; display: flex; align-items: center; gap: 8px; font-size: 13px; text-align: left; position: relative; }
-.opt[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); font-weight: 700; }
+.opt[aria-pressed="true"] { border-color: var(--accent-strong); background: var(--accent-soft); font-weight: 700; }
 .swatch { width: 16px; height: 16px; border-radius: 50%; flex: none; box-shadow: inset 0 0 0 1px rgba(0,0,0,.12); }
 .auto { position: absolute; top: -8px; right: 6px; font-size: 10px; background: var(--accent); color: var(--accent-ink); border-radius: 6px; padding: 0 5px; line-height: 16px; }
 
@@ -274,7 +318,7 @@ h2 { font-size: 15px; font-weight: 700; }
 .glasses { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
 .glass { border: 0; background: none; padding: 2px; color: var(--line); display: grid; place-items: center; }
 .glass svg { width: 100%; max-width: 38px; height: 40px; }
-.glass.on { color: var(--accent); }
+.glass.on { color: var(--accent-strong); }
 .water-read { display: flex; align-items: baseline; gap: 6px; }
 .water-read .num { font-size: 28px; font-weight: 800; }
 
@@ -326,7 +370,7 @@ h2 { font-size: 15px; font-weight: 700; }
 .tabbar { position: absolute; left: 0; right: 0; bottom: 0; z-index: 6; background: var(--surface); border-top: 1px solid var(--line); display: grid; grid-template-columns: 1fr 88px 1fr; align-items: center; padding: 6px max(16px, env(safe-area-inset-right, 0px)) calc(8px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
 .tab { border: 0; background: none; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 11px; color: var(--muted); padding: 6px 0; }
 .tab svg { width: 24px; height: 24px; }
-.tab[aria-current="page"] { color: var(--accent); font-weight: 700; }
+.tab[aria-current="page"] { color: var(--accent-strong); font-weight: 700; }
 .fab { justify-self: center; width: 64px; height: 64px; margin-top: -30px; border-radius: 22px; border: 4px solid var(--frame); background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; box-shadow: 0 8px 20px color-mix(in srgb, var(--accent) 40%, transparent); }
 .fab svg { width: 28px; height: 28px; }
 .phone.no-tabs .tabbar { display: none; }
@@ -394,10 +438,15 @@ h2 { font-size: 15px; font-weight: 700; }
     vhard: { name: "非常费劲", pts: 3,  face: "pain" }
   };
   var CUP_ML = 250;
+  var SYMPTOMS = ["腹痛", "腹胀", "发热", "恶心呕吐", "便血", "黏液", "排不尽感"];
+  var DIET = ["辛辣", "油腻", "乳制品", "酒精", "咖啡浓茶", "红心火龙果/甜菜", "高纤维"];
+  var MEDS = ["铁剂", "铋剂", "益生菌", "泻药", "抗生素", "止泻药"];
+  function has(r, k, v) { return (r[k] || []).indexOf(v) >= 0; }
   function goal() { return (state && state.profile && state.profile.waterGoal) || 8; }
   function waterPts(c) { var g = goal(); return c >= g ? 15 : c >= g * 0.75 ? 12 : c >= g * 0.5 ? 8 : 3; }
   function scoreOf(r) {
-    return TYPES[r.type].pts + COLORS[r.color].pts + EFFORT[r.effort].pts + waterPts(r.water);
+    // backend only: symptoms take a few points off, never shown as a rule to the user
+    return Math.max(0, TYPES[r.type].pts + COLORS[r.color].pts + EFFORT[r.effort].pts + waterPts(r.water) - Math.min(12, (r.symptoms || []).length * 4));
   }
   function band(s) {
     if (s >= 95) return { label: "完美", cls: "perfect", color: "var(--perfect)" };
@@ -455,11 +504,19 @@ h2 { font-size: 15px; font-weight: 700; }
   var stored = load(KEY);
   var state = {
     records: stored || seedExamples(),
-    settings: load(SKEY) || { daily: true, dailyTime: "08:30", water: true },
+    settings: Object.assign({ daily: true, dailyTime: "08:30", water: true, noBm: true, weekly: true, blur: true, healthRead: false, healthWrite: false, onboarded: false }, load(SKEY) || {}),
     profile: load(PKEY) || { loggedIn: false, phone: "", via: "", name: "", gender: "", birthYear: "", waterGoal: 8 },
     login: { phone: "", code: "", agree: false, countdown: 0 },
     confirmClear: false,
     range: "week",
+    reportRange: "week",
+    prevView: "home",
+    fromSubmit: false,
+    peek: false,
+    confirmDel: false,
+    confirmAcct: false,
+    doc: null,
+    reportText: null,
     view: "home",
     draft: null,
     lastId: null,
@@ -467,6 +524,7 @@ h2 { font-size: 15px; font-weight: 700; }
     selDay: null
   };
   state.calMonth.setDate(1);
+  state.onb = state.settings.onboarded ? -1 : 0;
   function persist() { save(KEY, state.records); }
 
   /* ---------- derived ---------- */
@@ -487,12 +545,35 @@ h2 { font-size: 15px; font-weight: 700; }
   function evaluateAlerts(focus) {
     var alerts = [], all = sorted(), days = byDay(), today = startOfDay(new Date());
     var latest = focus || all[all.length - 1];
-    if (latest && (latest.color === "red" || latest.color === "black")) {
+    var recentLatest = latest && latest.ts > addDays(today, -2).getTime();
+    var explained = latest && (latest.color === "black" ? (has(latest, "meds", "铁剂") || has(latest, "meds", "铋剂")) : latest.color === "red" ? has(latest, "diet", "红心火龙果/甜菜") : false);
+    if (latest && explained) {
+      alerts.push({ level: "info", title: "颜色变化可能与" + (latest.color === "black" ? "药物" : "饮食") + "有关",
+        text: (latest.color === "black" ? "你记录了服用铁剂或铋剂，大便发黑通常是正常现象，停药后会恢复。" : "你记录了吃红心火龙果或甜菜，大便发红通常是食物染色，一两天内会恢复。") + "如果大便呈柏油样、有腥臭味，或伴随头晕乏力，仍需尽快就医。", doctor: false });
+    } else if (latest && (latest.color === "red" || latest.color === "black")) {
       alerts.push({ level: "urgent", title: "建议尽快就医", text: "这次大便颜色为" + COLORS[latest.color].name + "，" + COLORS[latest.color].note + "。如果近期没有吃过相关食物或药物，请尽快到消化内科就诊；若伴随头晕、乏力、腹痛，请立即就医。", doctor: true });
     }
     var recentPale = all.filter(function (r) { return r.color === "pale" && r.ts > addDays(today, -3).getTime(); });
     if (recentPale.length) {
       alerts.push({ level: "urgent", title: "建议就医检查", text: "近 3 天出现灰白色大便，可能与肝胆问题有关。如同时有皮肤或眼白发黄、尿色变深，请尽快就医。", doctor: true });
+    }
+    if (recentLatest && has(latest, "symptoms", "便血") && latest.color !== "red") {
+      alerts.push({ level: "urgent", title: "记录到便血，建议就医", text: "少量鲜红色血可能来自痔疮或肛裂，但也可能是肠道出血。请尽快到消化内科或肛肠科就诊。", doctor: true });
+    }
+    if (recentLatest && has(latest, "symptoms", "发热") && latest.type >= 6) {
+      alerts.push({ level: "urgent", title: "腹泻伴发热，建议就医", text: "腹泻同时发热可能是肠道感染。请多补水，尽快就医，不要自行服用止泻药。", doctor: true });
+    }
+    if (recentLatest && has(latest, "symptoms", "黏液")) {
+      alerts.push({ level: "warn", title: "大便带黏液", text: "偶尔少量黏液可能与饮食有关。如果反复出现，或伴随腹痛、便血，请就医检查。", doctor: false });
+    }
+    if (recentLatest && latest.type >= 6 && has(latest, "meds", "泻药")) {
+      alerts.push({ level: "info", title: "稀便可能与泻药有关", text: "你记录了服用泻药，大便变稀是常见反应。如果次数很多或腹痛明显，请减量并咨询医生。", doctor: false });
+    }
+    if (all.length && state.settings.noBm) {
+      var gap = Math.round((today - startOfDay(new Date(all[all.length - 1].ts))) / 864e5);
+      if (gap >= 3) {
+        alerts.push({ level: gap >= 7 ? "urgent" : "warn", title: "已经 " + gap + " 天没有排便记录", text: gap >= 7 ? "超过一周没有排便，建议就医，避免粪便嵌塞。" : "如果确实没有排便，可以多喝温水、吃些富含膳食纤维的食物，饭后散步，早上固定时间如厕。如果只是忘了记录，可以补记。", doctor: gap >= 7 });
+      }
     }
     var tl = days[dayKey(today)] || [], loose = looseCount(tl);
     if (loose >= 6) {
@@ -571,14 +652,14 @@ h2 { font-size: 15px; font-weight: 700; }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
   function recordRow(r) {
     var s = scoreOf(r), b = band(s);
-    return '<div class="row"><span class="thumb type" style="background:color-mix(in srgb, ' + b.color + ' 16%, var(--surface));color:' + b.color + '">' + b.label + '</span>' +
+    return '<button class="row" data-rec="' + r.id + '"><span class="thumb type" style="background:color-mix(in srgb, ' + b.color + ' 16%, var(--surface));color:' + b.color + '">' + b.label + '</span>' +
       '<div class="row-main"><div class="row-title">' + relDay(r.ts) + ' ' + fmtTime(r.ts) + ' · 第 ' + r.type + ' 型</div>' +
       '<div class="row-sub">' + COLORS[r.color].name + ' · ' + EFFORT[r.effort].name + ' · 喝水 ' + r.water + ' 杯</div></div>' +
-      '<span class="score-badge" style="color:' + b.color + '">' + s + '</span></div>';
+      '<span class="score-badge" style="color:' + b.color + '">' + s + '</span></button>';
   }
   function alertHtml(a) {
     return '<div class="alert ' + a.level + '" role="' + (a.level === "urgent" ? "alert" : "status") + '"><div class="alert-title">' + (a.doctor ? HOSP : BELL) + esc(a.title) + '</div><p>' + esc(a.text) + '</p>' +
-      (a.doctor ? '<p class="small"><b>就医时可以告诉医生：</b></p><ul class="doctor"><li>异常开始的时间和持续天数</li><li>大便的颜色、形状、每天次数</li><li>是否伴随腹痛、发热、体重下降</li><li>近期饮食、服用的药物或补充剂</li></ul>' : '') + '</div>';
+      (a.doctor ? '<p class="small"><b>就医时可以告诉医生：</b></p><ul class="doctor"><li>异常开始的时间和持续天数</li><li>大便的颜色、形状、每天次数</li><li>是否伴随腹痛、发热、体重下降</li><li>近期饮食、服用的药物或补充剂</li></ul><button class="btn ghost block" data-action="report-month">生成就医报告</button>' : '') + '</div>';
   }
 
   /* ---------- views ---------- */
@@ -651,7 +732,7 @@ h2 { font-size: 15px; font-weight: 700; }
     var html = '<div class="pad home">';
 
     // 1. greeting
-    html += '<div class="hello"><div class="hello-left"><button class="avatar" data-nav="settings" aria-label="我的：登录和设置">' + avatarInner() + '</button><div><p class="eyebrow">' + (now.getMonth() + 1) + '月' + now.getDate() + '日 星期' + WEEK[now.getDay()] + '</p><h1>' + greet + pname + '</h1></div></div><span class="brand">' + LOGO + '顺畅</span></div>';
+    html += '<div class="hello"><div class="hello-left"><button class="avatar" data-nav="settings" aria-label="我的：登录和设置">' + avatarInner() + '</button><div><p class="eyebrow">' + (now.getMonth() + 1) + '月' + now.getDate() + '日 星期' + WEEK[now.getDay()] + '</p><h1>' + greet + pname + '</h1>' + (streak() > 1 ? '<span class="streak">已连续记录 ' + streak() + ' 天</span>' : '') + '</div></div><span class="brand">' + LOGO + '顺畅</span></div>';
 
     // 2. score
     html += '<div class="group"><div class="sec-title"><h2>评分</h2></div><section class="card">';
@@ -695,6 +776,7 @@ h2 { font-size: 15px; font-weight: 700; }
     } else {
       html += lineChart(ser, monthTicks);
     }
+    html += '<button class="btn ghost block" data-action="' + (isWeek ? "report-week" : "report-month") + '">查看' + (isWeek ? "周报" : "月报") + '</button>';
     html += '</section></div>';
 
     // recent records
@@ -736,7 +818,7 @@ h2 { font-size: 15px; font-weight: 700; }
         '<label class="input"><span>+86</span><input id="login-phone" type="tel" inputmode="numeric" maxlength="11" placeholder="手机号" autocomplete="tel" value="' + esc(L.phone) + '"></label>' +
         '<div class="code-row"><label class="input"><input id="login-code" inputmode="numeric" maxlength="6" placeholder="6 位验证码" autocomplete="one-time-code" value="' + esc(L.code) + '"></label>' +
         '<button class="btn ghost" id="send-code" data-action="send-code"' + (L.countdown ? " disabled" : "") + '>' + (L.countdown ? L.countdown + " 秒后重发" : "获取验证码") + '</button></div>' +
-        '<label class="agree"><input type="checkbox" id="login-agree"' + (L.agree ? " checked" : "") + '>我已阅读并同意《用户协议》和《隐私政策》</label>' +
+        '<label class="agree"><input type="checkbox" id="login-agree"' + (L.agree ? " checked" : "") + '>我已阅读并同意<button class="link" data-doc="terms">《用户协议》</button>和<button class="link" data-doc="privacy">《隐私政策》</button></label>' +
         '<p class="err small" id="login-err" hidden></p>' +
         '<button class="btn primary block" data-action="login">登录</button>' +
         '<div class="or">其他方式</div><div class="row-btns"><button class="btn ghost" data-action="login-wechat">微信登录</button><button class="btn ghost" data-action="login-apple">Apple 登录</button></div>' +
@@ -752,46 +834,121 @@ h2 { font-size: 15px; font-weight: 700; }
       '<div class="setting"><div><div class="small"><b>每日喝水目标</b></div><div class="muted small">约 ' + goal() * CUP_ML + ' ml，用于计算饮水得分</div></div>' +
       '<div class="stepper"><button class="icon-btn sm" data-action="goal-minus" aria-label="少一杯">−</button><span class="num">' + goal() + '</span><button class="icon-btn sm" data-action="goal-plus" aria-label="多一杯">+</button><span class="muted small">杯</span></div></div></section>';
 
+    var bd = badges();
+    html += '<section class="card"><div class="card-head"><h2>成就</h2><span class="muted small">已获得 ' + bd.filter(function (x) { return x.on; }).length + ' / ' + bd.length + '</span></div><div class="badges">' +
+      bd.map(function (x) { return '<div class="badge' + (x.on ? " on" : "") + '"><span class="medal">' + x.mark + '</span>' + x.name + '</div>'; }).join("") + '</div></section>';
+
+    html += '<section class="card"><h2>报告</h2><div><button class="list-row" data-action="report-week"><span>周报</span>' + CHEV + '</button><button class="list-row" data-action="report-month"><span>月报 / 就医报告</span>' + CHEV + '</button></div></section>';
+
     // reminders (moved from home)
     var st = state.settings;
     html += '<section class="card"><h2>提醒</h2>' +
       '<div class="setting"><div><div class="small"><b>每日记录提醒</b></div><div class="muted small">每天 <input type="time" id="daily-time" value="' + esc(st.dailyTime) + '" aria-label="提醒时间"> 提醒我记录</div></div>' +
       '<label class="switch"><input type="checkbox" id="daily-on" ' + (st.daily ? "checked" : "") + ' aria-label="每日记录提醒"><span></span></label></div>' +
       '<div class="setting"><div><div class="small"><b>喝水提醒</b></div><div class="muted small">白天每 2 小时提醒喝一杯水</div></div>' +
-      '<label class="switch"><input type="checkbox" id="water-on" ' + (st.water ? "checked" : "") + ' aria-label="喝水提醒"><span></span></label></div></section>';
+      '<label class="switch"><input type="checkbox" id="water-on" ' + (st.water ? "checked" : "") + ' aria-label="喝水提醒"><span></span></label></div>' +
+      toggleRow("nobm-on", st.noBm, "多日未排便提醒", "连续 3 天没有记录时提醒你") +
+      toggleRow("weekly-on", st.weekly, "每周报告", "每周一早上推送上周的肠道报告") + '</section>';
 
-    html += '<section class="card"><h2>数据与隐私</h2><p class="muted small">拍的照片只用来识别颜色，识别完不会保存；记录里只保留评分和你填写的内容。</p>' +
+    html += '<section class="card"><h2>健康数据</h2>' +
+      toggleRow("hread-on", st.healthRead, "从健康 App 读取喝水量", "记录时自动带入今天的饮水数据") +
+      toggleRow("hwrite-on", st.healthWrite, "把记录写入健康 App", "和步数、睡眠等数据放在一起看") +
+      '<p class="muted small">需要在手机系统里授权，支持 Apple 健康和主流安卓健康平台。</p></section>';
+
+    html += '<section class="card"><h2>数据与隐私</h2>' + toggleRow("blur-on", st.blur, "拍照预览自动模糊", "拍完只显示模糊画面，需要时再点开查看") +
+      '<p class="muted small">拍的照片只用来识别颜色，识别完不会保存；记录里只保留评分和你填写的内容。</p>' +
       (state.confirmClear
         ? '<div class="confirm"><span class="small">确定删除全部 ' + state.records.length + ' 条记录吗？删除后无法恢复。</span><div class="row-btns"><button class="btn ghost" data-action="clear-cancel">取消</button><button class="btn danger" data-action="clear-all">确认删除</button></div></div>'
         : '<button class="btn ghost block danger-text" data-action="clear-ask"' + (state.records.length ? "" : " disabled") + '>清除全部记录</button>') + '</section>';
-    html += '<p class="disclaimer">顺畅 v0.2 · 评分仅用于日常健康记录，不能替代医生的诊断。</p></div>';
+    html += '<section class="card"><h2>关于</h2><div>' +
+      '<button class="list-row" data-doc="terms"><span>用户协议</span>' + CHEV + '</button>' +
+      '<button class="list-row" data-doc="privacy"><span>隐私政策</span>' + CHEV + '</button>' +
+      '<button class="list-row" data-doc="medical"><span>医疗免责声明</span>' + CHEV + '</button>' +
+      '<button class="list-row" data-action="onb-replay"><span>重新查看新手引导</span>' + CHEV + '</button>' +
+      (p.loggedIn ? '<button class="list-row danger-text" data-action="acct-ask"><span>注销账号</span></button>' : '') + '</div>' +
+      (state.confirmAcct ? '<div class="confirm"><span class="small">注销后，账号和全部记录会被永久删除，无法恢复。</span><div class="row-btns"><button class="btn ghost" data-action="acct-cancel">取消</button><button class="btn danger" data-action="acct-confirm">确认注销</button></div></div>' : '') + '</section>';
+    html += '<p class="disclaimer">顺畅 v0.3 · 评分仅用于日常健康记录，不能替代医生的诊断。</p></div>';
     return html;
   }
 
-  function newDraft() {
-    var last = sorted().slice(-1)[0];
-    return { nth: todayList().length + 1, photo: null, thumb: null, color: null, autoColor: null, type: null, water: last && dayKey(new Date(last.ts)) === dayKey(new Date()) ? last.water : 6, effort: null };
+  function toggleRow(id, on, title, sub) {
+    return '<div class="setting"><div><div class="small"><b>' + title + '</b></div><div class="muted small">' + sub + '</div></div>' +
+      '<label class="switch"><input type="checkbox" id="' + id + '"' + (on ? " checked" : "") + ' aria-label="' + title + '"><span></span></label></div>';
+  }
+  function streak() {
+    var days = byDay(), d = startOfDay(new Date()), n = 0;
+    if (!days[dayKey(d)]) d = addDays(d, -1);
+    while (days[dayKey(d)]) { n++; d = addDays(d, -1); }
+    return n;
+  }
+  function badges() {
+    var days = byDay(), keys = Object.keys(days).sort(), best = 0, run = 0, prev = null, waterDays = 0, perfect = false;
+    keys.forEach(function (k) {
+      var d = new Date(k + "T00:00:00");
+      run = prev && dayKey(addDays(prev, 1)) === k ? run + 1 : 1;
+      best = Math.max(best, run); prev = d;
+      var l = days[k];
+      if (Math.max.apply(null, l.map(function (r) { return r.water; })) >= goal()) waterDays++;
+      if (dayScore(l) >= 95) perfect = true;
+    });
+    return [
+      { name: "第一次记录", mark: "1", on: state.records.length >= 1 },
+      { name: "连续 7 天", mark: "7", on: best >= 7 },
+      { name: "连续 30 天", mark: "30", on: best >= 30 },
+      { name: "喝水达标 7 天", mark: "水", on: waterDays >= 7 },
+      { name: "完美的一天", mark: "95", on: perfect },
+      { name: "累计 50 次", mark: "50", on: state.records.length >= 50 }
+    ];
+  }
+
+  function newDraft(rec) {
+    if (rec) return { editId: rec.id, ts: rec.ts, photo: null, color: rec.color, autoColor: null, type: rec.type, water: rec.water, effort: rec.effort,
+      symptoms: (rec.symptoms || []).slice(), diet: (rec.diet || []).slice(), meds: (rec.meds || []).slice() };
+    var tl = todayList().slice().sort(function (a, b) { return a.ts - b.ts; });
+    return { editId: null, ts: Date.now(), photo: null, color: null, autoColor: null, type: null, water: tl.length ? tl[tl.length - 1].water : 6, effort: null, symptoms: [], diet: [], meds: [] };
+  }
+  function nthOf(d) {
+    var list = byDay()[dayKey(new Date(d.ts))] || [];
+    return list.filter(function (r) { return r.id !== d.editId && r.ts <= d.ts; }).length + 1;
+  }
+  function isTodayTs(ts) { return dayKey(new Date(ts)) === dayKey(new Date()); }
+  function photoRequired(d) { return !d.editId && isTodayTs(d.ts) && nthOf(d) === 1; }
+  function localInput(ts) { var x = new Date(ts); return dayKey(x) + "T" + pad2(x.getHours()) + ":" + pad2(x.getMinutes()); }
+  function chipGroup(key, list, d) {
+    return '<div class="chips">' + list.map(function (v) { return '<button class="chip" data-tag="' + key + '|' + v + '" aria-pressed="' + ((d[key] || []).indexOf(v) >= 0) + '">' + v + '</button>'; }).join("") + '</div>';
   }
 
   function viewRecord() {
-    var d = state.draft, html = '<div class="pad">';
-    html += '<div class="topbar"><button class="icon-btn" data-nav="home" aria-label="返回">' + BACK + '</button><h1>' + (d.nth > 1 ? "今天第 " + d.nth + " 次" : "记录这一次") + '</h1></div>';
-    if (d.nth > 1) {
-      html += '<div class="notice"><b>今天已经记录了 ' + (d.nth - 1) + ' 次</b><span>拉肚子时不用每次都拍照，直接选颜色和形状就能记录。喝水量已带入今天的数据。</span></div>';
+    var d = state.draft, n = nthOf(d), today = isTodayTs(d.ts), html = '<div class="pad">';
+    var title = d.editId ? "编辑记录" : !today ? "补记 " + (new Date(d.ts).getMonth() + 1) + "月" + new Date(d.ts).getDate() + "日" : n > 1 ? "今天第 " + n + " 次" : "记录这一次";
+    html += '<div class="topbar"><button class="icon-btn" data-action="rec-back" aria-label="返回">' + BACK + '</button><h1>' + title + '</h1></div>';
+    if (!d.editId && today && n > 1) {
+      html += '<div class="notice"><b>今天已经记录了 ' + (n - 1) + ' 次</b><span>拉肚子时不用每次都拍照，直接选颜色和形状就能记录。喝水量已带入今天的数据。</span></div>';
+    } else if (!d.editId && !today) {
+      html += '<div class="notice"><b>正在补记过去的记录</b><span>补记不需要拍照，选好颜色和形状即可。</span></div>';
     }
 
-    html += '<section class="photo">';
-    if (d.photo) {
-      html += '<img src="' + d.photo + '" alt="本次拍摄的照片">' + (d.autoColor ? '<span class="detect">已识别颜色：' + COLORS[d.autoColor].name + '</span>' : '') +
-        '<label for="photo-input" class="retake" style="min-height:0;padding:6px 12px">重新拍</label>';
-    } else {
-      html += '<label for="photo-input"><span class="cam"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.5"/></svg></span>' +
-        '<b>' + (d.nth > 1 ? "拍照（可选）" : "拍照或从相册选择") + '</b><span class="muted small">照片只用来识别颜色，识别完不会保存</span></label>';
-    }
-    html += '<input class="sr" type="file" id="photo-input" accept="image/*" capture="environment"></section>';
-    if (!d.photo) html += '<button class="link sample-link" data-action="sample">手边没有照片？用示例照片试试</button>';
+    var minTs = addDays(startOfDay(new Date()), -7).getTime();
+    html += '<section class="card"><div class="time-row"><div><h2>时间</h2><span class="muted small">' + (d.editId ? "可以修改成实际时间" : "忘了记录？改成当时的时间就能补记") + '</span></div>' +
+      '<input type="datetime-local" id="rec-time" value="' + localInput(d.ts) + '" min="' + localInput(minTs) + '" max="' + localInput(Date.now()) + '" aria-label="排便时间"></div></section>';
 
-    html += '<section class="card field"><div class="field-head"><h2>颜色</h2><span class="muted small">' + (d.autoColor ? "已根据照片识别，可修改" : "拍照后自动识别") + '</span></div><div class="colors">';
+    if (!d.editId) {
+      html += '<section class="photo">';
+      if (d.photo) {
+        var hide = state.settings.blur && !state.peek;
+        html += '<img src="' + d.photo + '" alt="本次拍摄的照片"' + (hide ? ' class="blurred"' : '') + '>' +
+          (d.autoColor ? '<span class="detect">已识别颜色：' + COLORS[d.autoColor].name + '</span>' : '') +
+          '<button class="peek" data-action="peek">' + (hide ? "已模糊处理 · 点按查看" : "重新模糊") + '</button>' +
+          '<label for="photo-input" class="retake" style="min-height:0;padding:6px 12px">重新拍</label>';
+      } else {
+        html += '<label for="photo-input"><span class="cam"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.5"/></svg></span>' +
+          '<b>' + (photoRequired(d) ? "拍照或从相册选择" : "拍照（可选）") + '</b><span class="muted small">' + (state.settings.blur ? "拍完会自动模糊预览，" : "") + '照片只用来识别颜色，不会保存</span></label>';
+      }
+      html += '<input class="sr" type="file" id="photo-input" accept="image/*" capture="environment"></section>';
+      if (!d.photo) html += '<button class="link sample-link" data-action="sample">手边没有照片？用示例照片试试</button>';
+    }
+
+    html += '<section class="card field"><div class="field-head"><h2>颜色</h2><span class="muted small">' + (d.autoColor ? "已根据照片识别，可修改" : d.editId ? "" : "拍照后自动识别") + '</span></div><div class="colors">';
     Object.keys(COLORS).forEach(function (k) {
       html += '<button class="opt" data-color="' + k + '" aria-pressed="' + (d.color === k) + '"><span class="swatch" style="background:' + COLORS[k].hex + '"></span>' + COLORS[k].name + (d.autoColor === k ? '<span class="auto">识别</span>' : '') + '</button>';
     });
@@ -803,11 +960,13 @@ h2 { font-size: 15px; font-weight: 700; }
     }
     html += '</div>' + (d.type ? '<p class="type-desc">' + TYPES[d.type].desc + '</p>' : '') + '</section>';
 
-    html += '<section class="card field"><div class="field-head"><h2>今天喝了多少水</h2><span class="water-read"><span class="num">' + d.water + '</span><span class="muted small">杯 ≈ ' + d.water * CUP_ML + ' ml</span></span></div><div class="glasses" role="group" aria-label="喝水杯数，每杯 250 毫升">';
+    html += '<section class="card field"><div class="field-head"><h2>' + (today ? "今天" : "当天") + '喝了多少水</h2><span class="water-read"><span class="num">' + d.water + '</span><span class="muted small">杯 ≈ ' + d.water * CUP_ML + ' ml</span></span></div>' +
+      (state.settings.healthRead && today ? '<p class="small" style="color:var(--accent-strong)">已从健康 App 读取今天的饮水量，可手动调整</p>' : '') +
+      '<div class="glasses" role="group" aria-label="喝水杯数，每杯 250 毫升">';
     for (var g = 1; g <= 12; g++) {
       html += '<button class="glass' + (g <= d.water ? " on" : "") + '" data-water="' + g + '" aria-label="' + g + ' 杯">' + GLASS + '</button>';
     }
-    html += '</div><p class="muted small">点第几杯就记为几杯，再点一次同一杯可减少。你的目标是每天 ' + goal() + ' 杯（约 ' + goal() * CUP_ML + ' ml），可在「我的」里修改。</p></section>';
+    html += '</div><p class="muted small">点第几杯就记为几杯，再点一次同一杯可减少。你的目标是每天 ' + goal() + ' 杯（约 ' + goal() * CUP_ML + ' ml）。</p></section>';
 
     html += '<section class="card field"><h2>这次排便感觉怎么样</h2><div class="seg">';
     Object.keys(EFFORT).forEach(function (k) {
@@ -815,14 +974,25 @@ h2 { font-size: 15px; font-weight: 700; }
     });
     html += '</div></section>';
 
+    html += '<section class="card field"><div class="field-head"><h2>有没有不舒服</h2><span class="muted small">可多选，没有就跳过</span></div>' + chipGroup("symptoms", SYMPTOMS, d) + '</section>';
+    html += '<section class="card field"><div class="field-head"><h2>饮食与用药</h2><span class="muted small">可选，帮你解释颜色和形状的变化</span></div>' +
+      '<span class="sub-h">最近 24 小时吃过</span>' + chipGroup("diet", DIET, d) + '<span class="sub-h">正在服用</span>' + chipGroup("meds", MEDS, d) + '</section>';
+
+    if (d.editId) html += deleteBlock();
+
     var missing = [];
-    if (!d.photo && d.nth <= 1) missing.push("照片");
+    if (!d.photo && photoRequired(d)) missing.push("照片");
     if (!d.color) missing.push("颜色");
     if (!d.type) missing.push("形状");
     if (!d.effort) missing.push("排便感觉");
-    html += '</div><div class="sticky-cta"><button class="btn primary block" data-action="submit"' + (missing.length ? " disabled" : "") + '>生成评分</button>' +
+    html += '</div><div class="sticky-cta"><button class="btn primary block" data-action="submit"' + (missing.length ? " disabled" : "") + '>' + (d.editId ? "保存修改" : "生成评分") + '</button>' +
       '<p class="hint">' + (missing.length ? "还需要：" + missing.join("、") : "准备好了") + '</p></div>';
     return html;
+  }
+  function deleteBlock() {
+    return state.confirmDel
+      ? '<section class="card confirm"><span class="small">确定删除这条记录吗？删除后无法恢复。</span><div class="row-btns"><button class="btn ghost" data-action="del-cancel">取消</button><button class="btn danger" data-action="del-confirm">删除</button></div></section>'
+      : '<button class="btn ghost block danger-text" data-action="del-ask">删除这条记录</button>';
   }
 
   function adviceFor(r) {
@@ -841,10 +1011,16 @@ h2 { font-size: 15px; font-weight: 700; }
     var r = state.records.filter(function (x) { return x.id === state.lastId; })[0];
     if (!r) { state.view = "home"; return viewHome(); }
     var s = scoreOf(r), b = band(s), alerts = evaluateAlerts(r);
-    var html = '<div class="pad"><div class="topbar"><button class="icon-btn" data-nav="home" aria-label="返回首页">' + BACK + '</button><h1>本次评分</h1></div>';
+    var dl = (byDay()[dayKey(new Date(r.ts))] || []).slice().sort(function (a, c) { return a.ts - c.ts; }), nth = dl.indexOf(r) + 1;
+    var html = '<div class="pad"><div class="topbar"><button class="icon-btn" data-action="back" aria-label="返回">' + BACK + '</button><h1>' + (state.fromSubmit ? "本次评分" : "记录详情") + '</h1></div>';
     html += '<section class="card result-hero">' + ring(s, "xl") +
-      '<p class="muted small">' + relDay(r.ts) + ' ' + fmtTime(r.ts) + (todayList().length > 1 ? ' · 今天第 ' + todayList().length + ' 次' : '') + ' · 第 ' + r.type + ' 型 · ' + TYPES[r.type].tag + '</p></section>';
+      '<p class="muted small">' + relDay(r.ts) + ' ' + fmtTime(r.ts) + (dl.length > 1 ? ' · 当天第 ' + nth + ' 次' : '') + ' · 第 ' + r.type + ' 型 · ' + TYPES[r.type].tag + '</p></section>';
     html += '<div class="group"><div class="sec-title"><h2>各项表现</h2></div><section class="card">' + contribs(r, true).replace('class="contribs full"', 'class="contribs full" style="border-top:0;padding-top:0"') + '</section></div>';
+    var tagRows = [["不舒服", r.symptoms], ["饮食", r.diet], ["用药", r.meds]].filter(function (x) { return x[1] && x[1].length; });
+    if (tagRows.length) {
+      html += '<div class="group"><div class="sec-title"><h2>其他记录</h2></div><section class="card">' +
+        tagRows.map(function (x) { return '<div class="tagline"><b>' + x[0] + '</b><span>' + x[1].map(esc).join("、") + '</span></div>'; }).join("") + '</section></div>';
+    }
     html += '<div class="group"><div class="sec-title"><h2>给你的建议</h2></div><section class="card"><ul class="tips">';
     adviceFor(r).forEach(function (t) { html += '<li>' + esc(t) + '</li>'; });
     html += '</ul></section></div>';
@@ -853,9 +1029,106 @@ h2 { font-size: 15px; font-weight: 700; }
       alerts.forEach(function (a) { html += alertHtml(a); });
       html += '</div>';
     }
-    html += '<div class="row-btns"><button class="btn ghost" data-nav="calendar">查看日历</button><button class="btn primary" data-nav="home">完成</button></div>';
+    if (state.fromSubmit) {
+      html += '<div class="row-btns"><button class="btn ghost" data-nav="calendar">查看日历</button><button class="btn primary" data-nav="home">完成</button></div>';
+      html += '<button class="link" style="align-self:center" data-action="edit-rec">记错了？修改这条记录</button>';
+    } else {
+      html += '<button class="btn primary block" data-action="edit-rec">编辑这条记录</button>' + deleteBlock();
+    }
     html += '<p class="disclaimer">评分仅用于日常健康记录，不能替代医生的诊断。</p></div>';
     return html;
+  }
+
+  function viewReport() {
+    var isWeek = state.reportRange !== "month", n = isWeek ? 7 : 30, today = startOfDay(new Date());
+    var from = addDays(today, -(n - 1)), prevFrom = addDays(from, -n), prevTo = addDays(from, -1);
+    var ser = series(from, today, isWeek ? function (d) { return "周" + WEEK[d.getDay()]; } : function (d) { return (d.getMonth() + 1) + "/" + d.getDate(); });
+    var av = avgOf(ser), pv = avgOf(series(prevFrom, prevTo, function () { return ""; }));
+    var recs = state.records.filter(function (r) { return r.ts >= from.getTime(); }).sort(function (a, b) { return a.ts - b.ts; });
+    var days = byDay(), waterDays = 0;
+    ser.forEach(function (p) { var l = days[dayKey(p.date)]; if (l && Math.max.apply(null, l.map(function (r) { return r.water; })) >= goal()) waterDays++; });
+    var typeCount = [0, 0, 0, 0, 0, 0, 0, 0], colorCount = {}, tagCount = { symptoms: {}, diet: {}, meds: {} };
+    recs.forEach(function (r) {
+      typeCount[r.type]++; colorCount[r.color] = (colorCount[r.color] || 0) + 1;
+      ["symptoms", "diet", "meds"].forEach(function (k) { (r[k] || []).forEach(function (v) { tagCount[k][v] = (tagCount[k][v] || 0) + 1; }); });
+    });
+    var abn = recs.filter(isAbnormal).reverse();
+    var delta = av.avg != null && pv.avg != null ? av.avg - pv.avg : null;
+    var label = isWeek ? "上周" : "上月";
+    var maxT = Math.max.apply(null, typeCount.slice(1).concat([1]));
+
+    var html = '<div class="pad"><div class="topbar"><button class="icon-btn" data-action="back" aria-label="返回">' + BACK + '</button><h1>健康报告</h1></div>';
+    html += '<div class="segctl" role="tablist" aria-label="报告范围"><button role="tab" data-action="report-week" aria-selected="' + isWeek + '">周报</button><button role="tab" data-action="report-month" aria-selected="' + !isWeek + '">月报</button></div>';
+    html += '<section class="card"><p class="eyebrow">' + (from.getMonth() + 1) + '月' + from.getDate() + '日 – ' + (today.getMonth() + 1) + '月' + today.getDate() + '日 · 日均评分</p>' +
+      '<div class="kpi"><span class="kpi-num"' + (av.avg != null ? ' style="color:' + band(av.avg).color + '"' : '') + '>' + (av.avg != null ? av.avg : "–") + '</span><span class="kpi-unit">分</span>' +
+      (delta != null ? '<span class="delta" style="margin-left:8px;color:' + (delta >= 0 ? "var(--good)" : "var(--ok)") + '">' + (delta >= 0 ? "比" + label + "高 " + delta : "比" + label + "低 " + (-delta)) + ' 分</span>' : '') + '</div>' +
+      lineChart(ser, isWeek ? function () { return true; } : monthTicks) + '</section>';
+    html += '<div class="stats" style="grid-template-columns:repeat(2,1fr)">' +
+      '<div class="stat"><span class="num">' + av.n + ' / ' + n + '</span><span>记录天数</span></div>' +
+      '<div class="stat"><span class="num">' + recs.length + '</span><span>排便次数</span></div>' +
+      '<div class="stat"><span class="num">' + (av.n ? (recs.length / av.n).toFixed(1) : "–") + '</span><span>有记录的日子平均每天次数</span></div>' +
+      '<div class="stat"><span class="num">' + waterDays + '</span><span>喝水达标天数</span></div></div>';
+    html += '<section class="card"><h2>形状分布</h2><div class="dist">';
+    for (var t = 1; t <= 7; t++) {
+      var col = t <= 2 || t >= 6 ? "var(--ok)" : "var(--good)";
+      html += '<div class="dist-row"><span>' + t + ' 型 · ' + TYPES[t].tag + '</span><div class="dist-bar"><i style="width:' + (typeCount[t] / maxT * 100).toFixed(0) + '%;background:' + col + '"></i></div><span class="num">' + typeCount[t] + '</span></div>';
+    }
+    html += '</div></section>';
+    html += '<section class="card"><h2>颜色</h2><div class="chips">' + (Object.keys(colorCount).length ? Object.keys(colorCount).map(function (k) {
+      return '<span class="tag" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;padding:4px 10px"><span class="swatch" style="background:' + COLORS[k].hex + ';width:12px;height:12px"></span>' + COLORS[k].name + ' ' + colorCount[k] + ' 次</span>';
+    }).join("") : '<span class="muted small">没有记录</span>') + '</div></section>';
+    html += '<section class="card"><div class="card-head"><h2>异常记录</h2><span class="muted small">' + abn.length + ' 条</span></div>' +
+      (abn.length ? '<div class="rows">' + abn.slice(0, 6).map(recordRow).join("") + '</div>' : '<p class="muted small">这段时间没有异常记录。</p>') + '</section>';
+    var tagHtml = [["不舒服", "symptoms"], ["饮食", "diet"], ["用药", "meds"]].map(function (x) {
+      var o = tagCount[x[1]], ks = Object.keys(o);
+      return '<div class="tagline"><b>' + x[0] + '</b><span class="' + (ks.length ? "" : "muted") + '">' + (ks.length ? ks.map(function (k) { return esc(k) + " " + o[k] + " 次"; }).join("、") : "没有记录") + '</span></div>';
+    }).join("");
+    html += '<section class="card"><h2>症状、饮食与用药</h2>' + tagHtml + '</section>';
+    html += '<section class="card"><h2>给医生看</h2><p class="muted small">就医时可以把这份报告给医生看。正式版支持导出 PDF 或图片分享。</p>' +
+      '<button class="btn primary block" data-action="copy-report">复制文字版报告</button>' +
+      (state.reportText ? '<textarea class="copybox" id="report-text" readonly aria-label="报告文字">' + esc(state.reportText) + '</textarea><p class="muted small">没能自动复制，请长按上面的文字选择复制。</p>' : '') + '</section>';
+    html += '<p class="disclaimer">报告由你的记录自动生成，仅供参考，不能替代医生的诊断。</p></div>';
+    return html;
+  }
+  function reportPlain() {
+    var isWeek = state.reportRange !== "month", n = isWeek ? 7 : 30, today = startOfDay(new Date()), from = addDays(today, -(n - 1));
+    var ser = series(from, today, function () { return ""; }), av = avgOf(ser);
+    var recs = state.records.filter(function (r) { return r.ts >= from.getTime(); }).sort(function (a, b) { return a.ts - b.ts; });
+    var lines = ["顺畅 · 肠道健康" + (isWeek ? "周报" : "月报"), (from.getMonth() + 1) + "月" + from.getDate() + "日 – " + (today.getMonth() + 1) + "月" + today.getDate() + "日",
+      "记录天数：" + av.n + " / " + n + "，排便次数：" + recs.length + "，日均评分：" + (av.avg != null ? av.avg : "–"), "", "明细："];
+    recs.forEach(function (r) {
+      var extra = [].concat(r.symptoms || [], r.diet || [], r.meds || []);
+      lines.push((new Date(r.ts).getMonth() + 1) + "/" + new Date(r.ts).getDate() + " " + fmtTime(r.ts) + "  第" + r.type + "型 " + COLORS[r.color].name + " " + EFFORT[r.effort].name + " 喝水" + r.water + "杯" + (extra.length ? "  " + extra.join("、") : ""));
+    });
+    lines.push("", "此报告由用户自行记录生成，仅供就诊参考。");
+    return lines.join("\n");
+  }
+
+  var DOCS = {
+    terms: { title: "用户协议", body: [["服务内容", "顺畅帮助你记录排便情况、生成评分和健康提醒。评分和提醒基于你填写的内容和照片颜色识别，仅用于日常健康管理。"], ["账号", "你可以使用手机号、微信或 Apple 账号登录。请妥善保管账号，不要转借他人使用。"], ["使用规范", "请如实记录。不要上传与排便记录无关的照片或他人隐私内容。"], ["服务变更", "我们可能会调整或升级功能，重大变更会提前在 App 内通知。"], ["联系我们", "如有疑问，可在「我的」页面反馈。"]] },
+    privacy: { title: "隐私政策", body: [["我们收集什么", "你填写的排便记录（时间、颜色、形状、喝水量、症状、饮食、用药）、账号信息（手机号或第三方账号标识、昵称、性别、出生年份）。"], ["照片怎么处理", "照片只在手机上用来识别颜色，识别完成后立即丢弃，不会上传，也不会保存在记录里。"], ["数据存在哪里", "未登录时数据只保存在你的手机上；登录后会加密同步到云端，方便换机。"], ["健康 App", "只有在你开启并授权后，我们才会读取饮水量或写入排便记录。你可以随时在设置里关闭。"], ["你的权利", "你可以随时清除全部记录或注销账号，注销后数据会被永久删除。"]] },
+    medical: { title: "医疗免责声明", body: [["不是医疗诊断", "顺畅的评分、分析和提醒只用于日常健康记录，不能替代医生的诊断和治疗。"], ["出现这些情况请就医", "便血或黑色柏油样便、灰白色大便、持续腹泻超过 2 天、腹泻伴发热、剧烈腹痛、超过一周没有排便、不明原因的体重下降。"], ["紧急情况", "如果出现大量出血、晕厥、严重脱水等紧急情况，请立即拨打 120 或前往急诊。"], ["儿童与特殊人群", "婴幼儿、孕妇、老人及慢性病患者的判断标准可能不同，请以医生意见为准。"]] }
+  };
+  function viewDoc() {
+    var doc = DOCS[state.doc] || DOCS.terms;
+    return '<div class="pad"><div class="topbar"><button class="icon-btn" data-action="back" aria-label="返回">' + BACK + '</button><h1>' + doc.title + '</h1></div>' +
+      '<section class="card doc">' + doc.body.map(function (x) { return '<h3>' + x[0] + '</h3><p>' + x[1] + '</p>'; }).join("") + '<p class="muted small">更新日期：2026 年 11 月 6 日</p></section></div>';
+  }
+
+  /* ---------- first-run onboarding ---------- */
+  var LOCK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/><circle cx="12" cy="15.5" r="1.4"/></svg>';
+  function onbHtml(step) {
+    var steps = [
+      { art: '<div class="art-circle">' + LOGO + '</div>', h: "欢迎使用顺畅", p: "每次排便后拍一张照片，再回答两个小问题，30 秒就能记下肠道状况。" },
+      { art: ring(88, "xl"), h: "看懂你的评分", p: "分数越高越好。圆环的颜色代表等级，出现异常时我们会提醒你，必要时建议就医。",
+        extra: '<div class="legend"><span><i style="background:var(--perfect)"></i>完美</span><span><i style="background:var(--good)"></i>优秀</span><span><i style="background:var(--fine)"></i>良好</span><span><i style="background:var(--ok)"></i>一般</span><span><i style="background:var(--bad)"></i>需关注</span></div>' },
+      { art: '<div class="art-circle">' + LOCK + '</div>', h: "隐私与提醒", p: "照片只用来识别颜色，预览会自动模糊，识别完就丢弃。开启通知后，我们会按时提醒你记录和喝水。" }
+    ], st = steps[step], last = step === steps.length - 1;
+    return '<button class="onb-skip" data-action="onb-done">跳过</button><div class="onb-art">' + st.art + '</div>' +
+      '<div style="display:flex;flex-direction:column;gap:10px"><h1>' + st.h + '</h1><p>' + st.p + '</p>' + (st.extra || '') + '</div>' +
+      '<div class="dots">' + steps.map(function (_, i) { return '<i class="' + (i === step ? "on" : "") + '"></i>'; }).join("") + '</div>' +
+      (last ? '<div class="row-btns"><button class="btn ghost" data-action="onb-done">暂不开启</button><button class="btn primary" data-action="onb-notify">开启通知并开始</button></div>'
+            : '<button class="btn primary block" data-action="onb-next">下一步</button>');
   }
 
   function viewCalendar() {
@@ -922,8 +1195,13 @@ h2 { font-size: 15px; font-weight: 700; }
   function render(keepScroll) {
     var top = screen.scrollTop;
     var v = state.view;
-    screen.innerHTML = v === "record" ? viewRecord() : v === "result" ? viewResult() : v === "calendar" ? viewCalendar() : v === "settings" ? viewSettings() : viewHome();
-    phone.classList.toggle("no-tabs", v === "record" || v === "result" || v === "settings");
+    screen.innerHTML = v === "record" ? viewRecord() : v === "result" ? viewResult() : v === "calendar" ? viewCalendar() : v === "settings" ? viewSettings() : v === "report" ? viewReport() : v === "doc" ? viewDoc() : viewHome();
+    phone.classList.toggle("no-tabs", ["record", "result", "settings", "report", "doc"].indexOf(v) >= 0);
+    var ob = document.getElementById("onb");
+    if (state.onb >= 0) {
+      if (!ob) { ob = document.createElement("div"); ob.id = "onb"; ob.className = "onb"; ob.setAttribute("role", "dialog"); ob.setAttribute("aria-label", "新手引导"); phone.appendChild(ob); }
+      ob.innerHTML = onbHtml(state.onb);
+    } else if (ob) ob.remove();
     document.querySelectorAll(".tab").forEach(function (t) { t.setAttribute("aria-current", t.getAttribute("data-nav") === v ? "page" : "false"); });
     screen.scrollTop = keepScroll ? top : 0;
     animateRings();
@@ -933,7 +1211,8 @@ h2 { font-size: 15px; font-weight: 700; }
   function go(view) {
     if (view === "record" && (state.view !== "record" || !state.draft)) state.draft = newDraft();
     if (view === "calendar" && state.view !== "calendar") { state.selDay = null; }
-    if (view === "settings") state.confirmClear = false;
+    if (view === "settings") { state.confirmClear = false; state.confirmAcct = false; }
+    if (view === "home" || view === "calendar") state.prevView = view;
     state.view = view;
     render(false);
   }
@@ -1020,27 +1299,49 @@ h2 { font-size: 15px; font-weight: 700; }
 
   function submit() {
     var d = state.draft;
-    if (!d || (!d.photo && d.nth <= 1) || !d.color || !d.type || !d.effort) return;
+    if (!d || (!d.photo && photoRequired(d)) || !d.color || !d.type || !d.effort) return;
+    var fields = { ts: d.ts, type: d.type, color: d.color, water: d.water, effort: d.effort, symptoms: d.symptoms.slice(), diet: d.diet.slice(), meds: d.meds.slice() };
+    if (d.editId) {
+      var rec = state.records.filter(function (r) { return r.id === d.editId; })[0];
+      if (rec) Object.assign(rec, fields);
+      persist();
+      state.lastId = d.editId; state.draft = null; state.fromSubmit = false; state.view = "result";
+      render(false); toast("已保存修改");
+      return;
+    }
     var ov = document.createElement("div");
     ov.className = "overlay";
     ov.innerHTML = '<div class="scan">' + LOGO + '</div><b>正在分析…</b><span class="muted small">识别颜色 · 判断形状 · 计算评分</span>';
     phone.appendChild(ov);
     setTimeout(function () {
       var hadExamples = state.records.some(function (r) { return r.example; });
-      var rec = { id: "r" + Date.now(), ts: Date.now(), type: d.type, color: d.color, water: d.water, effort: d.effort };
+      var rec = Object.assign({ id: "r" + Date.now() }, fields);
       state.records.push(rec);
       persist();
-      state.lastId = rec.id; state.draft = null;
+      state.lastId = rec.id; state.draft = null; state.fromSubmit = true; state.peek = false;
       ov.remove();
       state.view = "result";
       render(false);
       toast(hadExamples ? "已保存（示例数据仍在，可在首页清除）" : "已保存到日历");
     }, 1100);
   }
+  function deleteCurrent() {
+    var id = state.view === "record" && state.draft ? state.draft.editId : state.lastId;
+    state.records = state.records.filter(function (r) { return r.id !== id; });
+    persist();
+    state.confirmDel = false; state.draft = null; state.view = state.prevView === "calendar" ? "calendar" : "home";
+    render(false); toast("记录已删除");
+  }
+  function finishOnb(notify) {
+    state.onb = -1; state.settings.onboarded = true;
+    if (notify) { state.settings.daily = true; state.settings.water = true; }
+    save(SKEY, state.settings); render(true);
+    if (notify) toast("已开启记录和喝水提醒");
+  }
 
   /* ---------- events ---------- */
   document.addEventListener("click", function (e) {
-    var el = e.target.closest("[data-nav],[data-action],[data-color],[data-type],[data-water],[data-effort],[data-day],[data-gender]");
+    var el = e.target.closest("[data-nav],[data-action],[data-color],[data-type],[data-water],[data-effort],[data-day],[data-gender],[data-tag],[data-rec],[data-doc]");
     if (!el || el.disabled) return;
     var d = state.draft;
     if (el.hasAttribute("data-nav")) return go(el.getAttribute("data-nav"));
@@ -1049,9 +1350,61 @@ h2 { font-size: 15px; font-weight: 700; }
     if (el.hasAttribute("data-water")) { var w = Number(el.getAttribute("data-water")); d.water = d.water === w ? w - 1 : w; return render(true); }
     if (el.hasAttribute("data-effort")) { d.effort = el.getAttribute("data-effort"); return render(true); }
     if (el.hasAttribute("data-day")) { state.selDay = el.getAttribute("data-day"); return render(true); }
+    if (el.hasAttribute("data-tag")) {
+      var kv = el.getAttribute("data-tag").split("|"), arr = d[kv[0]], ix = arr.indexOf(kv[1]);
+      if (ix >= 0) arr.splice(ix, 1); else arr.push(kv[1]);
+      return render(true);
+    }
+    if (el.hasAttribute("data-rec")) {
+      if (state.view !== "result") state.prevView = state.view;
+      state.lastId = el.getAttribute("data-rec"); state.fromSubmit = false; state.confirmDel = false; state.view = "result";
+      return render(false);
+    }
+    if (el.hasAttribute("data-doc")) {
+      e.preventDefault();
+      state.docBack = state.view; state.doc = el.getAttribute("data-doc"); state.view = "doc";
+      return render(false);
+    }
     if (el.hasAttribute("data-gender")) { state.profile.gender = el.getAttribute("data-gender"); saveProfile(); return render(true); }
     switch (el.getAttribute("data-action")) {
       case "sample": samplePhoto(); break;
+      case "peek": state.peek = !state.peek; render(true); break;
+      case "rec-back":
+        if (state.draft && state.draft.editId) { state.lastId = state.draft.editId; state.view = "result"; state.draft = null; render(false); }
+        else go(state.prevView === "calendar" ? "calendar" : "home");
+        break;
+      case "back":
+        if (state.view === "doc") { state.view = state.docBack || "settings"; render(false); }
+        else if (state.view === "report") { state.view = state.reportBack || "home"; render(false); }
+        else go(state.prevView === "calendar" ? "calendar" : "home");
+        break;
+      case "edit-rec":
+        var er = state.records.filter(function (r) { return r.id === state.lastId; })[0];
+        if (er) { state.draft = newDraft(er); state.confirmDel = false; state.view = "record"; render(false); }
+        break;
+      case "del-ask": state.confirmDel = true; render(true); break;
+      case "del-cancel": state.confirmDel = false; render(true); break;
+      case "del-confirm": deleteCurrent(); break;
+      case "report-week": case "report-month":
+        if (state.view !== "report") state.reportBack = state.view;
+        state.reportRange = el.getAttribute("data-action") === "report-week" ? "week" : "month";
+        state.reportText = null; state.view = "report"; render(state.view === "report" && el.closest(".segctl") ? true : false); break;
+      case "copy-report":
+        var txt = reportPlain();
+        try {
+          navigator.clipboard.writeText(txt).then(function () { toast("报告已复制，可以粘贴发给医生"); }, function () { state.reportText = txt; render(true); });
+        } catch (err) { state.reportText = txt; render(true); }
+        break;
+      case "onb-next": state.onb++; render(true); break;
+      case "onb-done": finishOnb(false); break;
+      case "onb-notify": finishOnb(true); break;
+      case "onb-replay": state.onb = 0; render(true); break;
+      case "acct-ask": state.confirmAcct = true; render(true); break;
+      case "acct-cancel": state.confirmAcct = false; render(true); break;
+      case "acct-confirm":
+        state.records = []; persist();
+        state.profile = { loggedIn: false, phone: "", via: "", name: "", gender: "", birthYear: "", waterGoal: 8 }; saveProfile();
+        state.confirmAcct = false; render(false); toast("账号已注销，数据已删除"); break;
       case "submit": submit(); break;
       case "clear-examples":
         state.records = state.records.filter(function (r) { return !r.example; });
@@ -1080,6 +1433,16 @@ h2 { font-size: 15px; font-weight: 700; }
     else if (id === "pf-name") { state.profile.name = e.target.value.trim(); saveProfile(); toast("昵称已保存"); return; }
     else if (id === "pf-year") { state.profile.birthYear = e.target.value; saveProfile(); return; }
     else if (id === "login-agree") { state.login.agree = e.target.checked; return; }
+    else if (id === "rec-time") {
+      var v = new Date(e.target.value).getTime(), min = addDays(startOfDay(new Date()), -7).getTime();
+      if (!isNaN(v)) { state.draft.ts = Math.min(Date.now(), Math.max(min, v)); render(true); }
+      return;
+    }
+    else if (id === "nobm-on") { st.noBm = e.target.checked; toast(st.noBm ? "已开启多日未排便提醒" : "已关闭多日未排便提醒"); }
+    else if (id === "weekly-on") { st.weekly = e.target.checked; toast(st.weekly ? "每周一推送周报" : "已关闭周报推送"); }
+    else if (id === "blur-on") { st.blur = e.target.checked; toast(st.blur ? "拍照预览会自动模糊" : "已关闭自动模糊"); }
+    else if (id === "hread-on") { st.healthRead = e.target.checked; toast(st.healthRead ? "已授权读取喝水量（演示）" : "已停止读取健康数据"); }
+    else if (id === "hwrite-on") { st.healthWrite = e.target.checked; toast(st.healthWrite ? "记录会写入健康 App（演示）" : "已停止写入健康 App"); }
     else return;
     save(SKEY, st);
   });
