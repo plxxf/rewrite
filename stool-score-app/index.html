@@ -7,44 +7,46 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap">
 <style>
 /* Layout: a single phone-shaped app shell (full-bleed on phones, framed on desktop) with a scrolling screen and a bottom tab bar. */
 :root {
-  --bg: #E9EFEC;
-  --frame: #F6F9F7;
+  --bg: #E3E3E9;
+  --frame: #F2F2F7;
   --surface: #FFFFFF;
-  --ink: #14302A;
-  --muted: #5B706A;
-  --line: #DAE3DF;
-  --accent: #1D7A65;
+  --fill: #F2F2F7;
+  --seg-on: #FFFFFF;
+  --ink: #1C1C1E;
+  --muted: #8A8A8E;
+  --line: #E5E5EA;
+  --accent: #14A085;
   --accent-ink: #FFFFFF;
-  --accent-soft: #DCEFE8;
-  --good: #2C9A5D;
-  --perfect: #2F6BD8;
-  --fine: #7DA526;
-  --ok: #E07A1F;
-  --bad: #C4433A;
-  --bad-soft: #FBE8E5;
-  --warn-soft: #FDEEDF;
+  --accent-soft: #DDF3EE;
+  --perfect: #007AFF;
+  --good: #34C759;
+  --fine: #8DBF2E;
+  --ok: #FF9500;
+  --bad: #FF3B30;
+  --bad-soft: #FFECEB;
+  --warn-soft: #FFF4E5;
   --stool: #7A4A26;
-  --shadow: 0 20px 60px rgba(20, 48, 42, .16);
-  --f-display: "Bricolage Grotesque", "Noto Sans SC", system-ui, sans-serif;
-  --f-body: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --shadow: 0 20px 60px rgba(0, 0, 0, .14);
+  --f-display: -apple-system, "SF Pro Display", "SF Pro Rounded", system-ui, "PingFang SC", "Noto Sans SC", sans-serif;
+  --f-body: -apple-system, "SF Pro Text", system-ui, "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #0B1311; --frame: #111B18; --surface: #18241F; --ink: #E3EDE9; --muted: #92A69F;
-    --line: #283631; --accent: #4CC2A3; --accent-ink: #08201A; --accent-soft: #173A31;
-    --perfect: #78A6F7; --fine: #A9CF57; --good: #55C585; --ok: #F2994E; --bad: #F0706A; --bad-soft: #3A1E1C; --warn-soft: #3A2615;
-    --stool: #B27B4F; --shadow: 0 20px 60px rgba(0, 0, 0, .5); color-scheme: dark;
+    --bg: #111113; --frame: #000000; --surface: #1C1C1E; --fill: #2C2C2E; --seg-on: #636366; --ink: #FFFFFF; --muted: #8E8E93;
+    --line: #38383A; --accent: #2FD1B0; --accent-ink: #00261E; --accent-soft: #10332C;
+    --perfect: #0A84FF; --good: #30D158; --fine: #A6D65A; --ok: #FF9F0A; --bad: #FF453A; --bad-soft: #3A1A18; --warn-soft: #3A2A12;
+    --stool: #B27B4F; --shadow: 0 20px 60px rgba(0, 0, 0, .6); color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #0B1311; --frame: #111B18; --surface: #18241F; --ink: #E3EDE9; --muted: #92A69F;
-  --line: #283631; --accent: #4CC2A3; --accent-ink: #08201A; --accent-soft: #173A31;
-  --perfect: #78A6F7; --fine: #A9CF57; --good: #55C585; --ok: #F2994E; --bad: #F0706A; --bad-soft: #3A1E1C; --warn-soft: #3A2615;
-  --stool: #B27B4F; --shadow: 0 20px 60px rgba(0, 0, 0, .5); color-scheme: dark;
+  --bg: #111113; --frame: #000000; --surface: #1C1C1E; --fill: #2C2C2E; --seg-on: #636366; --ink: #FFFFFF; --muted: #8E8E93;
+  --line: #38383A; --accent: #2FD1B0; --accent-ink: #00261E; --accent-soft: #10332C;
+  --perfect: #0A84FF; --good: #30D158; --fine: #A6D65A; --ok: #FF9F0A; --bad: #FF453A; --bad-soft: #3A1A18; --warn-soft: #3A2A12;
+  --stool: #B27B4F; --shadow: 0 20px 60px rgba(0, 0, 0, .6); color-scheme: dark;
 }
 * { box-sizing: border-box; }
 html, body { height: 100%; }
@@ -72,7 +74,7 @@ button { cursor: pointer; }
 
 /* type */
 h1, h2, h3, p { margin: 0; }
-h1 { font-size: 24px; font-weight: 700; text-wrap: balance; }
+h1 { font-size: 24px; font-weight: 700; text-wrap: balance; letter-spacing: -.01em; }
 h2 { font-size: 15px; font-weight: 700; }
 .eyebrow { font-size: 12px; color: var(--muted); letter-spacing: .06em; }
 .muted { color: var(--muted); }
@@ -83,9 +85,50 @@ h2 { font-size: 15px; font-weight: 700; }
 .brand { font-family: var(--f-display); font-weight: 800; font-size: 13px; letter-spacing: .08em; color: var(--accent); display: inline-flex; align-items: center; gap: 6px; }
 .brand svg { width: 22px; height: 22px; }
 
-.card { background: var(--surface); border-radius: 22px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.card { background: var(--surface); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
 .card-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
 .link { background: none; border: 0; padding: 0; color: var(--accent); font-size: 13px; font-weight: 500; }
+
+/* apple-health-like grouping */
+.pad.home { gap: 26px; }
+.group { display: flex; flex-direction: column; gap: 8px; }
+.sec-title { display: flex; justify-content: space-between; align-items: baseline; padding: 0 4px; }
+.sec-title h2 { font-size: 21px; font-weight: 700; letter-spacing: -.01em; }
+.hello h1 { font-size: 32px; letter-spacing: -.02em; }
+.cap { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 13px; }
+.cap-label { color: var(--accent); font-weight: 600; display: inline-flex; gap: 6px; align-items: center; }
+.cap-label svg { width: 16px; height: 16px; }
+.cap .chev { color: var(--muted); display: inline-flex; align-items: center; gap: 2px; background: none; border: 0; padding: 0; font-size: 13px; }
+.kpi { display: flex; align-items: baseline; gap: 3px; }
+.kpi-num { font-family: var(--f-display); font-size: 34px; font-weight: 700; letter-spacing: -.02em; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.kpi-unit { font-size: 15px; color: var(--muted); font-weight: 600; }
+.score-row { display: grid; grid-template-columns: auto 1fr; gap: 18px; align-items: center; }
+.score-text { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.ring .segv { fill: none; transition: stroke-dasharray .9s cubic-bezier(.2,.8,.2,1); }
+.ring.xl { width: 184px; height: 184px; }
+.ring.xl .big { font-size: 60px; }
+.ring .of { font-size: 12px; font-weight: 600; }
+.contribs { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 16px; padding-top: 4px; border-top: 1px solid var(--line); padding-block: 14px 2px; }
+.contribs.full { grid-template-columns: 1fr; }
+.contrib { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.c-top { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; font-size: 14px; font-weight: 600; }
+.c-lvl { font-size: 12px; font-weight: 600; }
+.c-bar { height: 6px; border-radius: 999px; background: var(--fill); overflow: hidden; }
+.c-bar i { display: block; height: 100%; border-radius: inherit; }
+.c-sub { display: flex; justify-content: space-between; gap: 6px; font-size: 12px; color: var(--muted); }
+.c-sub span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.segctl { display: grid; grid-template-columns: 1fr 1fr; background: var(--fill); border-radius: 9px; padding: 2px; }
+.segctl button { border: 0; background: none; border-radius: 7px; padding: 5px 0; font-size: 13px; font-weight: 600; }
+.segctl button[aria-selected="true"] { background: var(--seg-on); box-shadow: 0 1px 3px rgba(0,0,0,.14); }
+.lchart { width: 100%; height: auto; display: block; overflow: visible; }
+.lchart .grid { stroke: var(--line); stroke-width: 1; }
+.lchart .ax { fill: var(--muted); font-size: 10px; font-family: var(--f-body); }
+.lchart .line { fill: none; stroke: var(--accent); stroke-width: 2.2; stroke-linejoin: round; stroke-linecap: round; }
+.lchart .area { fill: var(--accent); opacity: .1; }
+.lchart .avg { stroke: var(--muted); stroke-dasharray: 3 3; stroke-width: 1; }
+.lchart .dot { stroke: var(--surface); stroke-width: 1.5; }
+.ok-note { display: flex; gap: 10px; align-items: center; font-size: 13px; }
+.ok-note svg { width: 20px; height: 20px; color: var(--good); flex: none; }
 
 /* avatar + settings */
 .hello-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
@@ -94,7 +137,7 @@ h2 { font-size: 15px; font-weight: 700; }
 .avatar.lg { width: 54px; height: 54px; border-radius: 18px; background: var(--accent-soft); font-size: 22px; }
 .profile { flex-direction: row; align-items: center; gap: 14px; }
 .grow { flex: 1; min-width: 0; }
-.input { display: flex; align-items: center; gap: 8px; border: 1.5px solid var(--line); border-radius: 14px; padding: 0 12px; background: var(--frame); flex: 1; min-width: 0; }
+.input { display: flex; align-items: center; gap: 8px; border: 1.5px solid var(--line); border-radius: 14px; padding: 0 12px; background: var(--fill); flex: 1; min-width: 0; }
 .input:focus-within { border-color: var(--accent); }
 .input span { color: var(--muted); font-size: 14px; }
 .input input { border: 0; background: none; padding: 12px 0; width: 100%; min-width: 0; outline: none; }
@@ -105,13 +148,13 @@ h2 { font-size: 15px; font-weight: 700; }
 .err { color: var(--bad); }
 .or { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--muted); }
 .or::before, .or::after { content: ""; flex: 1; height: 1px; background: var(--line); }
-.inline-input { border: 1px solid var(--line); background: var(--frame); border-radius: 10px; padding: 6px 10px; font-size: 14px; width: 150px; max-width: 55%; text-align: right; }
+.inline-input { border: 1px solid var(--line); background: var(--fill); border-radius: 10px; padding: 6px 10px; font-size: 14px; width: 150px; max-width: 55%; text-align: right; }
 .mini-seg { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
 .chip { border: 1.5px solid var(--line); background: var(--surface); border-radius: 999px; padding: 3px 12px; font-size: 13px; }
 .chip[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); font-weight: 700; }
 .stepper { display: flex; align-items: center; gap: 10px; flex: none; }
 .stepper .num { font-size: 18px; font-weight: 800; min-width: 22px; text-align: center; }
-.icon-btn.sm { width: 32px; height: 32px; border-radius: 10px; background: var(--frame); font-size: 18px; font-weight: 700; }
+.icon-btn.sm { width: 32px; height: 32px; border-radius: 10px; background: var(--fill); font-size: 18px; font-weight: 700; }
 .btn.danger { background: var(--bad); color: var(--surface); }
 .btn.danger-text { color: var(--bad); }
 .confirm { display: flex; flex-direction: column; gap: 10px; }
@@ -148,7 +191,7 @@ h2 { font-size: 15px; font-weight: 700; }
 .ring .of { font-size: 11px; color: var(--muted); }
 .hero-meta { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 .chips-inline { display: flex; flex-wrap: wrap; gap: 6px; }
-.tag { font-size: 12px; padding: 2px 8px; border-radius: 8px; background: var(--frame); color: var(--muted); }
+.tag { font-size: 12px; padding: 2px 8px; border-radius: 8px; background: var(--fill); color: var(--muted); }
 
 .empty-hero { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
 .btn { border: 0; border-radius: 16px; padding: 13px 18px; font-weight: 700; font-size: 15px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
@@ -170,7 +213,7 @@ h2 { font-size: 15px; font-weight: 700; }
 .rows { display: flex; flex-direction: column; }
 .row { display: grid; grid-template-columns: 44px 1fr auto; gap: 12px; align-items: center; padding: 10px 0; border-top: 1px solid var(--line); }
 .row:first-child { border-top: 0; padding-top: 0; }
-.thumb { width: 44px; height: 44px; border-radius: 12px; background: var(--frame); object-fit: cover; display: grid; place-items: center; color: var(--stool); overflow: hidden; }
+.thumb { width: 44px; height: 44px; border-radius: 12px; background: var(--fill); object-fit: cover; display: grid; place-items: center; color: var(--stool); overflow: hidden; }
 .thumb svg { width: 32px; }
 .row-main { min-width: 0; }
 .row-title { font-size: 14px; font-weight: 500; }
@@ -180,7 +223,7 @@ h2 { font-size: 15px; font-weight: 700; }
 /* toggles */
 .setting { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 .setting + .setting { border-top: 1px solid var(--line); padding-top: 12px; }
-.setting input[type="time"] { border: 1px solid var(--line); background: var(--frame); border-radius: 10px; padding: 4px 8px; font-size: 13px; }
+.setting input[type="time"] { border: 1px solid var(--line); background: var(--fill); border-radius: 10px; padding: 4px 8px; font-size: 13px; }
 .switch { position: relative; width: 46px; height: 28px; flex: none; }
 .switch input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
 .switch span { position: absolute; inset: 0; border-radius: 999px; background: var(--line); transition: background .2s; pointer-events: none; }
@@ -240,7 +283,7 @@ h2 { font-size: 15px; font-weight: 700; }
 .result-hero .ring .big { font-size: 58px; }
 .breakdown { display: flex; flex-direction: column; gap: 12px; }
 .bk { display: grid; grid-template-columns: 74px 1fr 52px; gap: 10px; align-items: center; font-size: 13px; }
-.bk-track { height: 8px; border-radius: 999px; background: var(--frame); overflow: hidden; }
+.bk-track { height: 8px; border-radius: 999px; background: var(--fill); overflow: hidden; }
 .bk-fill { height: 100%; border-radius: inherit; }
 .bk-val { text-align: right; font-family: var(--f-display); font-weight: 600; font-variant-numeric: tabular-nums; }
 .bk-val small { color: var(--muted); font-weight: 400; }
@@ -259,7 +302,7 @@ h2 { font-size: 15px; font-weight: 700; }
 .stat span:last-child { font-size: 12px; color: var(--muted); }
 .cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
 .dow { text-align: center; font-size: 11px; color: var(--muted); padding-bottom: 2px; }
-.day { aspect-ratio: 1 / 1.15; max-width: 100%; border: 0; border-radius: 12px; background: var(--frame); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; padding: 2px; position: relative; }
+.day { aspect-ratio: 1 / 1.15; max-width: 100%; border: 0; border-radius: 12px; background: var(--fill); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; padding: 2px; position: relative; }
 .day .d { font-size: 11px; color: var(--muted); line-height: 1; }
 .day .s { font-family: var(--f-display); font-weight: 800; font-size: 15px; line-height: 1.1; font-variant-numeric: tabular-nums; }
 .day.has .d { color: inherit; opacity: .8; }
@@ -290,7 +333,7 @@ h2 { font-size: 15px; font-weight: 700; }
 .disclaimer { font-size: 11px; color: var(--muted); text-align: center; line-height: 1.5; }
 
 @media (prefers-reduced-motion: reduce) {
-  .ring .val { transition: none; }
+  .ring .val, .ring .segv { transition: none; }
   .scan::after { animation: none; top: 50%; }
 }
 </style>
@@ -401,6 +444,7 @@ h2 { font-size: 15px; font-weight: 700; }
     profile: load(PKEY) || { loggedIn: false, phone: "", via: "", name: "", gender: "", birthYear: "", waterGoal: 8 },
     login: { phone: "", code: "", agree: false, countdown: 0 },
     confirmClear: false,
+    range: "week",
     view: "home",
     draft: null,
     lastId: null,
@@ -495,6 +539,7 @@ h2 { font-size: 15px; font-weight: 700; }
     requestAnimationFrame(function () {
       requestAnimationFrame(function () {
         document.querySelectorAll(".ring .val").forEach(function (el) { el.style.strokeDashoffset = el.getAttribute("data-target"); });
+        document.querySelectorAll(".ring .segv").forEach(function (el) { el.style.strokeDasharray = el.getAttribute("data-dash"); });
       });
     });
   }
@@ -512,50 +557,140 @@ h2 { font-size: 15px; font-weight: 700; }
   }
 
   /* ---------- views ---------- */
+  function partsOf(r) {
+    return [
+      { name: "形状", v: TYPES[r.type].pts, max: 40, note: "第 " + r.type + " 型 · " + TYPES[r.type].tag },
+      { name: "颜色", v: COLORS[r.color].pts, max: 25, note: COLORS[r.color].name },
+      { name: "顺畅度", v: EFFORT[r.effort].pts, max: 20, note: EFFORT[r.effort].name },
+      { name: "饮水", v: waterPts(r.water), max: 15, note: r.water + " / " + goal() + " 杯" }
+    ];
+  }
+  // Ring split into one arc per contributor (arc length = its share of 100 points).
+  function segRing(r, cls) {
+    var R = 52, C = 2 * Math.PI * R, gap = C * 0.022, usable = C - gap * 4, s = scoreOf(r), b = band(s), start = gap / 2, out = "";
+    partsOf(r).forEach(function (p) {
+      var len = usable * p.max / 100, pct = p.v / p.max, col = band(pct * 100).color;
+      out += '<circle class="track" cx="60" cy="60" r="' + R + '" stroke-width="11" stroke-dasharray="' + len.toFixed(2) + ' ' + C.toFixed(2) + '" stroke-dashoffset="' + (-start).toFixed(2) + '"/>' +
+        '<circle class="segv" cx="60" cy="60" r="' + R + '" stroke-width="11" stroke="' + col + '" stroke-dasharray="0 ' + C.toFixed(2) + '" data-dash="' + (len * pct).toFixed(2) + ' ' + C.toFixed(2) + '" stroke-dashoffset="' + (-start).toFixed(2) + '"/>';
+      start += len + gap;
+    });
+    return '<div class="ring ' + (cls || "") + '" role="img" aria-label="评分 ' + s + ' 分，' + b.label + '"><svg viewBox="0 0 120 120">' + out + '</svg>' +
+      '<div class="center"><span class="big" style="color:' + b.color + '">' + s + '</span><span class="of" style="color:' + b.color + '">' + b.label + '</span></div></div>';
+  }
+  function contribs(r, full) {
+    return '<div class="contribs' + (full ? " full" : "") + '">' + partsOf(r).map(function (p) {
+      var pct = p.v / p.max, b = band(pct * 100);
+      return '<div class="contrib"><div class="c-top"><span>' + p.name + '</span><span class="c-lvl" style="color:' + b.color + '">' + b.label + '</span></div>' +
+        '<div class="c-bar"><i style="width:' + Math.max(3, pct * 100).toFixed(0) + '%;background:' + b.color + '"></i></div>' +
+        '<div class="c-sub"><span>' + esc(p.note) + '</span><span class="num">' + p.v + '/' + p.max + '</span></div></div>';
+    }).join("") + '</div>';
+  }
+  function series(from, to, labelFn) {
+    var days = byDay(), out = [];
+    for (var d = new Date(from); d <= to; d = addDays(d, 1)) {
+      var l = days[dayKey(d)];
+      out.push({ date: new Date(d), score: l ? dayScore(l) : null, label: labelFn(d) });
+    }
+    return out;
+  }
+  function avgOf(ser) {
+    var v = ser.filter(function (p) { return p.score != null; }).map(function (p) { return p.score; });
+    return v.length ? { avg: Math.round(v.reduce(function (a, b) { return a + b; }, 0) / v.length), n: v.length } : { avg: null, n: 0 };
+  }
+  function lineChart(ser, ticks) {
+    var W = 320, H = 156, L = 4, RM = 26, T = 10, B = 22, iw = W - L - RM, ih = H - T - B, n = ser.length;
+    function x(i) { return L + (n === 1 ? iw / 2 : iw * i / (n - 1)); }
+    function y(v) { return T + ih * (1 - v / 100); }
+    var g = "";
+    [0, 40, 60, 80, 100].forEach(function (v) {
+      g += '<line class="grid" x1="' + L + '" x2="' + (L + iw) + '" y1="' + y(v) + '" y2="' + y(v) + '"/><text class="ax" x="' + (W - 2) + '" y="' + (y(v) + 3.5) + '" text-anchor="end">' + v + '</text>';
+    });
+    var pts = [];
+    ser.forEach(function (p, i) { if (p.score != null) pts.push([x(i), y(p.score), p.score]); });
+    if (pts.length) {
+      var a = avgOf(ser).avg, line = "M" + pts.map(function (q) { return q[0].toFixed(1) + " " + q[1].toFixed(1); }).join(" L");
+      g += '<path class="area" d="' + line + ' L' + pts[pts.length - 1][0].toFixed(1) + ' ' + y(0) + ' L' + pts[0][0].toFixed(1) + ' ' + y(0) + ' Z"/>';
+      g += '<line class="avg" x1="' + L + '" x2="' + (L + iw) + '" y1="' + y(a).toFixed(1) + '" y2="' + y(a).toFixed(1) + '"/>';
+      g += '<path class="line" d="' + line + '"/>';
+      pts.forEach(function (q, k) {
+        g += '<circle class="dot" cx="' + q[0].toFixed(1) + '" cy="' + q[1].toFixed(1) + '" r="' + (k === pts.length - 1 ? 5 : 3.2) + '" fill="' + band(q[2]).color + '"/>';
+      });
+    }
+    ser.forEach(function (p, i) {
+      var show = ticks(i, n);
+      if (show) g += '<text class="ax" x="' + x(i).toFixed(1) + '" y="' + (H - 6) + '" text-anchor="' + (i === 0 ? "start" : i === n - 1 ? "end" : "middle") + '">' + p.label + '</text>';
+    });
+    return '<svg class="lchart" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="每日评分走势折线图">' + g + '</svg>';
+  }
+  function monthTicks(i, n) { return i === 0 || i === n - 1 || (i % 7 === 0 && n - 1 - i >= 4); }
+
+  var CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.6 2.6L16 9.5"/></svg>';
+  var CHEV = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>';
+
   function viewHome() {
-    var now = new Date(), all = sorted(), latest = all[all.length - 1];
+    var now = new Date(), today = startOfDay(now), all = sorted(), latest = all[all.length - 1];
     var h = now.getHours(), greet = h < 11 ? "早上好" : h < 14 ? "中午好" : h < 18 ? "下午好" : "晚上好";
     var hasExample = state.records.some(function (r) { return r.example; });
     var alerts = evaluateAlerts();
     var days = byDay(), todayList = days[dayKey(now)];
-    var html = '<div class="pad">';
     var pname = state.profile.loggedIn && state.profile.name ? "，" + esc(state.profile.name) : "";
-    html += '<div class="hello"><div class="hello-left"><button class="avatar" data-nav="settings" aria-label="我的：登录和设置">' + avatarInner() + '</button><div><p class="eyebrow">' + (now.getMonth() + 1) + '月' + now.getDate() + '日 · 星期' + WEEK[now.getDay()] + '</p><h1>' + greet + pname + '</h1></div></div><span class="brand">' + LOGO + '顺畅</span></div>';
-    if (hasExample) {
-      html += '<div class="banner example"><div class="grow">现在显示的是<b>示例数据</b>，方便你预览各个功能。开始记录前可以清除它们。</div><button class="link" data-action="clear-examples">清除示例</button></div>';
-    }
-    alerts.forEach(function (a) { html += alertHtml(a); });
+    var html = '<div class="pad home">';
 
-    html += '<section class="card">';
+    // 1. greeting
+    html += '<div class="hello"><div class="hello-left"><button class="avatar" data-nav="settings" aria-label="我的：登录和设置">' + avatarInner() + '</button><div><p class="eyebrow">' + (now.getMonth() + 1) + '月' + now.getDate() + '日 星期' + WEEK[now.getDay()] + '</p><h1>' + greet + pname + '</h1></div></div><span class="brand">' + LOGO + '顺畅</span></div>';
+
+    // 2. score
+    html += '<div class="group"><div class="sec-title"><h2>评分</h2></div><section class="card">';
     if (latest) {
       var s = scoreOf(latest), b = band(s);
-      html += '<div class="card-head"><h2>' + (todayList ? "今天的评分" : "最近一次评分") + '</h2><span class="muted small">' + relDay(latest.ts) + ' ' + fmtTime(latest.ts) + '</span></div>' +
-        '<div class="hero">' + ring(s) + '<div class="hero-meta"><span class="pill ' + b.cls + '">' + b.label + '</span>' +
-        '<p class="small">第 ' + latest.type + ' 型 · ' + TYPES[latest.type].name + '</p>' +
-        '<div class="chips-inline"><span class="tag">' + COLORS[latest.color].name + '</span><span class="tag">' + EFFORT[latest.effort].name + '</span><span class="tag">' + latest.water + ' 杯水</span></div></div></div>';
+      html += '<div class="cap"><span class="cap-label">' + LOGO + (todayList ? "今天" : "最近一次") + '</span><span class="muted">' + relDay(latest.ts) + ' ' + fmtTime(latest.ts) + '</span></div>' +
+        '<div class="score-row">' + segRing(latest) + '<div class="score-text"><span class="pill ' + b.cls + '" style="align-self:flex-start">' + b.label + '</span>' +
+        '<p class="small"><b>第 ' + latest.type + ' 型 · ' + TYPES[latest.type].name + '</b></p><p class="muted small">' + COLORS[latest.color].name + ' · ' + EFFORT[latest.effort].name + ' · 喝水 ' + latest.water + ' 杯</p><p class="muted small">圆环分四段：形状、颜色、顺畅度、饮水</p></div></div>' +
+        contribs(latest, false);
       if (!todayList) html += '<button class="btn primary block" data-nav="record">记录今天这一次</button>';
     } else {
       html += '<div class="empty-hero"><h2>还没有记录</h2><p class="muted small">拍一张照片，回答两个小问题，就能得到这一次的肠道评分。</p><button class="btn primary" data-nav="record">开始第一次记录</button></div>';
     }
-    html += '</section>';
+    html += '</section></div>';
 
-    // week
-    html += '<section class="card"><div class="card-head"><h2>近 7 天</h2><button class="link" data-nav="calendar">看日历</button></div><div class="week">';
-    for (var i = 6; i >= 0; i--) {
-      var d = addDays(startOfDay(now), -i), l = days[dayKey(d)];
-      var sc = l ? dayScore(l) : null, bb = sc != null ? band(sc) : null;
-      html += '<div class="wcol' + (i === 0 ? " today" : "") + '"><span class="wval" style="color:' + (bb ? bb.color : "var(--muted)") + '">' + (sc != null ? sc : "–") + '</span>' +
-        '<div class="wbar' + (sc == null ? " none" : "") + '" style="height:' + (sc != null ? Math.max(8, sc * 0.72) : 4) + 'px;' + (bb ? "background:" + bb.color : "") + '"></div>' +
-        '<span class="wlab">' + (i === 0 ? "今天" : WEEK[d.getDay()]) + '</span></div>';
+    // 3. recent days
+    var isWeek = state.range !== "month";
+    var ser = isWeek ? series(addDays(today, -6), today, function (d) { return dayKey(d) === dayKey(today) ? "今天" : "周" + WEEK[d.getDay()]; })
+                     : series(addDays(today, -29), today, function (d) { return (d.getMonth() + 1) + "/" + d.getDate(); });
+    var av = avgOf(ser), first = ser[0].date;
+    html += '<div class="group"><div class="sec-title"><h2>近几天</h2><button class="link" data-nav="calendar">日历</button></div><section class="card">' +
+      '<div class="segctl" role="tablist" aria-label="时间范围"><button role="tab" data-action="range-week" aria-selected="' + isWeek + '">周</button><button role="tab" data-action="range-month" aria-selected="' + !isWeek + '">月</button></div>' +
+      '<div><p class="eyebrow">日均评分</p><div class="kpi"><span class="kpi-num"' + (av.avg != null ? ' style="color:' + band(av.avg).color + '"' : "") + '>' + (av.avg != null ? av.avg : "–") + '</span><span class="kpi-unit">分</span></div>' +
+      '<p class="muted small">' + (first.getMonth() + 1) + '月' + first.getDate() + '日 – ' + (today.getMonth() + 1) + '月' + today.getDate() + '日 · 记录 ' + av.n + ' 天</p></div>';
+    if (isWeek) {
+      html += '<div class="week">';
+      ser.forEach(function (p, i) {
+        var bb = p.score != null ? band(p.score) : null;
+        html += '<div class="wcol' + (i === 6 ? " today" : "") + '"><span class="wval" style="color:' + (bb ? bb.color : "var(--muted)") + '">' + (p.score != null ? p.score : "–") + '</span>' +
+          '<div class="wbar' + (p.score == null ? " none" : "") + '" style="height:' + (p.score != null ? Math.max(8, p.score * 0.72) : 4) + 'px;' + (bb ? "background:" + bb.color : "") + '"></div>' +
+          '<span class="wlab">' + p.label + '</span></div>';
+      });
+      html += '</div>';
+    } else {
+      html += lineChart(ser, monthTicks);
     }
-    html += '</div></section>';
+    html += '</section></div>';
 
-    // recent
+    // recent records
     if (all.length) {
-      html += '<section class="card"><div class="card-head"><h2>最近记录</h2><span class="muted small">共 ' + all.length + ' 次</span></div><div class="rows">';
+      html += '<div class="group"><div class="sec-title"><h2>最近记录</h2><span class="muted small">共 ' + all.length + ' 次</span></div><section class="card"><div class="rows">';
       all.slice(-3).reverse().forEach(function (r) { html += recordRow(r); });
-      html += '</div></section>';
+      html += '</div></section></div>';
     }
+
+    // tips at the bottom
+    html += '<div class="group"><div class="sec-title"><h2>提示</h2></div>';
+    if (alerts.length) alerts.forEach(function (a) { html += alertHtml(a); });
+    else html += '<section class="card ok-note">' + CHECK + '<span>最近没有发现异常，继续保持规律饮水和作息。</span></section>';
+    if (hasExample) {
+      html += '<div class="banner example"><div class="grow">现在显示的是<b>示例数据</b>，方便你预览各个功能。开始记录前可以清除它们。</div><button class="link" data-action="clear-examples">清除示例</button></div>';
+    }
+    html += '</div>';
 
     html += '<p class="disclaimer">评分仅用于日常健康记录，不能替代医生的诊断。</p></div>';
     return html;
@@ -681,27 +816,19 @@ h2 { font-size: 15px; font-weight: 700; }
   function viewResult() {
     var r = state.records.filter(function (x) { return x.id === state.lastId; })[0];
     if (!r) { state.view = "home"; return viewHome(); }
-    var s = scoreOf(r), b = band(s);
-    var parts = [
-      { name: "形状", v: TYPES[r.type].pts, max: 40, note: "第 " + r.type + " 型" },
-      { name: "颜色", v: COLORS[r.color].pts, max: 25, note: COLORS[r.color].name },
-      { name: "顺畅度", v: EFFORT[r.effort].pts, max: 20, note: EFFORT[r.effort].name },
-      { name: "饮水", v: waterPts(r.water), max: 15, note: r.water + " 杯" }
-    ];
-    var alerts = evaluateAlerts(r);
+    var s = scoreOf(r), b = band(s), alerts = evaluateAlerts(r);
     var html = '<div class="pad"><div class="topbar"><button class="icon-btn" data-nav="home" aria-label="返回首页">' + BACK + '</button><h1>本次评分</h1></div>';
-    html += '<section class="card result-hero">' + ring(s) + '<span class="pill ' + b.cls + '">' + b.label + '</span>' +
+    html += '<section class="card result-hero">' + segRing(r, "xl") +
       '<p class="muted small">' + relDay(r.ts) + ' ' + fmtTime(r.ts) + ' · 第 ' + r.type + ' 型 · ' + TYPES[r.type].tag + '</p></section>';
-    alerts.forEach(function (a) { html += alertHtml(a); });
-    html += '<section class="card"><h2>得分构成</h2><div class="breakdown">';
-    parts.forEach(function (p) {
-      var pct = p.v / p.max, col = pct >= .75 ? "var(--good)" : pct >= .45 ? "var(--ok)" : "var(--bad)";
-      html += '<div class="bk"><span>' + p.name + '<br><span class="muted" style="font-size:11px">' + p.note + '</span></span><div class="bk-track"><div class="bk-fill" style="width:' + (pct * 100).toFixed(0) + '%;background:' + col + '"></div></div><span class="bk-val">' + p.v + '<small>/' + p.max + '</small></span></div>';
-    });
-    html += '</div></section>';
-    html += '<section class="card"><h2>给你的建议</h2><ul class="tips">';
+    html += '<div class="group"><div class="sec-title"><h2>得分构成</h2><span class="muted small">满分 100</span></div><section class="card">' + contribs(r, true).replace('class="contribs full"', 'class="contribs full" style="border-top:0;padding-top:0"') + '</section></div>';
+    html += '<div class="group"><div class="sec-title"><h2>给你的建议</h2></div><section class="card"><ul class="tips">';
     adviceFor(r).forEach(function (t) { html += '<li>' + esc(t) + '</li>'; });
-    html += '</ul></section>';
+    html += '</ul></section></div>';
+    if (alerts.length) {
+      html += '<div class="group"><div class="sec-title"><h2>提示</h2></div>';
+      alerts.forEach(function (a) { html += alertHtml(a); });
+      html += '</div>';
+    }
     html += '<div class="row-btns"><button class="btn ghost" data-nav="calendar">查看日历</button><button class="btn primary" data-nav="home">完成</button></div>';
     html += '<p class="disclaimer">评分仅用于日常健康记录，不能替代医生的诊断。</p></div>';
     return html;
@@ -725,6 +852,11 @@ h2 { font-size: 15px; font-weight: 700; }
     html += '<div class="stats"><div class="stat"><span class="num">' + scores.length + '</span><span>记录天数</span></div>' +
       '<div class="stat"><span class="num" style="color:' + (avg != null ? band(avg).color : "inherit") + '">' + (avg != null ? avg : "–") + '</span><span>平均分</span></div>' +
       '<div class="stat"><span class="num" style="color:' + (abnormalDays ? "var(--bad)" : "inherit") + '">' + abnormalDays + '</span><span>异常天数</span></div></div>';
+    var lastDay = isCurrent ? today.getDate() : total;
+    if (!(new Date(y, mo, 1) > today)) {
+      html += '<section class="card"><div class="cap"><span class="cap-label">' + LOGO + '评分走势</span><span class="muted">虚线为月平均</span></div>' +
+        lineChart(series(new Date(y, mo, 1), new Date(y, mo, lastDay), function (d) { return d.getDate() + "日"; }), monthTicks) + '</section>';
+    }
 
     html += '<section class="card"><div class="cal">';
     ["一", "二", "三", "四", "五", "六", "日"].forEach(function (w) { html += '<span class="dow">' + w + '</span>'; });
@@ -900,6 +1032,8 @@ h2 { font-size: 15px; font-weight: 700; }
       case "clear-examples":
         state.records = state.records.filter(function (r) { return !r.example; });
         persist(); render(true); toast("示例数据已清除"); break;
+      case "range-week": state.range = "week"; render(true); break;
+      case "range-month": state.range = "month"; render(true); break;
       case "send-code": sendCode(); break;
       case "login": loginPhone(); break;
       case "login-wechat": loginVia("微信"); break;
