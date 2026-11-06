@@ -22,13 +22,13 @@
   --accent: #14A085;
   --accent-ink: #FFFFFF;
   --accent-soft: #DDF3EE;
-  --perfect: #007AFF;
-  --good: #34C759;
-  --fine: #8DBF2E;
-  --ok: #FF9500;
-  --bad: #FF3B30;
+  --perfect: #5856D6;
+  --good: #3478F6;
+  --fine: #2FA8DF;
+  --ok: #F2784B;
+  --bad: #E5383B;
   --bad-soft: #FFECEB;
-  --warn-soft: #FFF4E5;
+  --warn-soft: #FFF0EA;
   --stool: #7A4A26;
   --shadow: 0 20px 60px rgba(0, 0, 0, .14);
   --f-display: -apple-system, "SF Pro Display", "SF Pro Rounded", system-ui, "PingFang SC", "Noto Sans SC", sans-serif;
@@ -38,14 +38,14 @@
   :root:not([data-theme="light"]) {
     --bg: #111113; --frame: #000000; --surface: #1C1C1E; --fill: #2C2C2E; --seg-on: #636366; --ink: #FFFFFF; --muted: #8E8E93;
     --line: #38383A; --accent: #2FD1B0; --accent-ink: #00261E; --accent-soft: #10332C;
-    --perfect: #0A84FF; --good: #30D158; --fine: #A6D65A; --ok: #FF9F0A; --bad: #FF453A; --bad-soft: #3A1A18; --warn-soft: #3A2A12;
+    --perfect: #8A87FF; --good: #4A90FF; --fine: #64D2FF; --ok: #FF9A70; --bad: #FF5A52; --bad-soft: #3A1A18; --warn-soft: #3A2219;
     --stool: #B27B4F; --shadow: 0 20px 60px rgba(0, 0, 0, .6); color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #111113; --frame: #000000; --surface: #1C1C1E; --fill: #2C2C2E; --seg-on: #636366; --ink: #FFFFFF; --muted: #8E8E93;
   --line: #38383A; --accent: #2FD1B0; --accent-ink: #00261E; --accent-soft: #10332C;
-  --perfect: #0A84FF; --good: #30D158; --fine: #A6D65A; --ok: #FF9F0A; --bad: #FF453A; --bad-soft: #3A1A18; --warn-soft: #3A2A12;
+  --perfect: #8A87FF; --good: #4A90FF; --fine: #64D2FF; --ok: #FF9A70; --bad: #FF5A52; --bad-soft: #3A1A18; --warn-soft: #3A2219;
   --stool: #B27B4F; --shadow: 0 20px 60px rgba(0, 0, 0, .6); color-scheme: dark;
 }
 * { box-sizing: border-box; }
@@ -123,8 +123,8 @@ h2 { font-size: 15px; font-weight: 700; }
 .lchart { width: 100%; height: auto; display: block; overflow: visible; }
 .lchart .grid { stroke: var(--line); stroke-width: 1; }
 .lchart .ax { fill: var(--muted); font-size: 10px; font-family: var(--f-body); }
-.lchart .line { fill: none; stroke: var(--accent); stroke-width: 2.2; stroke-linejoin: round; stroke-linecap: round; }
-.lchart .area { fill: var(--accent); opacity: .1; }
+.lchart .line { fill: none; stroke: var(--good); stroke-width: 2.2; stroke-linejoin: round; stroke-linecap: round; }
+.lchart .area { fill: var(--good); opacity: .1; }
 .lchart .avg { stroke: var(--muted); stroke-dasharray: 3 3; stroke-width: 1; }
 .lchart .dot { stroke: var(--surface); stroke-width: 1.5; }
 .today-strip { display: flex; flex-direction: column; gap: 8px; border-top: 1px solid var(--line); padding-top: 12px; }
