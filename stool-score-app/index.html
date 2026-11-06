@@ -127,6 +127,14 @@ h2 { font-size: 15px; font-weight: 700; }
 .lchart .area { fill: var(--accent); opacity: .1; }
 .lchart .avg { stroke: var(--muted); stroke-dasharray: 3 3; stroke-width: 1; }
 .lchart .dot { stroke: var(--surface); stroke-width: 1.5; }
+.today-strip { display: flex; flex-direction: column; gap: 8px; border-top: 1px solid var(--line); padding-top: 12px; }
+.ts-head { display: flex; justify-content: space-between; align-items: baseline; font-size: 14px; }
+.ts-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.ts-item { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; background: var(--fill); border-radius: 8px; padding: 3px 8px; font-variant-numeric: tabular-nums; }
+.ts-item i { width: 8px; height: 8px; border-radius: 50%; }
+.day .cnt { position: absolute; top: 3px; left: 4px; font-size: 9px; font-weight: 700; line-height: 1; }
+.wcnt { font-size: 10px; color: var(--muted); line-height: 1; }
+.notice { display: flex; flex-direction: column; gap: 4px; background: var(--accent-soft); border-radius: 14px; padding: 12px 14px; font-size: 13px; }
 .ok-note { display: flex; gap: 10px; align-items: center; font-size: 13px; }
 .ok-note svg { width: 20px; height: 20px; color: var(--good); flex: none; }
 
@@ -424,6 +432,13 @@ h2 { font-size: 15px; font-weight: 700; }
     function rnd() { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }
     var today = startOfDay(new Date());
     for (var i = 30; i >= 1; i--) {
+      if (i === 12) { // one example day with diarrhoea: several trips in a day
+        [[7, 40, 6, "yellow", "normal"], [10, 15, 7, "yellow", "easy"], [13, 5, 7, "yellow", "easy"], [17, 30, 6, "brown", "normal"]].forEach(function (t, k) {
+          var dd = addDays(today, -i); dd.setHours(t[0], t[1]);
+          out.push({ id: "ex12-" + k, ts: dd.getTime(), type: t[2], color: t[3], water: 7, effort: t[4], example: true });
+        });
+        continue;
+      }
       if (rnd() < 0.15) continue; // a few days without a record
       var d = addDays(today, -i);
       var late = i <= 4; // the last few days drift toward constipation, to show the warning
@@ -461,7 +476,12 @@ h2 { font-size: 15px; font-weight: 700; }
     state.records.forEach(function (r) { var k = dayKey(new Date(r.ts)); (m[k] = m[k] || []).push(r); });
     return m;
   }
-  function dayScore(list) { return Math.round(list.reduce(function (s, r) { return s + scoreOf(r); }, 0) / list.length); }
+  function looseCount(list) { return list.filter(function (r) { return r.type >= 6; }).length; }
+  function dayScore(list) {
+    var avg = list.reduce(function (s, r) { return s + scoreOf(r); }, 0) / list.length;
+    return Math.max(0, Math.round(avg - Math.max(0, looseCount(list) - 2) * 6));
+  }
+  function todayList() { return byDay()[dayKey(new Date())] || []; }
   function isAbnormal(r) { return r.color === "red" || r.color === "black" || r.color === "pale" || r.type === 1 || r.type === 7; }
 
   function evaluateAlerts(focus) {
@@ -473,6 +493,12 @@ h2 { font-size: 15px; font-weight: 700; }
     var recentPale = all.filter(function (r) { return r.color === "pale" && r.ts > addDays(today, -3).getTime(); });
     if (recentPale.length) {
       alerts.push({ level: "urgent", title: "建议就医检查", text: "近 3 天出现灰白色大便，可能与肝胆问题有关。如同时有皮肤或眼白发黄、尿色变深，请尽快就医。", doctor: true });
+    }
+    var tl = days[dayKey(today)] || [], loose = looseCount(tl);
+    if (loose >= 6) {
+      alerts.push({ level: "urgent", title: "今天已腹泻 " + loose + " 次，建议就医", text: "一天内多次稀便容易脱水。请尽快就医，尤其是出现发热、便血、口干、尿少或头晕时。", doctor: true });
+    } else if (loose >= 3) {
+      alerts.push({ level: "warn", title: "今天已腹泻 " + loose + " 次", text: "一天 3 次及以上稀便属于腹泻。请少量多次补水，最好喝口服补液盐，饮食清淡。若次数继续增加、超过 2 天，或出现发热、便血、口干尿少，请就医。", doctor: false });
     }
     var watery = 0;
     for (var i = 0; i < 3; i++) {
@@ -577,7 +603,7 @@ h2 { font-size: 15px; font-weight: 700; }
     var days = byDay(), out = [];
     for (var d = new Date(from); d <= to; d = addDays(d, 1)) {
       var l = days[dayKey(d)];
-      out.push({ date: new Date(d), score: l ? dayScore(l) : null, label: labelFn(d) });
+      out.push({ date: new Date(d), score: l ? dayScore(l) : null, count: l ? l.length : 0, label: labelFn(d) });
     }
     return out;
   }
@@ -631,11 +657,18 @@ h2 { font-size: 15px; font-weight: 700; }
     html += '<div class="group"><div class="sec-title"><h2>评分</h2></div><section class="card">';
     if (latest) {
       var s = scoreOf(latest), b = band(s);
-      html += '<div class="cap"><span class="cap-label">' + LOGO + (todayList ? "今天" : "最近一次") + '</span><span class="muted">' + relDay(latest.ts) + ' ' + fmtTime(latest.ts) + '</span></div>' +
+      html += '<div class="cap"><span class="cap-label">' + LOGO + (todayList ? (todayList.length > 1 ? "今天第 " + todayList.length + " 次" : "今天") : "最近一次") + '</span><span class="muted">' + relDay(latest.ts) + ' ' + fmtTime(latest.ts) + '</span></div>' +
         '<div class="score-row">' + ring(scoreOf(latest)) + '<div class="score-text"><span class="pill ' + b.cls + '" style="align-self:flex-start">' + b.label + '</span>' +
         '<p class="small"><b>第 ' + latest.type + ' 型 · ' + TYPES[latest.type].name + '</b></p><p class="muted small">' + COLORS[latest.color].name + ' · ' + EFFORT[latest.effort].name + ' · 喝水 ' + latest.water + ' 杯</p></div></div>' +
         contribs(latest, false);
-      if (!todayList) html += '<button class="btn primary block" data-nav="record">记录今天这一次</button>';
+      if (todayList) {
+        var tls = todayList.slice().sort(function (a, b) { return a.ts - b.ts; }), lc = looseCount(tls);
+        html += '<div class="today-strip"><div class="ts-head"><b>今天 ' + tls.length + ' 次</b>' + (lc ? '<span class="muted small">其中稀便 ' + lc + ' 次</span>' : '') + '</div><div class="ts-list">' +
+          tls.map(function (r) { return '<span class="ts-item"><i style="background:' + band(scoreOf(r)).color + '"></i>' + fmtTime(r.ts) + ' · ' + r.type + ' 型</span>'; }).join("") + '</div></div>';
+        html += '<button class="btn ghost block" data-nav="record">再记录一次</button>';
+      } else {
+        html += '<button class="btn primary block" data-nav="record">记录今天这一次</button>';
+      }
     } else {
       html += '<div class="empty-hero"><h2>还没有记录</h2><p class="muted small">拍一张照片，回答两个小问题，就能得到这一次的肠道评分。</p><button class="btn primary" data-nav="record">开始第一次记录</button></div>';
     }
@@ -656,7 +689,7 @@ h2 { font-size: 15px; font-weight: 700; }
         var bb = p.score != null ? band(p.score) : null;
         html += '<div class="wcol' + (i === 6 ? " today" : "") + '"><span class="wval" style="color:' + (bb ? bb.color : "var(--muted)") + '">' + (p.score != null ? p.score : "–") + '</span>' +
           '<div class="wbar' + (p.score == null ? " none" : "") + '" style="height:' + (p.score != null ? Math.max(8, p.score * 0.72) : 4) + 'px;' + (bb ? "background:" + bb.color : "") + '"></div>' +
-          '<span class="wlab">' + p.label + '</span></div>';
+          '<span class="wlab">' + p.label + '</span>' + (p.count > 1 ? '<span class="wcnt">' + p.count + ' 次</span>' : '') + '</div>';
       });
       html += '</div>';
     } else {
@@ -737,12 +770,15 @@ h2 { font-size: 15px; font-weight: 700; }
 
   function newDraft() {
     var last = sorted().slice(-1)[0];
-    return { photo: null, thumb: null, color: null, autoColor: null, type: null, water: last && dayKey(new Date(last.ts)) === dayKey(new Date()) ? last.water : 6, effort: null };
+    return { nth: todayList().length + 1, photo: null, thumb: null, color: null, autoColor: null, type: null, water: last && dayKey(new Date(last.ts)) === dayKey(new Date()) ? last.water : 6, effort: null };
   }
 
   function viewRecord() {
     var d = state.draft, html = '<div class="pad">';
-    html += '<div class="topbar"><button class="icon-btn" data-nav="home" aria-label="返回">' + BACK + '</button><h1>记录这一次</h1></div>';
+    html += '<div class="topbar"><button class="icon-btn" data-nav="home" aria-label="返回">' + BACK + '</button><h1>' + (d.nth > 1 ? "今天第 " + d.nth + " 次" : "记录这一次") + '</h1></div>';
+    if (d.nth > 1) {
+      html += '<div class="notice"><b>今天已经记录了 ' + (d.nth - 1) + ' 次</b><span>拉肚子时不用每次都拍照，直接选颜色和形状就能记录。喝水量已带入今天的数据。</span></div>';
+    }
 
     html += '<section class="photo">';
     if (d.photo) {
@@ -750,7 +786,7 @@ h2 { font-size: 15px; font-weight: 700; }
         '<label for="photo-input" class="retake" style="min-height:0;padding:6px 12px">重新拍</label>';
     } else {
       html += '<label for="photo-input"><span class="cam"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.5"/></svg></span>' +
-        '<b>拍照或从相册选择</b><span class="muted small">照片只用来识别颜色，识别完不会保存</span></label>';
+        '<b>' + (d.nth > 1 ? "拍照（可选）" : "拍照或从相册选择") + '</b><span class="muted small">照片只用来识别颜色，识别完不会保存</span></label>';
     }
     html += '<input class="sr" type="file" id="photo-input" accept="image/*" capture="environment"></section>';
     if (!d.photo) html += '<button class="link sample-link" data-action="sample">手边没有照片？用示例照片试试</button>';
@@ -780,7 +816,7 @@ h2 { font-size: 15px; font-weight: 700; }
     html += '</div></section>';
 
     var missing = [];
-    if (!d.photo) missing.push("照片");
+    if (!d.photo && d.nth <= 1) missing.push("照片");
     if (!d.color) missing.push("颜色");
     if (!d.type) missing.push("形状");
     if (!d.effort) missing.push("排便感觉");
@@ -807,7 +843,7 @@ h2 { font-size: 15px; font-weight: 700; }
     var s = scoreOf(r), b = band(s), alerts = evaluateAlerts(r);
     var html = '<div class="pad"><div class="topbar"><button class="icon-btn" data-nav="home" aria-label="返回首页">' + BACK + '</button><h1>本次评分</h1></div>';
     html += '<section class="card result-hero">' + ring(s, "xl") +
-      '<p class="muted small">' + relDay(r.ts) + ' ' + fmtTime(r.ts) + ' · 第 ' + r.type + ' 型 · ' + TYPES[r.type].tag + '</p></section>';
+      '<p class="muted small">' + relDay(r.ts) + ' ' + fmtTime(r.ts) + (todayList().length > 1 ? ' · 今天第 ' + todayList().length + ' 次' : '') + ' · 第 ' + r.type + ' 型 · ' + TYPES[r.type].tag + '</p></section>';
     html += '<div class="group"><div class="sec-title"><h2>各项表现</h2></div><section class="card">' + contribs(r, true).replace('class="contribs full"', 'class="contribs full" style="border-top:0;padding-top:0"') + '</section></div>';
     html += '<div class="group"><div class="sec-title"><h2>给你的建议</h2></div><section class="card"><ul class="tips">';
     adviceFor(r).forEach(function (t) { html += '<li>' + esc(t) + '</li>'; });
@@ -856,13 +892,13 @@ h2 { font-size: 15px; font-weight: 700; }
       if (list) {
         var sc = dayScore(list), b = band(sc);
         style = ' style="background:color-mix(in srgb, ' + b.color + ' 22%, var(--surface));color:' + b.color + '"';
-        inner += '<span class="s">' + sc + '</span>' + (list.some(isAbnormal) ? '<span class="flag" title="有异常"></span>' : '');
+        inner += '<span class="s">' + sc + '</span>' + (list.length > 1 ? '<span class="cnt">' + list.length + '次</span>' : '') + (list.some(isAbnormal) ? '<span class="flag" title="有异常"></span>' : '');
       }
       html += '<button class="' + cls + '"' + style + ' data-day="' + k + '"' + (future ? " disabled" : "") + ' aria-label="' + (mo + 1) + '月' + dd + '日' + (list ? "，" + dayScore(list) + " 分" : "，无记录") + '">' + inner + '</button>';
     }
     html += '</div><div class="legend"><span><i style="background:var(--perfect)"></i>95+ 完美</span><span><i style="background:var(--good)"></i>80–94 优秀</span><span><i style="background:var(--fine)"></i>60–79 良好</span><span><i style="background:var(--ok)"></i>40–59 一般</span><span><i style="background:var(--bad)"></i>&lt;40 需关注</span><span><i style="background:var(--bad);border-radius:50%"></i>有异常</span></div></section>';
 
-    var sel = state.selDay || (days[dayKey(today)] ? dayKey(today) : null);
+    var sel = state.selDay || (isCurrent && days[dayKey(today)] ? dayKey(today) : null);
     if (!sel) {
       // default to the most recent recorded day in this month
       for (var z = total; z >= 1; z--) { var kk = dayKey(new Date(y, mo, z)); if (days[kk]) { sel = kk; break; } }
@@ -984,7 +1020,7 @@ h2 { font-size: 15px; font-weight: 700; }
 
   function submit() {
     var d = state.draft;
-    if (!d || !d.photo || !d.color || !d.type || !d.effort) return;
+    if (!d || (!d.photo && d.nth <= 1) || !d.color || !d.type || !d.effort) return;
     var ov = document.createElement("div");
     ov.className = "overlay";
     ov.innerHTML = '<div class="scan">' + LOGO + '</div><b>正在分析…</b><span class="muted small">识别颜色 · 判断形状 · 计算评分</span>';
