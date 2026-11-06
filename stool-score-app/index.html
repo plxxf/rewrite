@@ -939,7 +939,12 @@ button.row:first-child { border-top: 0; }
   var DEFAULT_NAME = "大便超人";
   function displayName() { return state.profile.name || DEFAULT_NAME; }
   function maskPhone(ph) { return ph.length > 6 ? ph.slice(0, 3) + "****" + ph.slice(-3) : ph; }
-  var DIAL = [["+65", "新加坡"], ["+60", "马来西亚"], ["+852", "中国香港"], ["+853", "中国澳门"], ["+886", "中国台湾"], ["+86", "中国大陆"], ["+1", "美国/加拿大"], ["+61", "澳大利亚"], ["+44", "英国"]];
+  // first launch markets come first; the rest stay available for travellers
+  var DIAL = [["+1", "美国/加拿大"], ["+65", "新加坡"], ["+60", "马来西亚"], ["+852", "中国香港"], ["+853", "中国澳门"], ["+886", "中国台湾"], ["+86", "中国大陆"], ["+61", "澳大利亚"], ["+44", "英国"]];
+  function defaultDial() {
+    var lang = (navigator.language || "").toUpperCase();
+    return /-SG\b/.test(lang) ? "+65" : "+1";
+  }
 
   function viewSettings() {
     var p = state.profile, L = state.login, html = '<div class="pad">';
@@ -950,13 +955,13 @@ button.row:first-child { border-top: 0; }
         '<button class="link" data-action="logout">退出登录</button></section>';
     } else {
       html += '<section class="card field"><h2>登录 / 注册</h2><p class="muted small">登录后记录会同步到云端，换手机也不会丢。</p>' +
-        '<label class="input"><select id="login-dial" aria-label="国家或地区区号" class="dial">' + DIAL.map(function (d) { return '<option value="' + d[0] + '"' + ((L.dial || "+65") === d[0] ? " selected" : "") + '>' + d[0] + ' ' + d[1] + '</option>'; }).join("") + '</select><input id="login-phone" type="tel" inputmode="numeric" maxlength="15" placeholder="手机号" autocomplete="tel" value="' + esc(L.phone) + '"></label>' +
+        '<label class="input"><select id="login-dial" aria-label="国家或地区区号" class="dial">' + DIAL.map(function (d) { return '<option value="' + d[0] + '"' + ((L.dial || defaultDial()) === d[0] ? " selected" : "") + '>' + d[0] + ' ' + d[1] + '</option>'; }).join("") + '</select><input id="login-phone" type="tel" inputmode="numeric" maxlength="15" placeholder="手机号" autocomplete="tel" value="' + esc(L.phone) + '"></label>' +
         '<div class="code-row"><label class="input"><input id="login-code" inputmode="numeric" maxlength="6" placeholder="6 位验证码" autocomplete="one-time-code" value="' + esc(L.code) + '"></label>' +
         '<button class="btn ghost" id="send-code" data-action="send-code"' + (L.countdown ? " disabled" : "") + '>' + (L.countdown ? L.countdown + " 秒后重发" : "获取验证码") + '</button></div>' +
         '<label class="agree"><input type="checkbox" id="login-agree"' + (L.agree ? " checked" : "") + '>我已阅读并同意<button class="link" data-doc="terms">《用户协议》</button>和<button class="link" data-doc="privacy">《隐私政策》</button></label>' +
         '<p class="err small" id="login-err" hidden></p>' +
         '<button class="btn primary block" data-action="login">登录</button>' +
-        '<div class="or">其他方式</div><div class="row-btns"><button class="btn ghost" data-action="login-wechat">微信登录</button><button class="btn ghost" data-action="login-apple">Apple 登录</button></div>' +
+        '<div class="or">其他方式</div><div class="row-btns"><button class="btn ghost" data-action="login-apple">Apple 登录</button><button class="btn ghost" data-action="login-google">Google 登录</button></div>' +
         '<p class="muted small" style="text-align:center">演示版不会真的发送短信，输入任意 6 位数字即可登录。</p></section>';
     }
 
@@ -1286,9 +1291,9 @@ button.row:first-child { border-top: 0; }
   }
 
   var DOCS = {
-    terms: { title: "用户协议", body: [["适用人群", "本产品面向年满 14 周岁的用户。14 至 18 周岁的用户需在监护人同意下使用。"], ["运营方", "「拉了么」由 Neighbor（一家在新加坡注册的公司）运营。"], ["服务内容", "拉了么帮助你记录排便情况、生成评分和健康提醒。评分和提醒基于你填写的内容和照片颜色识别，仅用于日常健康管理。"], ["账号", "你可以使用手机号、微信或 Apple 账号登录。请妥善保管账号，不要转借他人使用。"], ["使用规范", "请如实记录。不要上传与排便记录无关的照片或他人隐私内容。"], ["服务变更", "我们可能会调整或升级功能，重大变更会提前在 App 内通知。"], ["联系我们", "如有疑问，可在「我的」页面反馈。"]] },
-    privacy: { title: "隐私政策", body: [["我们收集什么", "你填写的排便记录（时间、颜色、形状、喝水量、症状、饮食、用药）、账号信息（手机号或第三方账号标识）、你填写的昵称、性别、年龄、身高、体重。"], ["照片怎么处理", "照片只在手机上用来识别颜色，识别完成后立即丢弃，不会上传，也不会保存在记录里。"], ["数据存在哪里", "未登录时数据只保存在你的手机上；登录后会加密同步到云端，方便换机。"], ["健康 App", "只有在你开启并授权后，我们才会读取饮水量或写入排便记录。你可以随时在设置里关闭。"], ["使用统计", "为了改进产品，我们会统计应用启动、页面访问、功能使用次数等匿名数据。统计数据不包含你的排便记录、症状、用药和身体数据。你可以在「我的 → 数据与隐私」里关闭。"], ["你的权利", "你可以随时清除全部记录或注销账号，注销后数据会被永久删除。"], ["个人信息处理者", "Neighbor（新加坡）。数据存储地点和跨境传输安排以正式版隐私政策为准。"]] },
-    medical: { title: "医疗免责声明", body: [["不是医疗诊断", "拉了么的评分、分析和提醒只用于日常健康记录，不能替代医生的诊断和治疗。"], ["出现这些情况请就医", "便血或黑色柏油样便、灰白色大便、稀便持续超过 2 天、稀便同时发热、剧烈腹痛、超过一周没有排便、不明原因的体重下降。"], ["紧急情况", "如果出现大量出血、晕厥、严重脱水等紧急情况，请立即拨打当地急救电话（例如新加坡 995、马来西亚 999、中国香港 999、中国台湾 119、中国大陆 120）或前往急诊。"], ["适用人群", "本产品不面向 14 周岁以下儿童。14 至 18 周岁的用户需在监护人同意下使用。孕妇、老人及有慢性疾病的人群，评分和提醒可能不适用，请以医生意见为准。"]] }
+    terms: { title: "用户协议", body: [["适用人群", "本产品面向年满 14 周岁的用户。14 至 18 周岁的用户需在监护人同意下使用。"], ["运营方", "「拉了么」由 Neighbor（一家在新加坡注册的公司）运营。"], ["服务内容", "拉了么帮助你记录排便情况、生成评分和健康提醒。评分和提醒基于你填写的内容和照片颜色识别，仅用于日常健康管理。"], ["账号", "你可以使用手机号、Apple 账号或 Google 账号登录。请妥善保管账号，不要转借他人使用。"], ["使用规范", "请如实记录。不要上传与排便记录无关的照片或他人隐私内容。"], ["服务变更", "我们可能会调整或升级功能，重大变更会提前在 App 内通知。"], ["联系我们", "如有疑问，可在「我的」页面反馈。"]] },
+    privacy: { title: "隐私政策", body: [["我们收集什么", "你填写的排便记录（时间、颜色、形状、喝水量、症状、饮食、用药）、账号信息（手机号或第三方账号标识）、你填写的昵称、性别、年龄、身高、体重。"], ["照片怎么处理", "照片只在手机上用来识别颜色，识别完成后立即丢弃，不会上传，也不会保存在记录里。"], ["数据存在哪里", "未登录时数据只保存在你的手机上；登录后会加密同步到云端，方便换机。"], ["健康 App", "只有在你开启并授权后，我们才会读取饮水量或写入排便记录。你可以随时在设置里关闭。"], ["使用统计", "为了改进产品，我们会统计应用启动、页面访问、功能使用次数等匿名数据。统计数据不包含你的排便记录、症状、用药和身体数据。你可以在「我的 → 数据与隐私」里关闭。"], ["你的权利", "你可以随时清除全部记录或注销账号，注销后数据会被永久删除。"], ["个人信息处理者", "Neighbor（新加坡），由公司负责个人数据保护事务。数据存储地点和跨境传输安排以正式版隐私政策为准。"], ["不会做的事", "我们不出售你的数据，不在 App 里接入广告，不把你的健康信息分享给广告商或数据经纪商。"]] },
+    medical: { title: "医疗免责声明", body: [["不是医疗诊断", "拉了么的评分、分析和提醒只用于日常健康记录，不能替代医生的诊断和治疗。"], ["出现这些情况请就医", "便血或黑色柏油样便、灰白色大便、稀便持续超过 2 天、稀便同时发热、剧烈腹痛、超过一周没有排便、不明原因的体重下降。"], ["紧急情况", "如果出现大量出血、晕厥、严重脱水等紧急情况，请立即拨打当地急救电话（例如美国和加拿大 911、新加坡 995）或前往急诊。"], ["适用人群", "本产品不面向 14 周岁以下儿童。14 至 18 周岁的用户需在监护人同意下使用。孕妇、老人及有慢性疾病的人群，评分和提醒可能不适用，请以医生意见为准。"]] }
   };
   function viewDoc() {
     var doc = DOCS[state.doc] || DOCS.terms;
@@ -1854,7 +1859,7 @@ button.row:first-child { border-top: 0; }
       case "range-month": state.range = "month"; render(true); break;
       case "send-code": sendCode(); break;
       case "login": loginPhone(); break;
-      case "login-wechat": loginVia("微信"); break;
+      case "login-google": loginVia("Google"); break;
       case "login-apple": loginVia("Apple"); break;
       case "logout": state.profile.loggedIn = false; state.profile.phone = ""; state.profile.via = ""; saveProfile(); render(true); toast("已退出登录"); break;
       case "goal-minus": state.setBasic.waterGoal = Math.max(4, state.setBasic.waterGoal - 1); state.setBasic.goalAuto = false; state.setBasic.dirty = true; render(true); break;
@@ -1906,7 +1911,7 @@ button.row:first-child { border-top: 0; }
   }
   // basic length check per region; the SMS provider does the real validation
   function phoneOk(L) {
-    var d = L.dial || "+65", n = L.phone || "";
+    var d = L.dial || defaultDial(), n = L.phone || "";
     var len = { "+65": [8, 8], "+60": [9, 10], "+852": [8, 8], "+853": [8, 8], "+886": [9, 9], "+86": [11, 11], "+1": [10, 10], "+61": [9, 9], "+44": [10, 10] }[d] || [6, 15];
     return /^\d+$/.test(n) && n.length >= len[0] && n.length <= len[1];
   }
@@ -1939,7 +1944,7 @@ button.row:first-child { border-top: 0; }
     if (!phoneOk(L)) return loginError("请输入正确的手机号");
     if (!/^\d{6}$/.test(L.code)) return loginError("请输入 6 位验证码");
     if (!L.agree) return loginError("请先勾选同意用户协议和隐私政策");
-    finishLogin("手机", (L.dial || "+65") + " " + L.phone);
+    finishLogin("手机", (L.dial || defaultDial()) + " " + L.phone);
   }
   function loginVia(via) {
     if (!state.login.agree) return loginError("请先勾选同意用户协议和隐私政策");
