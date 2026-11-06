@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>顺畅肠道日记</title>
+<title>拉了么</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -267,6 +267,7 @@ button.row:first-child { border-top: 0; }
 .input { display: flex; align-items: center; gap: 8px; border: 1.5px solid var(--line); border-radius: 14px; padding: 0 12px; background: var(--fill); flex: 1; min-width: 0; }
 .input:focus-within { border-color: var(--accent-strong); }
 .input span { color: var(--muted); font-size: 14px; }
+.input .dial { border: 0; background: none; font-size: 14px; color: var(--muted); padding: 0; max-width: 46%; }
 .input input { border: 0; background: none; padding: 12px 0; width: 100%; min-width: 0; outline: none; }
 .code-row { display: flex; gap: 8px; }
 .code-row .btn { flex: none; padding: 0 14px; font-size: 14px; font-weight: 500; }
@@ -617,7 +618,7 @@ button.row:first-child { border-top: 0; }
   var stored = load(KEY);
   var state = {
     records: stored || seedExamples(),
-    settings: Object.assign({ daily: true, dailyTime: "08:30", water: true, noBm: true, weekly: true, blur: true, healthRead: false, healthWrite: false, onboarded: false }, load(SKEY) || {}),
+    settings: Object.assign({ daily: true, dailyTime: "08:30", water: true, noBm: true, weekly: true, blur: true, stats: true, healthRead: false, healthWrite: false, onboarded: false }, load(SKEY) || {}),
     profile: load(PKEY) || { loggedIn: false, phone: "", via: "", name: "", gender: "", birthYear: "", waterGoal: 8 },
     login: { phone: "", code: "", agree: false, countdown: 0 },
     confirmClear: false,
@@ -937,18 +938,19 @@ button.row:first-child { border-top: 0; }
   }
   var DEFAULT_NAME = "大便超人";
   function displayName() { return state.profile.name || DEFAULT_NAME; }
-  function maskPhone(ph) { return ph.slice(0, 3) + "****" + ph.slice(7); }
+  function maskPhone(ph) { return ph.length > 6 ? ph.slice(0, 3) + "****" + ph.slice(-3) : ph; }
+  var DIAL = [["+65", "新加坡"], ["+60", "马来西亚"], ["+852", "中国香港"], ["+853", "中国澳门"], ["+886", "中国台湾"], ["+86", "中国大陆"], ["+1", "美国/加拿大"], ["+61", "澳大利亚"], ["+44", "英国"]];
 
   function viewSettings() {
     var p = state.profile, L = state.login, html = '<div class="pad">';
     html += '<div class="topbar"><button class="icon-btn" data-nav="home" aria-label="返回首页">' + BACK + '</button><h1>我的</h1></div>';
     if (p.loggedIn) {
-      html += '<section class="card profile"><span class="avatar lg">' + avatarInner() + '</span><div class="grow"><b>' + esc(p.name || "顺畅用户") + '</b>' +
+      html += '<section class="card profile"><span class="avatar lg">' + avatarInner() + '</span><div class="grow"><b>' + esc(p.name || "拉了么用户") + '</b>' +
         '<div class="muted small">' + (p.phone ? maskPhone(p.phone) : p.via + " 账号") + ' · 已登录，记录会同步</div></div>' +
         '<button class="link" data-action="logout">退出登录</button></section>';
     } else {
       html += '<section class="card field"><h2>登录 / 注册</h2><p class="muted small">登录后记录会同步到云端，换手机也不会丢。</p>' +
-        '<label class="input"><span>+86</span><input id="login-phone" type="tel" inputmode="numeric" maxlength="11" placeholder="手机号" autocomplete="tel" value="' + esc(L.phone) + '"></label>' +
+        '<label class="input"><select id="login-dial" aria-label="国家或地区区号" class="dial">' + DIAL.map(function (d) { return '<option value="' + d[0] + '"' + ((L.dial || "+65") === d[0] ? " selected" : "") + '>' + d[0] + ' ' + d[1] + '</option>'; }).join("") + '</select><input id="login-phone" type="tel" inputmode="numeric" maxlength="15" placeholder="手机号" autocomplete="tel" value="' + esc(L.phone) + '"></label>' +
         '<div class="code-row"><label class="input"><input id="login-code" inputmode="numeric" maxlength="6" placeholder="6 位验证码" autocomplete="one-time-code" value="' + esc(L.code) + '"></label>' +
         '<button class="btn ghost" id="send-code" data-action="send-code"' + (L.countdown ? " disabled" : "") + '>' + (L.countdown ? L.countdown + " 秒后重发" : "获取验证码") + '</button></div>' +
         '<label class="agree"><input type="checkbox" id="login-agree"' + (L.agree ? " checked" : "") + '>我已阅读并同意<button class="link" data-doc="terms">《用户协议》</button>和<button class="link" data-doc="privacy">《隐私政策》</button></label>' +
@@ -995,6 +997,7 @@ button.row:first-child { border-top: 0; }
       '<p class="muted small">需要在手机系统里授权，支持 Apple 健康和主流安卓健康平台。</p></section>';
 
     html += '<section class="card"><h2>数据与隐私</h2>' + toggleRow("blur-on", st.blur, "拍照预览自动模糊", "拍完只显示模糊画面，需要时再点开查看") +
+      toggleRow("stats-on", st.stats, "匿名使用统计", "帮助我们改进产品，不包含你的记录和身体数据") +
       '<p class="muted small">拍的照片只用来识别颜色，识别完不会保存；记录里只保留评分和你填写的内容。</p>' +
       (state.confirmClear
         ? '<div class="confirm"><span class="small">确定删除全部 ' + state.records.length + ' 条记录吗？删除后无法恢复。</span><div class="row-btns"><button class="btn ghost" data-action="clear-cancel">取消</button><button class="btn danger" data-action="clear-all">确认删除</button></div></div>'
@@ -1006,7 +1009,7 @@ button.row:first-child { border-top: 0; }
       '<button class="list-row" data-action="onb-replay"><span>重新查看新手引导</span>' + CHEV + '</button>' +
       (p.loggedIn ? '<button class="list-row danger-text" data-action="acct-ask"><span>注销账号</span></button>' : '') + '</div>' +
       (state.confirmAcct ? '<div class="confirm"><span class="small">注销后，账号和全部记录会被永久删除，无法恢复。</span><div class="row-btns"><button class="btn ghost" data-action="acct-cancel">取消</button><button class="btn danger" data-action="acct-confirm">确认注销</button></div></div>' : '') + '</section>';
-    html += '<p class="disclaimer">顺畅 v0.3 · 评分仅用于日常健康记录，不能替代医生的诊断。</p></div>';
+    html += '<p class="disclaimer">拉了么 v0.3 · Neighbor · 评分仅用于日常健康记录，不能替代医生的诊断。</p></div>';
     return html;
   }
 
@@ -1272,7 +1275,7 @@ button.row:first-child { border-top: 0; }
     var isWeek = state.reportRange !== "month", n = isWeek ? 7 : 30, today = startOfDay(new Date()), from = addDays(today, -(n - 1));
     var ser = series(from, today, function () { return ""; }), av = avgOf(ser);
     var recs = state.records.filter(function (r) { return r.ts >= from.getTime(); }).sort(function (a, b) { return a.ts - b.ts; });
-    var lines = ["顺畅 · 排便记录" + (isWeek ? "周报" : "月报"), (from.getMonth() + 1) + "月" + from.getDate() + "日 – " + (today.getMonth() + 1) + "月" + today.getDate() + "日",
+    var lines = ["拉了么 · 排便记录" + (isWeek ? "周报" : "月报"), (from.getMonth() + 1) + "月" + from.getDate() + "日 – " + (today.getMonth() + 1) + "月" + today.getDate() + "日",
       "记录天数：" + av.n + " / " + n + "，排便次数：" + recs.length + "，日均评分：" + (av.avg != null ? av.avg : "–"), "", "明细："];
     recs.forEach(function (r) {
       var extra = [].concat(r.symptoms || [], r.diet || [], r.meds || []);
@@ -1283,9 +1286,9 @@ button.row:first-child { border-top: 0; }
   }
 
   var DOCS = {
-    terms: { title: "用户协议", body: [["适用人群", "本产品面向年满 14 周岁的用户。14 至 18 周岁的用户需在监护人同意下使用。"], ["服务内容", "顺畅帮助你记录排便情况、生成评分和健康提醒。评分和提醒基于你填写的内容和照片颜色识别，仅用于日常健康管理。"], ["账号", "你可以使用手机号、微信或 Apple 账号登录。请妥善保管账号，不要转借他人使用。"], ["使用规范", "请如实记录。不要上传与排便记录无关的照片或他人隐私内容。"], ["服务变更", "我们可能会调整或升级功能，重大变更会提前在 App 内通知。"], ["联系我们", "如有疑问，可在「我的」页面反馈。"]] },
-    privacy: { title: "隐私政策", body: [["我们收集什么", "你填写的排便记录（时间、颜色、形状、喝水量、症状、饮食、用药）、账号信息（手机号或第三方账号标识）、你填写的昵称、性别、年龄、身高、体重。"], ["照片怎么处理", "照片只在手机上用来识别颜色，识别完成后立即丢弃，不会上传，也不会保存在记录里。"], ["数据存在哪里", "未登录时数据只保存在你的手机上；登录后会加密同步到云端，方便换机。"], ["健康 App", "只有在你开启并授权后，我们才会读取饮水量或写入排便记录。你可以随时在设置里关闭。"], ["你的权利", "你可以随时清除全部记录或注销账号，注销后数据会被永久删除。"]] },
-    medical: { title: "医疗免责声明", body: [["不是医疗诊断", "顺畅的评分、分析和提醒只用于日常健康记录，不能替代医生的诊断和治疗。"], ["出现这些情况请就医", "便血或黑色柏油样便、灰白色大便、稀便持续超过 2 天、稀便同时发热、剧烈腹痛、超过一周没有排便、不明原因的体重下降。"], ["紧急情况", "如果出现大量出血、晕厥、严重脱水等紧急情况，请立即拨打 120 或前往急诊。"], ["适用人群", "本产品不面向 14 周岁以下儿童。14 至 18 周岁的用户需在监护人同意下使用。孕妇、老人及有慢性疾病的人群，评分和提醒可能不适用，请以医生意见为准。"]] }
+    terms: { title: "用户协议", body: [["适用人群", "本产品面向年满 14 周岁的用户。14 至 18 周岁的用户需在监护人同意下使用。"], ["运营方", "「拉了么」由 Neighbor（一家在新加坡注册的公司）运营。"], ["服务内容", "拉了么帮助你记录排便情况、生成评分和健康提醒。评分和提醒基于你填写的内容和照片颜色识别，仅用于日常健康管理。"], ["账号", "你可以使用手机号、微信或 Apple 账号登录。请妥善保管账号，不要转借他人使用。"], ["使用规范", "请如实记录。不要上传与排便记录无关的照片或他人隐私内容。"], ["服务变更", "我们可能会调整或升级功能，重大变更会提前在 App 内通知。"], ["联系我们", "如有疑问，可在「我的」页面反馈。"]] },
+    privacy: { title: "隐私政策", body: [["我们收集什么", "你填写的排便记录（时间、颜色、形状、喝水量、症状、饮食、用药）、账号信息（手机号或第三方账号标识）、你填写的昵称、性别、年龄、身高、体重。"], ["照片怎么处理", "照片只在手机上用来识别颜色，识别完成后立即丢弃，不会上传，也不会保存在记录里。"], ["数据存在哪里", "未登录时数据只保存在你的手机上；登录后会加密同步到云端，方便换机。"], ["健康 App", "只有在你开启并授权后，我们才会读取饮水量或写入排便记录。你可以随时在设置里关闭。"], ["使用统计", "为了改进产品，我们会统计应用启动、页面访问、功能使用次数等匿名数据。统计数据不包含你的排便记录、症状、用药和身体数据。你可以在「我的 → 数据与隐私」里关闭。"], ["你的权利", "你可以随时清除全部记录或注销账号，注销后数据会被永久删除。"], ["个人信息处理者", "Neighbor（新加坡）。数据存储地点和跨境传输安排以正式版隐私政策为准。"]] },
+    medical: { title: "医疗免责声明", body: [["不是医疗诊断", "拉了么的评分、分析和提醒只用于日常健康记录，不能替代医生的诊断和治疗。"], ["出现这些情况请就医", "便血或黑色柏油样便、灰白色大便、稀便持续超过 2 天、稀便同时发热、剧烈腹痛、超过一周没有排便、不明原因的体重下降。"], ["紧急情况", "如果出现大量出血、晕厥、严重脱水等紧急情况，请立即拨打当地急救电话（例如新加坡 995、马来西亚 999、中国香港 999、中国台湾 119、中国大陆 120）或前往急诊。"], ["适用人群", "本产品不面向 14 周岁以下儿童。14 至 18 周岁的用户需在监护人同意下使用。孕妇、老人及有慢性疾病的人群，评分和提醒可能不适用，请以医生意见为准。"]] }
   };
   function viewDoc() {
     var doc = DOCS[state.doc] || DOCS.terms;
@@ -1466,7 +1469,7 @@ button.row:first-child { border-top: 0; }
   function onbHtml(step) {
     if (state.onb === 1 && document.getElementById("onb-name")) state.basic.name = document.getElementById("onb-name").value.trim();
     var steps = [
-      { art: '<div class="art-circle">' + LOGO + '</div>', h: "欢迎使用顺畅", p: "每次排便后拍一张照片，再回答两个小问题，30 秒就能记下这一次的排便情况。" },
+      { art: '<div class="art-circle">' + LOGO + '</div>', h: "欢迎使用拉了么", p: "每次排便后拍一张照片，再回答两个小问题，30 秒就能记下这一次的排便情况。" },
       { form: true },
       { art: ring(88, "xl"), h: "看懂你的评分", p: "分数越高越好。圆环的颜色代表等级，出现需要留意的情况时会提醒你，必要时建议就医。",
         extra: '<div class="legend"><span><i style="background:var(--perfect)"></i>完美</span><span><i style="background:var(--good)"></i>优秀</span><span><i style="background:var(--fine)"></i>良好</span><span><i style="background:var(--ok)"></i>一般</span><span><i style="background:var(--bad)"></i>需关注</span></div>' },
@@ -1870,6 +1873,7 @@ button.row:first-child { border-top: 0; }
     if (id === "daily-on") { st.daily = e.target.checked; toast(st.daily ? "每天 " + st.dailyTime + " 提醒你记录" : "已关闭每日提醒"); }
     else if (id === "water-on") { st.water = e.target.checked; toast(st.water ? "已开启喝水提醒" : "已关闭喝水提醒"); }
     else if (id === "daily-time") { st.dailyTime = e.target.value || "08:30"; toast("提醒时间改为 " + st.dailyTime); }
+    else if (id === "login-dial") { state.login.dial = e.target.value; return; }
     else if (id === "login-agree") { state.login.agree = e.target.checked; return; }
     else if (id === "onb-guardian") { state.basic.guardian = e.target.checked; render(true); return; }
     else if (id === "set-guardian") { state.setBasic.guardian = e.target.checked; state.setBasic.dirty = true; render(true); return; }
@@ -1880,6 +1884,7 @@ button.row:first-child { border-top: 0; }
     }
     else if (id === "nobm-on") { st.noBm = e.target.checked; toast(st.noBm ? "已开启多日未排便提醒" : "已关闭多日未排便提醒"); }
     else if (id === "weekly-on") { st.weekly = e.target.checked; toast(st.weekly ? "每周一推送周报" : "已关闭周报推送"); }
+    else if (id === "stats-on") { st.stats = e.target.checked; toast(st.stats ? "已开启匿名使用统计" : "已关闭匿名使用统计"); }
     else if (id === "blur-on") { st.blur = e.target.checked; toast(st.blur ? "拍照预览会自动模糊" : "已关闭自动模糊"); }
     else if (id === "hread-on") { st.healthRead = e.target.checked; toast(st.healthRead ? "已授权读取喝水量（演示）" : "已停止读取健康数据"); }
     else if (id === "hwrite-on") { st.healthWrite = e.target.checked; toast(st.healthWrite ? "记录会写入健康 App（演示）" : "已停止写入健康 App"); }
@@ -1899,9 +1904,15 @@ button.row:first-child { border-top: 0; }
     var el = document.getElementById("login-err");
     if (el) { el.textContent = msg; el.hidden = !msg; }
   }
+  // basic length check per region; the SMS provider does the real validation
+  function phoneOk(L) {
+    var d = L.dial || "+65", n = L.phone || "";
+    var len = { "+65": [8, 8], "+60": [9, 10], "+852": [8, 8], "+853": [8, 8], "+886": [9, 9], "+86": [11, 11], "+1": [10, 10], "+61": [9, 9], "+44": [10, 10] }[d] || [6, 15];
+    return /^\d+$/.test(n) && n.length >= len[0] && n.length <= len[1];
+  }
   function sendCode() {
     var L = state.login;
-    if (!/^1\d{10}$/.test(L.phone)) return loginError("请输入 11 位手机号");
+    if (!phoneOk(L)) return loginError("请输入正确的手机号");
     loginError("");
     L.countdown = 60;
     toast("验证码已发送（演示）");
@@ -1925,10 +1936,10 @@ button.row:first-child { border-top: 0; }
   }
   function loginPhone() {
     var L = state.login;
-    if (!/^1\d{10}$/.test(L.phone)) return loginError("请输入 11 位手机号");
+    if (!phoneOk(L)) return loginError("请输入正确的手机号");
     if (!/^\d{6}$/.test(L.code)) return loginError("请输入 6 位验证码");
     if (!L.agree) return loginError("请先勾选同意用户协议和隐私政策");
-    finishLogin("手机", L.phone);
+    finishLogin("手机", (L.dial || "+65") + " " + L.phone);
   }
   function loginVia(via) {
     if (!state.login.agree) return loginError("请先勾选同意用户协议和隐私政策");
