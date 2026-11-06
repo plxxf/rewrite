@@ -173,6 +173,39 @@ h2 { font-size: 15px; font-weight: 700; }
 .block-line .ic { width: 16px; height: 16px; margin-top: 4px; }
 .guardian { display: flex; gap: 8px; align-items: flex-start; margin-top: 6px; font-size: 13px; color: var(--ink); }
 .guardian input { margin: 3px 0 0; accent-color: var(--accent); width: 16px; height: 16px; }
+.login-step { justify-content: center; gap: 18px; }
+.login-head { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
+.art-circle.sm { width: 84px; height: 84px; }
+.art-circle.sm svg { width: 40px; height: 40px; }
+.login-btns { display: flex; flex-direction: column; gap: 10px; }
+.login-btns .btn { gap: 10px; }
+.btn.login-apple { background: #000; color: #fff; }
+:root[data-theme="dark"] .btn.login-apple { background: #fff; color: #000; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn.login-apple { background: #fff; color: #000; } }
+.phone-form { display: flex; flex-direction: column; gap: 10px; }
+.data-rows { display: flex; flex-direction: column; background: var(--fill); border-radius: 14px; padding: 0 12px; }
+.data-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; width: 100%; background: none; border: 0; border-top: 1px solid var(--line); padding: 12px 0; font-size: 14px; text-align: left; }
+.data-row:first-child { border-top: 0; }
+.data-row .dv { display: inline-flex; align-items: center; gap: 4px; }
+.data-row .dv b { font-family: var(--f-display); font-variant-numeric: tabular-nums; }
+.data-row .dv .ic { width: 16px; height: 16px; color: var(--muted); }
+.sheet { position: absolute; inset: 0; z-index: 45; display: flex; align-items: flex-end; background: rgba(0, 0, 0, .35); animation: celeFade .2s ease both; }
+.sheet-card { width: 100%; background: var(--surface); border-radius: 22px 22px 0 0; padding: 14px max(16px, env(safe-area-inset-right, 0px)) calc(20px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); display: flex; flex-direction: column; gap: 10px; animation: sheetUp .28s cubic-bezier(.2, .9, .3, 1) both; }
+@keyframes sheetUp { from { transform: translateY(40px); opacity: 0; } }
+.sheet-head { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; }
+.sheet-head .link:last-child { justify-self: end; }
+.link.strong { font-weight: 700; font-size: 15px; }
+.sheet-head .link:first-child { font-size: 15px; color: var(--muted); }
+.dial-value { display: flex; justify-content: center; align-items: baseline; gap: 6px; padding-top: 6px; }
+.dial-value .num { font-size: 52px; font-weight: 700; letter-spacing: -.02em; line-height: 1; color: var(--accent-strong); }
+.dial-unit { font-size: 17px; color: var(--muted); font-weight: 600; }
+.dial-wrap { position: relative; height: 96px; margin: 0 -16px; border-top: 1px solid var(--line); background: linear-gradient(var(--fill), var(--surface)); overflow: hidden; }
+.dial-wrap canvas { width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; }
+.dial-wrap canvas:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.dial-pointer { position: absolute; left: 50%; top: 0; width: 0; height: 0; transform: translateX(-50%); border-left: 7px solid transparent; border-right: 7px solid transparent; border-top: 9px solid var(--accent); pointer-events: none; }
+.dial-fine { display: flex; justify-content: center; gap: 16px; }
+.dial-fine .icon-btn { width: 44px; height: 44px; border-radius: 50%; background: var(--fill); }
+@media (prefers-reduced-motion: reduce) { .sheet, .sheet-card { animation: none; } }
 .save-bar { display: flex; flex-direction: column; gap: 8px; border-top: 1px solid var(--line); padding-top: 12px; }
 .save-bar .hint { margin: 0; text-align: left; }
 .cap-note { display: flex; gap: 8px; align-items: flex-start; text-align: left; font-size: 13px; color: var(--accent-strong); background: var(--accent-soft); border-radius: 12px; padding: 8px 12px; margin: 0; }
@@ -954,15 +987,9 @@ button.row:first-child { border-top: 0; }
         '<div class="muted small">' + (p.phone ? maskPhone(p.phone) : p.via + " 账号") + ' · 已登录，记录会同步</div></div>' +
         '<button class="link" data-action="logout">退出登录</button></section>';
     } else {
-      html += '<section class="card field"><h2>登录 / 注册</h2><p class="muted small">登录后记录会同步到云端，换手机也不会丢。</p>' +
-        '<label class="input"><select id="login-dial" aria-label="国家或地区区号" class="dial">' + DIAL.map(function (d) { return '<option value="' + d[0] + '"' + ((L.dial || defaultDial()) === d[0] ? " selected" : "") + '>' + d[0] + ' ' + d[1] + '</option>'; }).join("") + '</select><input id="login-phone" type="tel" inputmode="numeric" maxlength="15" placeholder="手机号" autocomplete="tel" value="' + esc(L.phone) + '"></label>' +
-        '<div class="code-row"><label class="input"><input id="login-code" inputmode="numeric" maxlength="6" placeholder="6 位验证码" autocomplete="one-time-code" value="' + esc(L.code) + '"></label>' +
-        '<button class="btn ghost" id="send-code" data-action="send-code"' + (L.countdown ? " disabled" : "") + '>' + (L.countdown ? L.countdown + " 秒后重发" : "获取验证码") + '</button></div>' +
-        '<label class="agree"><input type="checkbox" id="login-agree"' + (L.agree ? " checked" : "") + '>我已阅读并同意<button class="link" data-doc="terms">《用户协议》</button>和<button class="link" data-doc="privacy">《隐私政策》</button></label>' +
-        '<p class="err small" id="login-err" hidden></p>' +
-        '<button class="btn primary block" data-action="login">登录</button>' +
-        '<div class="or">其他方式</div><div class="row-btns"><button class="btn ghost" data-action="login-apple">Apple 登录</button><button class="btn ghost" data-action="login-google">Google 登录</button></div>' +
-        '<p class="muted small" style="text-align:center">演示版不会真的发送短信，输入任意 6 位数字即可登录。</p></section>';
+      html += '<section class="card profile"><span class="avatar lg">' + avatarInner() + '</span><div class="grow"><b>还没有登录</b>' +
+        '<div class="muted small">登录后记录会加密备份，换手机也不会丢</div></div>' +
+        '<button class="btn primary" style="padding:9px 14px;font-size:14px" data-action="open-login">登录</button></section>';
     }
 
     if (!state.setBasic || !state.setBasic.dirty) state.setBasic = basicFromProfile();
@@ -970,8 +997,10 @@ button.row:first-child { border-top: 0; }
     html += '<section class="card"><h2>我的信息</h2>' +
       '<div class="setting"><label for="pf-name" class="small"><b>昵称</b></label><input class="inline-input" id="pf-name" maxlength="12" placeholder="' + DEFAULT_NAME + '" value="' + esc(sb.name) + '"></div>' +
       '<div class="setting"><span class="small"><b>性别</b></span>' + genderChips(sb.gender, "data-gender") + '</div>' +
-      '<div class="field" style="border-top:1px solid var(--line);padding-top:12px"><span class="small"><b>身体数据</b><span class="muted">　上下滑动选择</span></span>' +
-      '<div class="wheels">' + wheelHtml("age", "set", sb.age) + wheelHtml("height", "set", sb.height) + wheelHtml("weight", "set", sb.weight) + '</div>' +
+      '<div class="field" style="border-top:1px solid var(--line);padding-top:12px"><span class="small"><b>身体数据</b><span class="muted">　点按调整</span></span>' +
+      '<div class="data-rows">' + ["age", "height", "weight"].map(function (k) {
+        return '<button class="data-row" data-dial="' + k + '"><span>' + WHEELS[k].label + '</span><span class="dv"><b>' + dialFmt(k, sb[k]) + '</b>' + ic("chevron-right") + '</span></button>';
+      }).join("") + '</div>' +
       '<div class="basic-sum" id="set-sum" aria-live="polite">' + basicSummary(sb) + '</div></div>' +
       '<div class="setting"><div><div class="small"><b>每日喝水目标</b></div><div class="muted small" id="goal-src">' + goalSrcText(sb) + '</div></div>' +
       '<div class="stepper"><button class="icon-btn sm" data-action="goal-minus" aria-label="少一杯">' + ic("minus") + '</button><span class="num" id="goal-num">' + sb.waterGoal + '</span><button class="icon-btn sm" data-action="goal-plus" aria-label="多一杯">' + ic("plus") + '</button><span class="muted small">杯</span></div></div>' +
@@ -1331,6 +1360,120 @@ button.row:first-child { border-top: 0; }
   document.addEventListener("touchstart", function (e) { touchY = e.touches[0].clientY; }, { passive: true });
   document.addEventListener("touchmove", function (e) { var w = e.target.closest && e.target.closest(".wheel"); if (w && touchY != null && e.touches[0].clientY - touchY > 12) ageEdgeHint(w); }, { passive: true });
   document.addEventListener("keydown", function (e) { var w = document.activeElement; if (e.key === "ArrowUp" && w && w.classList && w.classList.contains("wheel")) ageEdgeHint(w); });
+  function dialFmt(k, v) { return (k === "weight" ? Number(v).toFixed(1) : String(v)) + " " + WHEELS[k].unit; }
+
+  /* ---------- precision dial (like a camera zoom ring) ---------- */
+  var dialAnim = null;
+  function dialSheetHtml() {
+    var d = state.dial, w = WHEELS[d.key];
+    return '<div class="sheet" role="dialog" aria-label="调整' + w.label + '"><div class="sheet-card">' +
+      '<div class="sheet-head"><button class="link" data-action="dial-cancel">取消</button><b>' + w.label + '</b><button class="link strong" data-action="dial-done">完成</button></div>' +
+      '<div class="dial-value"><span class="num" id="dial-num">' + (d.key === "weight" ? d.val.toFixed(1) : d.val) + '</span><span class="dial-unit">' + w.unit + '</span></div>' +
+      '<div class="dial-wrap"><canvas id="dial-canvas" tabindex="0" role="slider" aria-label="' + w.label + '" aria-valuemin="' + w.vals[0] + '" aria-valuemax="' + w.vals[w.vals.length - 1] + '" aria-valuenow="' + d.val + '"></canvas><i class="dial-pointer"></i></div>' +
+      '<p class="muted small" style="text-align:center">左右拖动刻度盘调整' + (d.key === "age" ? "，14 岁起" : "") + '</p>' +
+      '<div class="dial-fine"><button class="icon-btn" data-action="dial-step" data-dir="-1" aria-label="减少">' + ic("minus") + '</button><button class="icon-btn" data-action="dial-step" data-dir="1" aria-label="增加">' + ic("plus") + '</button></div>' +
+      '</div></div>';
+  }
+  function openDial(key) {
+    var vs = WHEELS[key].vals, v = state.setBasic[key], i = vs.indexOf(v);
+    if (i < 0) i = vs.indexOf(WHEELS[key].def);
+    state.dial = { key: key, pos: i, val: vs[i], last: i };
+    render(true);
+  }
+  function closeDial(apply) {
+    var d = state.dial;
+    if (dialAnim) cancelAnimationFrame(dialAnim);
+    if (apply && d) {
+      var b = state.setBasic;
+      if (b[d.key] !== d.val) {
+        b[d.key] = d.val; b.dirty = true; b.confirmOdd = false;
+        if (b.goalAuto) { var cups = suggestedCups(b); if (cups) b.waterGoal = cups; }
+      }
+    }
+    state.dial = null; render(true);
+  }
+  function haptic() { try { if (navigator.vibrate) navigator.vibrate(6); } catch (e) { /* not supported */ } }
+  function drawDial() {
+    var d = state.dial, cv = document.getElementById("dial-canvas");
+    if (!d || !cv) return;
+    var vs = WHEELS[d.key].vals, dpr = window.devicePixelRatio || 1, W = cv.clientWidth, H = cv.clientHeight;
+    if (cv.width !== Math.round(W * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+    var ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
+    var css = getComputedStyle(document.documentElement), ink = css.getPropertyValue("--ink").trim(), mut = css.getPropertyValue("--muted").trim(), acc = css.getPropertyValue("--accent").trim();
+    var gap = d.key === "weight" ? 9 : 11, R = W * 1.25, cx = W / 2, top = 14;
+    // long ticks on round numbers: every 10 (age, height) or every 5 kg; medium ticks every 5 / every 1 kg
+    var majorStep = d.key === "weight" ? 5 : 10, midStep = d.key === "weight" ? 1 : 5;
+    var from = Math.max(0, Math.floor(d.pos - W / gap)), to = Math.min(vs.length - 1, Math.ceil(d.pos + W / gap));
+    ctx.textAlign = "center"; ctx.font = "600 11px " + css.getPropertyValue("--f-display");
+    for (var i = from; i <= to; i++) {
+      var dx = (i - d.pos) * gap, th = dx / R;
+      if (Math.abs(th) > 1.2) continue;
+      var x = cx + R * Math.sin(th), y = top + R * (1 - Math.cos(th));
+      var isMajor = vs[i] % majorStep === 0, isMid = !isMajor && vs[i] % midStep === 0;
+      var len = isMajor ? 22 : isMid ? 15 : 9, fade = Math.max(0, 1 - Math.abs(dx) / (W * 0.55));
+      ctx.save(); ctx.translate(x, y); ctx.rotate(th);
+      ctx.globalAlpha = 0.25 + 0.75 * fade;
+      ctx.strokeStyle = Math.round(d.pos) === i ? acc : (isMajor ? ink : mut);
+      ctx.lineWidth = isMajor ? 2 : 1.4; ctx.lineCap = "round";
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, len); ctx.stroke();
+      if (isMajor) { ctx.fillStyle = ink; ctx.fillText(d.key === "weight" ? String(vs[i]) : String(vs[i]), 0, len + 16); }
+      ctx.restore();
+    }
+  }
+  function dialSet(pos, fromUser) {
+    var d = state.dial, vs = WHEELS[d.key].vals, max = vs.length - 1;
+    if (pos < 0) { pos = fromUser ? pos * 0.3 : 0; if (d.key === "age") ageEdgeHint({ getAttribute: function () { return "age"; }, scrollTop: 0, classList: { remove: function () {}, add: function () {} }, offsetWidth: 0 }); }
+    if (pos > max) pos = fromUser ? max + (pos - max) * 0.3 : max;
+    d.pos = pos;
+    var idx = Math.max(0, Math.min(max, Math.round(pos)));
+    if (idx !== d.last) { d.last = idx; d.val = vs[idx]; haptic(); var n = document.getElementById("dial-num"); if (n) n.textContent = d.key === "weight" ? d.val.toFixed(1) : d.val; var cv = document.getElementById("dial-canvas"); if (cv) cv.setAttribute("aria-valuenow", d.val); }
+    drawDial();
+  }
+  function dialSnap() {
+    var d = state.dial; if (!d) return;
+    var vs = WHEELS[d.key].vals, target = Math.max(0, Math.min(vs.length - 1, Math.round(d.pos)));
+    (function step() {
+      if (!state.dial) return;
+      var diff = target - d.pos;
+      if (Math.abs(diff) < 0.01) { dialSet(target, false); return; }
+      dialSet(d.pos + diff * 0.25, false); dialAnim = requestAnimationFrame(step);
+    })();
+  }
+  function initDial() {
+    var cv = document.getElementById("dial-canvas");
+    if (!cv || cv.dataset.ready) return;
+    cv.dataset.ready = "1";
+    drawDial();
+    var drag = null;
+    cv.addEventListener("pointerdown", function (e) {
+      if (dialAnim) cancelAnimationFrame(dialAnim);
+      drag = { x: e.clientX, pos: state.dial.pos, t: performance.now(), v: 0, lx: e.clientX };
+      cv.setPointerCapture(e.pointerId);
+    });
+    cv.addEventListener("pointermove", function (e) {
+      if (!drag) return;
+      var gap = state.dial.key === "weight" ? 9 : 11, now = performance.now();
+      drag.v = (e.clientX - drag.lx) / Math.max(1, now - drag.t); drag.lx = e.clientX; drag.t = now;
+      dialSet(drag.pos - (e.clientX - drag.x) / gap, true);
+    });
+    function end() {
+      if (!drag) return;
+      var v = -drag.v / (state.dial.key === "weight" ? 9 : 11) * 16; drag = null;
+      (function coast() {
+        if (!state.dial) return;
+        if (Math.abs(v) < 0.05) { dialSnap(); return; }
+        var max = WHEELS[state.dial.key].vals.length - 1;
+        if (state.dial.pos <= 0 && v < 0 || state.dial.pos >= max && v > 0) { dialSnap(); return; }
+        dialSet(state.dial.pos + v, true); v *= 0.93; dialAnim = requestAnimationFrame(coast);
+      })();
+    }
+    cv.addEventListener("pointerup", end); cv.addEventListener("pointercancel", end);
+    cv.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowLeft" || e.key === "ArrowDown") { dialSet(Math.round(state.dial.pos) - 1, false); dialSnap(); e.preventDefault(); }
+      if (e.key === "ArrowRight" || e.key === "ArrowUp") { dialSet(Math.round(state.dial.pos) + 1, false); dialSnap(); e.preventDefault(); }
+    });
+    cv.focus();
+  }
   function ageGroup(a) {
     if (a == null || a === "") return null;
     if (a < 1) return "婴儿"; if (a < 3) return "幼儿"; if (a < 12) return "儿童"; if (a < 18) return "青少年"; if (a < 65) return "成人"; return "老年人";
@@ -1471,16 +1614,53 @@ button.row:first-child { border-top: 0; }
     return '<div class="mini-seg">' + ["男", "女", "不透露"].map(function (g) { return '<button class="chip" ' + attr + '="' + g + '" aria-pressed="' + (cur === g) + '">' + g + '</button>'; }).join("") + '</div>';
   }
 
+  var LOGIN_STEP = 1, BASIC_STEP = 2;
+  var APPLE_LOGO = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M16.4 12.6c0-2.4 2-3.6 2.1-3.6-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.2.8 1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8-.1 0-2.5-1-2.5-4zM14 5.3c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.6 2.8-1.4z"/></svg>';
+  var GOOGLE_LOGO = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.6 12.3c0-.8-.1-1.5-.2-2.3H12v4.3h5.9a5 5 0 0 1-2.2 3.3v2.8h3.6c2.1-1.9 3.3-4.8 3.3-8.1z"/><path fill="#34A853" d="M12 23c3 0 5.5-1 7.3-2.7l-3.6-2.8c-1 .7-2.2 1.1-3.7 1.1-2.9 0-5.3-1.9-6.2-4.5H2.1v2.9A11 11 0 0 0 12 23z"/><path fill="#FBBC05" d="M5.8 14.1a6.6 6.6 0 0 1 0-4.2V7H2.1a11 11 0 0 0 0 10l3.7-2.9z"/><path fill="#EA4335" d="M12 5.4c1.6 0 3.1.6 4.2 1.7l3.2-3.2A11 11 0 0 0 2.1 7l3.7 2.9C6.7 7.3 9.1 5.4 12 5.4z"/></svg>';
+  function loginStepHtml() {
+    var L = state.login, p = state.profile, only = state.loginOnly;
+    var top = only ? '<button class="onb-skip" data-action="login-close">关闭</button>' : '<button class="onb-skip" data-action="onb-next">先不登录</button>';
+    var body;
+    if (p.loggedIn) {
+      body = '<div class="login-head"><div class="art-circle sm">' + CHECK + '</div><h1>已登录</h1><p>' + esc(p.phone ? maskPhone(p.phone) : p.via + " 账号") + '</p></div>' +
+        '<button class="btn primary block" data-action="' + (only ? "login-close" : "onb-next") + '">继续</button>';
+    } else {
+      body = '<div class="login-head"><div class="art-circle sm">' + LOGO + '</div><h1>登录拉了么</h1><p>登录后，记录会加密备份，换手机也不会丢。</p></div>' +
+        '<div class="login-btns">' +
+        '<button class="btn block login-apple" data-action="login-apple">' + APPLE_LOGO + '通过 Apple 登录</button>' +
+        '<button class="btn ghost block" data-action="login-google">' + GOOGLE_LOGO + '通过 Google 登录</button>' +
+        (L.phoneOpen
+          ? '<div class="phone-form"><label class="input"><select id="login-dial" aria-label="国家或地区区号" class="dial">' + DIAL.map(function (d) { return '<option value="' + d[0] + '"' + ((L.dial || defaultDial()) === d[0] ? " selected" : "") + '>' + d[0] + ' ' + d[1] + '</option>'; }).join("") + '</select>' +
+            '<input id="login-phone" type="tel" inputmode="numeric" maxlength="15" placeholder="手机号" autocomplete="tel" value="' + esc(L.phone) + '"></label>' +
+            '<div class="code-row"><label class="input"><input id="login-code" inputmode="numeric" maxlength="6" placeholder="6 位验证码" autocomplete="one-time-code" value="' + esc(L.code) + '"></label>' +
+            '<button class="btn ghost" id="send-code" data-action="send-code"' + (L.countdown ? " disabled" : "") + '>' + (L.countdown ? L.countdown + " 秒后重发" : "获取验证码") + '</button></div>' +
+            '<button class="btn primary block" data-action="login">登录 / 注册</button>' +
+            '<p class="muted small" style="text-align:center">演示版不会真的发送短信，输入任意 6 位数字即可。</p></div>'
+          : '<button class="btn ghost block" data-action="phone-open">' + ic("user-round") + '使用手机号登录 / 注册</button>') +
+        '</div>' +
+        '<label class="agree"><input type="checkbox" id="login-agree"' + (L.agree ? " checked" : "") + '>我已阅读并同意<button class="link" data-doc="terms">《用户协议》</button>和<button class="link" data-doc="privacy">《隐私政策》</button></label>' +
+        '<p class="err small" id="login-err" hidden></p>' +
+        (only ? '' : '<p class="muted small" style="text-align:center">也可以先不登录，所有功能都能用，数据只保存在这台手机上。</p>');
+    }
+    return top + '<div class="onb-slide ' + (state.onbAnim || "") + '"><div class="onb-form login-step">' + body + '</div></div>';
+  }
+  function onbDots(step) {
+    var h = '<div class="dots">';
+    for (var i = 0; i < ONB_STEPS; i++) h += '<i class="' + (i === step ? "on" : "") + '"></i>';
+    return h + '</div>';
+  }
   function onbHtml(step) {
-    if (state.onb === 1 && document.getElementById("onb-name")) state.basic.name = document.getElementById("onb-name").value.trim();
+    if (step === LOGIN_STEP) return loginStepHtml() + (state.loginOnly ? "" : onbDots(step));
+    if (state.onb === BASIC_STEP && document.getElementById("onb-name")) state.basic.name = document.getElementById("onb-name").value.trim();
     var steps = [
       { art: '<div class="art-circle">' + LOGO + '</div>', h: "欢迎使用拉了么", p: "每次排便后拍一张照片，再回答两个小问题，30 秒就能记下这一次的排便情况。" },
+      { login: true },
       { form: true },
       { art: ring(88, "xl"), h: "看懂你的评分", p: "分数越高越好。圆环的颜色代表等级，出现需要留意的情况时会提醒你，必要时建议就医。",
         extra: '<div class="legend"><span><i style="background:var(--perfect)"></i>完美</span><span><i style="background:var(--good)"></i>优秀</span><span><i style="background:var(--fine)"></i>良好</span><span><i style="background:var(--ok)"></i>一般</span><span><i style="background:var(--bad)"></i>需关注</span></div>' },
       { art: '<div class="art-circle">' + LOCK + '</div>', h: "隐私与提醒", p: "照片只用来识别颜色，预览会自动模糊，识别完就丢弃。开启通知后，我们会按时提醒你记录和喝水。" }
     ], st = steps[step], last = step === steps.length - 1;
-    var dots = '<div class="dots">' + steps.map(function (_, i) { return '<i class="' + (i === step ? "on" : "") + '"></i>'; }).join("") + '</div>';
+    var dots = onbDots(step);
     if (st.form) {
       var b = state.basic;
       return '<div class="onb-slide ' + (state.onbAnim || "") + '" style="padding-top:34px"><div class="onb-form">' +
@@ -1572,6 +1752,12 @@ button.row:first-child { border-top: 0; }
       if (!ob) { ob = document.createElement("div"); ob.id = "onb"; ob.className = "onb"; ob.setAttribute("role", "dialog"); ob.setAttribute("aria-label", "新手引导"); phone.appendChild(ob); }
       ob.innerHTML = onbHtml(state.onb);
     } else if (ob) ob.remove();
+    var sh = document.getElementById("dial-sheet");
+    if (state.dial) {
+      if (!sh) { sh = document.createElement("div"); sh.id = "dial-sheet"; phone.appendChild(sh); }
+      sh.innerHTML = dialSheetHtml();
+      requestAnimationFrame(initDial);
+    } else if (sh) sh.remove();
     document.querySelectorAll(".tab").forEach(function (t) { t.setAttribute("aria-current", t.getAttribute("data-nav") === v ? "page" : "false"); });
     screen.scrollTop = keepScroll ? top : 0;
     animateRings();
@@ -1587,6 +1773,7 @@ button.row:first-child { border-top: 0; }
       var bar = document.getElementById("save-bar"); if (bar) bar.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
+    state.dial = null;
     if (view === "settings") { state.confirmClear = false; state.confirmAcct = false; if (state.view !== "settings") state.setBasic = basicFromProfile(); }
     if (view === "home" || view === "calendar") state.prevView = view;
     state.view = view;
@@ -1711,17 +1898,18 @@ button.row:first-child { border-top: 0; }
     render(false); toast("记录已删除");
   }
   /* onboarding swipe: finger right-to-left = next step, left-to-right = previous step */
-  var ONB_STEPS = 4, swipe = null;
+  var ONB_STEPS = 5, swipe = null;
   function onbBtnLabel(b) { return b.age < MIN_AGE ? "暂不支持 14 岁以下" : !gateOk(b) ? "请先勾选监护人同意" : b.confirmOdd ? "确认无误" : "下一步"; }
   function onbGo(dir) {
     var next = state.onb + dir;
-    if (state.onb === 1 && dir > 0 && !(state.basic && state.basic.saved && gateOk(state.basic))) {
+    if (state.loginOnly && state.onb === LOGIN_STEP) { closeLogin(); return; }
+    if (state.onb === BASIC_STEP && dir > 0 && !(state.basic && state.basic.saved && gateOk(state.basic))) {
       var sl0 = document.querySelector(".onb-slide"); if (sl0) { sl0.className = "onb-slide settle"; sl0.style.transform = ""; sl0.style.opacity = ""; }
       toast(state.basic && state.basic.age < MIN_AGE ? "本产品暂不面向 14 岁以下儿童" : "请先确认年龄等信息，再点下一步");
       return;
     }
     if (next < 0 || next >= ONB_STEPS) { var sl = document.querySelector(".onb-slide"); if (sl) { sl.className = "onb-slide settle"; sl.style.transform = ""; sl.style.opacity = ""; } return; }
-    if (state.onb === 1 && state.basic && state.basic.touched) saveBasic(state.basic);
+    if (state.onb === BASIC_STEP && state.basic && state.basic.touched) saveBasic(state.basic);
     state.onb = next; state.onbAnim = dir > 0 ? "in-next" : "in-prev";
     render(true); state.onbAnim = "";
   }
@@ -1768,7 +1956,7 @@ button.row:first-child { border-top: 0; }
   /* ---------- events ---------- */
   document.addEventListener("click", function (e) {
     if (suppressClick) { e.preventDefault(); return; }
-    var el = e.target.closest("[data-nav],[data-action],[data-color],[data-type],[data-water],[data-effort],[data-day],[data-gender],[data-bgender],[data-tag],[data-rec],[data-doc]");
+    var el = e.target.closest("[data-nav],[data-action],[data-color],[data-type],[data-water],[data-effort],[data-day],[data-gender],[data-bgender],[data-dial],[data-tag],[data-rec],[data-doc]");
     if (!el || el.disabled) return;
     var d = state.draft;
     if (el.hasAttribute("data-nav")) return go(el.getAttribute("data-nav"));
@@ -1790,8 +1978,10 @@ button.row:first-child { border-top: 0; }
     if (el.hasAttribute("data-doc")) {
       e.preventDefault();
       state.docBack = state.view; state.doc = el.getAttribute("data-doc"); state.view = "doc";
+      if (state.onb >= 0) { state.onbPaused = state.onb; state.onb = -1; }
       return render(false);
     }
+    if (el.hasAttribute("data-dial")) { openDial(el.getAttribute("data-dial")); return; }
     if (el.hasAttribute("data-bgender")) {
       state.basic.gender = el.getAttribute("data-bgender"); state.basic.touched = true;
       var sv = Array.prototype.map.call(document.querySelectorAll(".wheel"), function (w) { return w.scrollTop; });
@@ -1813,7 +2003,7 @@ button.row:first-child { border-top: 0; }
         else go(state.prevView === "calendar" ? "calendar" : "home");
         break;
       case "back":
-        if (state.view === "doc") { state.view = state.docBack || "settings"; render(false); }
+        if (state.view === "doc") { state.view = state.docBack || "settings"; if (state.onbPaused != null) { state.onb = state.onbPaused; state.onbPaused = null; } render(false); }
         else if (state.view === "badges") { state.view = state.badgesBack || "settings"; render(false); }
         else if (state.view === "report") { state.view = state.reportBack || "home"; render(false); }
         else go(state.prevView === "calendar" ? "calendar" : "home");
@@ -1837,9 +2027,17 @@ button.row:first-child { border-top: 0; }
         break;
       case "onb-next": onbGo(1); break;
       case "onb-done":
-        if (!ageConfirmed()) { state.onb = 1; state.onbAnim = "in-next"; render(true); state.onbAnim = ""; toast("请先填写年龄"); break; }
+        if (!ageConfirmed()) { state.onb = Math.max(state.onb + 1, LOGIN_STEP); if (state.onb > BASIC_STEP) state.onb = BASIC_STEP; state.onbAnim = "in-next"; render(true); state.onbAnim = ""; if (state.onb === BASIC_STEP) toast("请先填写年龄"); break; }
         finishOnb(false); break;
-      case "onb-notify": if (!ageConfirmed()) { state.onb = 1; render(true); break; } finishOnb(true); break;
+      case "onb-notify": if (!ageConfirmed()) { state.onb = BASIC_STEP; render(true); break; } finishOnb(true); break;
+      case "dial-cancel": closeDial(false); break;
+      case "dial-done": closeDial(true); break;
+      case "dial-step":
+        if (state.dial) { var nd = Math.round(state.dial.pos) + Number(el.getAttribute("data-dir")); if (nd < 0 && state.dial.key === "age") toast("本产品暂不支持 14 岁以下的用户"); dialSet(Math.max(0, Math.min(WHEELS[state.dial.key].vals.length - 1, nd)), false); }
+        break;
+      case "phone-open": state.login.phoneOpen = true; render(true); break;
+      case "open-login": state.loginOnly = true; state.onb = LOGIN_STEP; state.onbAnim = "in-next"; render(true); state.onbAnim = ""; break;
+      case "login-close": closeLogin(); break;
       case "onb-replay": state.onb = 0; state.basic = basicFromProfile(); render(true); break;
       case "onb-basic-save":
         if (!gateOk(state.basic)) break;
@@ -1933,12 +2131,14 @@ button.row:first-child { border-top: 0; }
   function finishLogin(via, phoneNum) {
     var p = state.profile;
     p.loggedIn = true; p.via = via; p.phone = phoneNum || "";
-    if (!p.name) p.name = via === "手机" ? "用户" + phoneNum.slice(-4) : via + "用户";
     saveProfile();
     state.login = { phone: "", code: "", agree: false, countdown: 0 };
-    render(false);
     toast("登录成功");
+    if (state.loginOnly) { closeLogin(); return; }
+    if (state.onb === LOGIN_STEP) { onbGo(1); return; }
+    render(false);
   }
+  function closeLogin() { state.loginOnly = false; state.onb = -1; render(true); }
   function loginPhone() {
     var L = state.login;
     if (!phoneOk(L)) return loginError("请输入正确的手机号");
@@ -1954,7 +2154,7 @@ button.row:first-child { border-top: 0; }
   state.basic = basicFromProfile();
   state.setBasic = basicFromProfile();
   claimBadges();
-  if (!ageConfirmed()) state.onb = state.settings.onboarded ? 1 : 0;
+  if (!ageConfirmed()) state.onb = state.settings.onboarded ? BASIC_STEP : 0;
   render(false);
 })();
 </script>
