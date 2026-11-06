@@ -138,6 +138,33 @@ h2 { font-size: 15px; font-weight: 700; }
 .warn-line .ic { width: 15px; height: 15px; margin-top: 3px; }
 .warn-line.strong { font-weight: 600; }
 .goal-eval { display: flex; flex-direction: column; gap: 4px; background: var(--fill); border-radius: 12px; padding: 10px 12px; }
+.badge-hero { flex-direction: row; align-items: center; gap: 16px; }
+.medal.xl { width: 72px; height: 72px; border-radius: 50%; display: grid; place-items: center; flex: none; background: linear-gradient(145deg, var(--accent-2), var(--accent)); color: var(--accent-ink); box-shadow: 0 8px 22px color-mix(in srgb, var(--accent) 40%, transparent); }
+.medal.xl .ic { width: 34px; height: 34px; }
+.badge-list { display: flex; flex-direction: column; }
+.badge-item { display: flex; gap: 12px; align-items: flex-start; padding: 12px 0; border-top: 1px solid var(--line); }
+.badge-item:first-child { border-top: 0; padding-top: 0; }
+.badge-item .medal { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; flex: none; background: var(--fill); color: var(--muted); }
+.badge-item .medal .ic { width: 20px; height: 20px; }
+.badge-item.on .medal { background: linear-gradient(145deg, var(--accent-2), var(--accent)); color: var(--accent-ink); }
+.badge-item .grow { display: flex; flex-direction: column; gap: 4px; }
+.bi-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: 15px; }
+.bi-state { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; color: var(--accent-strong); }
+.bi-state .ic { width: 14px; height: 14px; }
+.celebrate { position: absolute; inset: 0; z-index: 50; display: grid; place-items: center; padding: 24px; background: rgba(0, 0, 0, .45); backdrop-filter: blur(4px); animation: celeFade .25s ease both; }
+.cele-card { position: relative; width: 100%; max-width: 320px; background: var(--surface); border-radius: 24px; padding: 28px 20px 20px; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; animation: celePop .45s cubic-bezier(.2, 1.3, .4, 1) both; }
+.cele-card h2 { font-size: 22px; }
+.cele-card .row-btns { width: 100%; margin-top: 10px; }
+.cele-card .medal.xl { width: 92px; height: 92px; margin-bottom: 14px; }
+.cele-card .medal.xl .ic { width: 42px; height: 42px; }
+.cele-burst { position: absolute; top: 28px; left: 50%; width: 92px; height: 92px; transform: translateX(-50%); pointer-events: none; }
+.cele-burst i { position: absolute; inset: 0; border-radius: 50%; border: 2px solid var(--accent); opacity: 0; animation: celeRing 1.6s ease-out infinite; }
+.cele-burst i:nth-child(2) { animation-delay: .4s; }
+.cele-burst i:nth-child(3) { animation-delay: .8s; }
+@keyframes celeFade { from { opacity: 0; } }
+@keyframes celePop { from { transform: scale(.8); opacity: 0; } }
+@keyframes celeRing { 0% { transform: scale(1); opacity: .6; } 100% { transform: scale(1.9); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .celebrate, .cele-card, .cele-burst i { animation: none; } }
 .save-bar { display: flex; flex-direction: column; gap: 8px; border-top: 1px solid var(--line); padding-top: 12px; }
 .save-bar .hint { margin: 0; text-align: left; }
 .cap-note { display: flex; gap: 8px; align-items: flex-start; text-align: left; font-size: 13px; color: var(--accent-strong); background: var(--accent-soft); border-radius: 12px; padding: 8px 12px; margin: 0; }
@@ -931,7 +958,7 @@ button.row:first-child { border-top: 0; }
       '<div class="field" style="border-top:1px solid var(--line);padding-top:12px"><span class="small"><b>身体数据</b><span class="muted">　上下滑动选择</span></span>' +
       '<div class="wheels">' + wheelHtml("age", "set", sb.age) + wheelHtml("height", "set", sb.height) + wheelHtml("weight", "set", sb.weight) + '</div>' +
       '<div class="basic-sum" id="set-sum" aria-live="polite">' + basicSummary(sb) + '</div></div>' +
-      '<div class="setting"><div><div class="small"><b>每日喝水目标</b></div><div class="muted small" id="goal-src">' + (sb.goalAuto && !oddity(sb).length ? "根据体重自动推荐" : "手动设置") + '，用于计算饮水得分</div></div>' +
+      '<div class="setting"><div><div class="small"><b>每日喝水目标</b></div><div class="muted small" id="goal-src">' + goalSrcText(sb) + '</div></div>' +
       '<div class="stepper"><button class="icon-btn sm" data-action="goal-minus" aria-label="少一杯">' + ic("minus") + '</button><span class="num" id="goal-num">' + sb.waterGoal + '</span><button class="icon-btn sm" data-action="goal-plus" aria-label="多一杯">' + ic("plus") + '</button><span class="muted small">杯</span></div></div>' +
       '<div class="goal-eval" id="goal-eval" aria-live="polite">' + goalEvalHtml(sb) + '</div>' +
       '<div class="save-bar" id="save-bar"><p class="hint">' + (sb.dirty ? "有未保存的修改" : "修改后点保存才会生效") + '</p><div class="row-btns">' +
@@ -939,7 +966,7 @@ button.row:first-child { border-top: 0; }
       '<button class="btn primary" data-action="info-save"' + (sb.dirty ? "" : " disabled") + '>' + (sb.confirmOdd ? "确认无误并保存" : "保存") + '</button></div></div></section>';
 
     var bd = badges();
-    html += '<section class="card"><div class="card-head"><h2>成就</h2><span class="muted small">已获得 ' + bd.filter(function (x) { return x.on; }).length + ' / ' + bd.length + '</span></div><div class="badges">' +
+    html += '<section class="card"><div class="card-head"><h2>成就</h2><button class="link" data-action="open-badges">已获得 ' + bd.filter(function (x) { return x.on; }).length + ' / ' + bd.length + ' · 查看全部</button></div><div class="badges">' +
       bd.map(function (x) { return '<div class="badge' + (x.on ? " on" : "") + '"><span class="medal">' + x.mark + '</span>' + x.name + '</div>'; }).join("") + '</div></section>';
 
     html += '<section class="card"><h2>报告</h2><div><button class="list-row" data-action="report-week"><span>周报</span>' + CHEV + '</button><button class="list-row" data-action="report-month"><span>月报 / 就医报告</span>' + CHEV + '</button></div></section>';
@@ -986,7 +1013,10 @@ button.row:first-child { border-top: 0; }
     return n;
   }
   function badges() {
-    var days = byDay(), keys = Object.keys(days).sort(), best = 0, run = 0, prev = null, waterDays = 0, perfect = false;
+    // only the user's own records count; example data never unlocks anything
+    var mine = state.records.filter(function (r) { return !r.example; }), days = {};
+    mine.forEach(function (r) { var k = dayKey(new Date(r.ts)); (days[k] = days[k] || []).push(r); });
+    var keys = Object.keys(days).sort(), best = 0, run = 0, prev = null, waterDays = 0, perfect = false;
     keys.forEach(function (k) {
       var d = new Date(k + "T00:00:00");
       run = prev && dayKey(addDays(prev, 1)) === k ? run + 1 : 1;
@@ -995,14 +1025,49 @@ button.row:first-child { border-top: 0; }
       if (Math.max.apply(null, l.map(function (r) { return r.water; })) >= goal()) waterDays++;
       if (dayScore(l) >= 95) perfect = true;
     });
+    var n = mine.length;
     return [
-      { name: "第一次记录", mark: ic("camera"), on: state.records.length >= 1 },
-      { name: "连续 7 天", mark: ic("flame"), on: best >= 7 },
-      { name: "连续 30 天", mark: ic("trophy"), on: best >= 30 },
-      { name: "喝水达标 7 天", mark: ic("droplet"), on: waterDays >= 7 },
-      { name: "完美的一天", mark: ic("sparkles"), on: perfect },
-      { name: "累计 50 次", mark: ic("shield-check"), on: state.records.length >= 50 }
-    ];
+      { id: "first", name: "第一次记录", desc: "完成第一次排便记录", icon: "camera", cur: Math.min(n, 1), target: 1, unit: "次" },
+      { id: "streak7", name: "连续 7 天", desc: "连续 7 天都有记录", icon: "flame", cur: Math.min(best, 7), target: 7, unit: "天" },
+      { id: "streak30", name: "连续 30 天", desc: "连续 30 天都有记录，养成习惯", icon: "trophy", cur: Math.min(best, 30), target: 30, unit: "天" },
+      { id: "water7", name: "喝水达标 7 天", desc: "累计 7 天喝水达到目标", icon: "droplet", cur: Math.min(waterDays, 7), target: 7, unit: "天" },
+      { id: "perfect", name: "完美的一天", desc: "某一天的评分达到 95 分以上", icon: "sparkles", cur: perfect ? 1 : 0, target: 1, unit: "天" },
+      { id: "count50", name: "累计 50 次", desc: "累计记录 50 次", icon: "shield-check", cur: Math.min(n, 50), target: 50, unit: "次" }
+    ].map(function (x) { x.on = x.cur >= x.target; x.mark = ic(x.icon); x.date = (state.settings.badgeDates || {})[x.id]; return x; });
+  }
+  // Remember when each badge was earned; return the ones that are new since last check.
+  function claimBadges() {
+    var dates = state.settings.badgeDates || (state.settings.badgeDates = {}), fresh = [];
+    badges().forEach(function (x) { if (x.on && !dates[x.id]) { dates[x.id] = Date.now(); fresh.push(x); } });
+    if (fresh.length) save(SKEY, state.settings);
+    return fresh;
+  }
+  function fmtDate(ts) { var d = new Date(ts); return d.getFullYear() + "年" + (d.getMonth() + 1) + "月" + d.getDate() + "日"; }
+
+  function viewBadges() {
+    var bd = badges(), got = bd.filter(function (x) { return x.on; }).length;
+    var html = '<div class="pad"><div class="topbar"><button class="icon-btn" data-action="back" aria-label="返回">' + BACK + '</button><h1>我的成就</h1></div>';
+    html += '<section class="card badge-hero"><div class="medal xl">' + ic("trophy") + '</div><div><div class="kpi"><span class="kpi-num">' + got + '</span><span class="kpi-unit">/ ' + bd.length + '</span></div><p class="muted small">' +
+      (got === bd.length ? "全部成就都拿到了，太厉害了！" : "再接再厉，还有 " + (bd.length - got) + " 个成就等你解锁") + '</p></div></section>';
+    html += '<section class="card"><div class="badge-list">' + bd.map(function (x) {
+      var pct = Math.round(x.cur / x.target * 100);
+      return '<div class="badge-item' + (x.on ? " on" : "") + '"><span class="medal">' + x.mark + '</span><div class="grow"><div class="bi-top"><b>' + x.name + '</b>' +
+        (x.on ? '<span class="bi-state">' + ic("circle-check") + '已获得</span>' : '<span class="muted small">' + x.cur + ' / ' + x.target + ' ' + x.unit + '</span>') + '</div>' +
+        '<p class="muted small">' + x.desc + (x.on && x.date ? ' · ' + fmtDate(x.date) + '获得' : '') + '</p>' +
+        (x.on ? '' : '<div class="c-bar"><i style="width:' + Math.max(3, pct) + '%;background:linear-gradient(90deg,var(--accent-2),var(--accent))"></i></div>') + '</div></div>';
+    }).join("") + '</div></section></div>';
+    return html;
+  }
+  function celebrate(list) {
+    if (!list.length) return;
+    var x = list[0], ov = document.createElement("div");
+    ov.className = "celebrate"; ov.setAttribute("role", "dialog"); ov.setAttribute("aria-label", "达成成就");
+    ov.innerHTML = '<div class="cele-card"><div class="cele-burst"><i></i><i></i><i></i></div><div class="medal xl">' + x.mark + '</div>' +
+      '<p class="eyebrow">达成成就</p><h2>' + x.name + '</h2><p class="muted small">' + x.desc + '</p>' +
+      (list.length > 1 ? '<p class="muted small">另外还解锁了 ' + (list.length - 1) + ' 个成就</p>' : '') +
+      '<div class="row-btns"><button class="btn ghost" data-action="cele-all">查看成就</button><button class="btn primary" data-action="cele-close">太棒了</button></div></div>';
+    phone.appendChild(ov);
+    var btn = ov.querySelector('[data-action="cele-close"]'); if (btn) btn.focus();
   }
 
   function newDraft(rec) {
@@ -1273,8 +1338,11 @@ button.row:first-child { border-top: 0; }
     else if (r <= 1.15) lv = { cls: "perfect", label: "刚刚好", tip: "这个目标很合适。" };
     else if (r <= 1.4) lv = { cls: "fine", label: "略多", tip: "运动量大或天热时没问题，平时可以适当减少。" };
     else lv = { cls: "bad", label: "偏多", tip: "喝得过多会加重肾脏负担，尽量分多次少量喝，有心、肾疾病请先问医生。" };
-    lv.text = basis + "约 " + rec + " 杯（" + rec * CUP_ML + " ml），你设置了 " + cups + " 杯。" + lv.tip;
+    lv.text = basis + "约 " + rec + " 杯（" + rec * CUP_ML + " ml），你设置了 " + cups + " 杯（约 " + cups * CUP_ML + " ml）。" + lv.tip;
     return lv;
+  }
+  function goalSrcText(b) {
+    return (b.goalAuto && !oddity(b).length ? "根据体重自动推荐" : "手动设置") + " · 约 " + b.waterGoal * CUP_ML + " ml";
   }
   function goalEvalHtml(b) {
     var e = goalEval(b);
@@ -1346,7 +1414,7 @@ button.row:first-child { border-top: 0; }
       if (b.goalAuto) { var cups = suggestedCups(b); if (cups) b.waterGoal = cups; }
       var gl = document.getElementById("goal-num"); if (gl) gl.textContent = b.waterGoal;
       var ge = document.getElementById("goal-eval"); if (ge) ge.innerHTML = goalEvalHtml(b);
-      var gs = document.getElementById("goal-src"); if (gs) gs.textContent = (b.goalAuto && !oddity(b).length ? "根据体重自动推荐" : "手动设置") + "，用于计算饮水得分";
+      var gs = document.getElementById("goal-src"); if (gs) gs.textContent = goalSrcText(b);
       syncSaveBar();
     }
     var sum = document.getElementById(ctx + "-sum");
@@ -1455,8 +1523,8 @@ button.row:first-child { border-top: 0; }
   function render(keepScroll) {
     var top = screen.scrollTop;
     var v = state.view;
-    screen.innerHTML = v === "record" ? viewRecord() : v === "result" ? viewResult() : v === "calendar" ? viewCalendar() : v === "settings" ? viewSettings() : v === "report" ? viewReport() : v === "doc" ? viewDoc() : viewHome();
-    phone.classList.toggle("no-tabs", ["record", "result", "settings", "report", "doc"].indexOf(v) >= 0);
+    screen.innerHTML = v === "record" ? viewRecord() : v === "result" ? viewResult() : v === "calendar" ? viewCalendar() : v === "settings" ? viewSettings() : v === "report" ? viewReport() : v === "badges" ? viewBadges() : v === "doc" ? viewDoc() : viewHome();
+    phone.classList.toggle("no-tabs", ["record", "result", "settings", "report", "doc", "badges"].indexOf(v) >= 0);
     var ob = document.getElementById("onb");
     if (state.onb >= 0) {
       if (!ob) { ob = document.createElement("div"); ob.id = "onb"; ob.className = "onb"; ob.setAttribute("role", "dialog"); ob.setAttribute("aria-label", "新手引导"); phone.appendChild(ob); }
@@ -1589,6 +1657,8 @@ button.row:first-child { border-top: 0; }
       state.view = "result";
       render(false);
       toast(hadExamples ? "已保存（示例数据仍在，可在首页清除）" : "已保存到日历");
+      var fresh = claimBadges();
+      if (fresh.length) setTimeout(function () { celebrate(fresh); }, 700);
     }, 1100);
   }
   function deleteCurrent() {
@@ -1683,6 +1753,9 @@ button.row:first-child { border-top: 0; }
     if (el.hasAttribute("data-gender")) { state.setBasic.gender = el.getAttribute("data-gender"); state.setBasic.dirty = true; return render(true); }
     switch (el.getAttribute("data-action")) {
       case "sample": samplePhoto(); break;
+      case "open-badges": state.badgesBack = state.view; state.view = "badges"; render(false); break;
+      case "cele-close": document.querySelectorAll(".celebrate").forEach(function (o) { o.remove(); }); break;
+      case "cele-all": document.querySelectorAll(".celebrate").forEach(function (o) { o.remove(); }); state.badgesBack = state.view; state.view = "badges"; render(false); break;
       case "water-minus": d.water = Math.max(0, d.water - 1); render(true); break;
       case "water-plus": d.water = Math.min(20, d.water + 1); render(true); break;
       case "peek": state.peek = !state.peek; render(true); break;
@@ -1692,6 +1765,7 @@ button.row:first-child { border-top: 0; }
         break;
       case "back":
         if (state.view === "doc") { state.view = state.docBack || "settings"; render(false); }
+        else if (state.view === "badges") { state.view = state.badgesBack || "settings"; render(false); }
         else if (state.view === "report") { state.view = state.reportBack || "home"; render(false); }
         else go(state.prevView === "calendar" ? "calendar" : "home");
         break;
@@ -1817,6 +1891,7 @@ button.row:first-child { border-top: 0; }
 
   state.basic = basicFromProfile();
   state.setBasic = basicFromProfile();
+  claimBadges();
   render(false);
 })();
 </script>
