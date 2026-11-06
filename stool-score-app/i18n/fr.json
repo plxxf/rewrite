@@ -603,5 +603,17 @@
  "拍照达人": "Pro de la photo",
  "累计 10 次拍照记录": "Noter avec une photo 10 fois",
  "看看报告": "Lecteur de rapports",
- "第一次打开周报或月报": "Ouvrir un rapport hebdomadaire ou mensuel pour la première fois"
+ "第一次打开周报或月报": "Ouvrir un rapport hebdomadaire ou mensuel pour la première fois",
+ "辛辣油腻": "Épicé ou gras",
+ "深色或红色食物": "Aliments foncés ou rouges",
+ "铋剂（部分胃药）": "Bismuth (certains médicaments pour l'estomac)",
+ "泻药/软便剂": "Laxatif / émollient fécal",
+ "有特别的饮食吗？（可选）": "Un aliment inhabituel ? (facultatif)",
+ "可以帮你解释颜色的变化": "Aide à expliquer les changements de couleur",
+ "正在服用：": "Pris actuellement : ",
+ "（在「我的」里修改）": " (modifiable dans Moi)",
+ "正在服用的药物": "Médicaments en cours",
+ "设置一次，之后的每条记录都会自动带上；停药后取消勾选即可。": "Réglez-le une fois : il sera ajouté automatiquement à chaque nouvelle note. Décochez-le à l'arrêt.",
+ "已更新正在服用的药物": "Médicaments mis à jour",
+ "你记录了吃过深色或红色食物，这类食物可能让大便颜色变深或发红。": "Vous avez noté des aliments foncés ou rouges, qui peuvent foncer ou rougir les selles."
 }

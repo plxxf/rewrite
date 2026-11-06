@@ -603,5 +603,17 @@
  "拍照达人": "Photo pro",
  "累计 10 次拍照记录": "Log with a photo 10 times",
  "看看报告": "Report reader",
- "第一次打开周报或月报": "Open a weekly or monthly report for the first time"
+ "第一次打开周报或月报": "Open a weekly or monthly report for the first time",
+ "辛辣油腻": "Spicy or greasy food",
+ "深色或红色食物": "Dark or red foods",
+ "铋剂（部分胃药）": "Bismuth (some stomach remedies)",
+ "泻药/软便剂": "Laxative / stool softener",
+ "有特别的饮食吗？（可选）": "Anything unusual you ate? (optional)",
+ "可以帮你解释颜色的变化": "Helps explain colour changes",
+ "正在服用：": "Currently taking: ",
+ "（在「我的」里修改）": " (change on the Me page)",
+ "正在服用的药物": "Medicines you're taking",
+ "设置一次，之后的每条记录都会自动带上；停药后取消勾选即可。": "Set this once and it's added to every new log automatically. Untick it when you stop.",
+ "已更新正在服用的药物": "Medicines updated",
+ "你记录了吃过深色或红色食物，这类食物可能让大便颜色变深或发红。": "You logged eating dark or red foods, which can make stools darker or red."
 }
