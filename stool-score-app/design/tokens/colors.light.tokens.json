@@ -1,0 +1,147 @@
+{
+ "颜色": {
+  "基础": {
+   "bg": {
+    "$type": "color",
+    "$value": "#E9E9EC",
+    "$description": "手机外的背景（仅桌面预览）"
+   },
+   "frame": {
+    "$type": "color",
+    "$value": "#F5F5F7",
+    "$description": "页面底色"
+   },
+   "surface": {
+    "$type": "color",
+    "$value": "#FFFFFF",
+    "$description": "卡片"
+   },
+   "fill": {
+    "$type": "color",
+    "$value": "#F0F0F2",
+    "$description": "输入框、进度条底色"
+   },
+   "seg-on": {
+    "$type": "color",
+    "$value": "#FFFFFF",
+    "$description": "分段控件选中"
+   },
+   "ink": {
+    "$type": "color",
+    "$value": "#141416",
+    "$description": "主要文字"
+   },
+   "muted": {
+    "$type": "color",
+    "$value": "#85858C",
+    "$description": "次要文字"
+   },
+   "line": {
+    "$type": "color",
+    "$value": "#E8E8EC",
+    "$description": "分割线"
+   },
+   "btn": {
+    "$type": "color",
+    "$value": "#141416",
+    "$description": "主按钮背景"
+   },
+   "btn-ink": {
+    "$type": "color",
+    "$value": "#FFFFFF",
+    "$description": "主按钮文字"
+   }
+  },
+  "品牌": {
+   "accent": {
+    "$type": "color",
+    "$value": "#EBA437",
+    "$description": "品牌橙黄（拍照按钮、选中）"
+   },
+   "accent-2": {
+    "$type": "color",
+    "$value": "#F6C875",
+    "$description": "品牌渐变浅色端"
+   },
+   "accent-strong": {
+    "$type": "color",
+    "$value": "#94590A",
+    "$description": "橙色文字、链接"
+   },
+   "accent-ink": {
+    "$type": "color",
+    "$value": "#2A1A00",
+    "$description": "橙色底上的文字"
+   },
+   "accent-soft": {
+    "$type": "color",
+    "$value": "#FBF1E0",
+    "$description": "橙色浅底"
+   }
+  },
+  "评分等级": {
+   "perfect": {
+    "$type": "color",
+    "$value": "#5E5CE6",
+    "$description": "评分·完美 95+"
+   },
+   "perfect-2": {
+    "$type": "color",
+    "$value": "#A3A1F7",
+    "$description": "评分·完美 渐变浅色端"
+   },
+   "good": {
+    "$type": "color",
+    "$value": "#3F7CF6",
+    "$description": "评分·优秀 80–94"
+   },
+   "good-2": {
+    "$type": "color",
+    "$value": "#8FB4FF",
+    "$description": "评分·优秀 渐变浅色端"
+   },
+   "fine": {
+    "$type": "color",
+    "$value": "#3AA8DC",
+    "$description": "评分·良好 60–79"
+   },
+   "fine-2": {
+    "$type": "color",
+    "$value": "#93D6F3",
+    "$description": "评分·良好 渐变浅色端"
+   },
+   "ok": {
+    "$type": "color",
+    "$value": "#EE963A",
+    "$description": "评分·一般 40–59"
+   },
+   "ok-2": {
+    "$type": "color",
+    "$value": "#F8C788",
+    "$description": "评分·一般 渐变浅色端"
+   },
+   "bad": {
+    "$type": "color",
+    "$value": "#E5484D",
+    "$description": "评分·需关注 <40"
+   },
+   "bad-2": {
+    "$type": "color",
+    "$value": "#F49A9D",
+    "$description": "评分·需关注 渐变浅色端"
+   }
+  },
+  "提醒": {
+   "bad-soft": {
+    "$type": "color",
+    "$value": "#FDEEEE",
+    "$description": "就医提醒卡片底色"
+   },
+   "warn-soft": {
+    "$type": "color",
+    "$value": "#FDF4E8",
+    "$description": "注意提醒卡片底色"
+   }
+  }
+ }
+}
