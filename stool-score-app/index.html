@@ -137,6 +137,7 @@ h2 { font-size: 15px; font-weight: 700; }
 .warn-line { display: flex; gap: 6px; align-items: flex-start; color: var(--ok); margin-top: 4px; }
 .warn-line .ic { width: 15px; height: 15px; margin-top: 3px; }
 .warn-line.strong { font-weight: 600; }
+.goal-eval { display: flex; flex-direction: column; gap: 4px; background: var(--fill); border-radius: 12px; padding: 10px 12px; }
 .save-bar { display: flex; flex-direction: column; gap: 8px; border-top: 1px solid var(--line); padding-top: 12px; }
 .save-bar .hint { margin: 0; text-align: left; }
 .cap-note { display: flex; gap: 8px; align-items: flex-start; text-align: left; font-size: 13px; color: var(--accent-strong); background: var(--accent-soft); border-radius: 12px; padding: 8px 12px; margin: 0; }
@@ -932,6 +933,7 @@ button.row:first-child { border-top: 0; }
       '<div class="basic-sum" id="set-sum" aria-live="polite">' + basicSummary(sb) + '</div></div>' +
       '<div class="setting"><div><div class="small"><b>每日喝水目标</b></div><div class="muted small" id="goal-src">' + (sb.goalAuto && !oddity(sb).length ? "根据体重自动推荐" : "手动设置") + '，用于计算饮水得分</div></div>' +
       '<div class="stepper"><button class="icon-btn sm" data-action="goal-minus" aria-label="少一杯">' + ic("minus") + '</button><span class="num" id="goal-num">' + sb.waterGoal + '</span><button class="icon-btn sm" data-action="goal-plus" aria-label="多一杯">' + ic("plus") + '</button><span class="muted small">杯</span></div></div>' +
+      '<div class="goal-eval" id="goal-eval" aria-live="polite">' + goalEvalHtml(sb) + '</div>' +
       '<div class="save-bar" id="save-bar"><p class="hint">' + (sb.dirty ? "有未保存的修改" : "修改后点保存才会生效") + '</p><div class="row-btns">' +
       '<button class="btn ghost" data-action="info-discard"' + (sb.dirty ? "" : " disabled") + '>放弃修改</button>' +
       '<button class="btn primary" data-action="info-save"' + (sb.dirty ? "" : " disabled") + '>' + (sb.confirmOdd ? "确认无误并保存" : "保存") + '</button></div></div></section>';
@@ -1258,6 +1260,26 @@ button.row:first-child { border-top: 0; }
     }
     return out;
   }
+  // How reasonable is the chosen daily water goal, compared with what the body data suggests
+  function goalEval(b) {
+    var cups = b.waterGoal, rec = suggestedCups(b), basis = "按你的体重估算";
+    if (!rec) {
+      if (b.age < 18) return { cls: "", label: "仅供参考", text: "未成年人的喝水量和年龄、活动量关系很大，建议按儿科医生的建议设置。" };
+      rec = 8; basis = "按成年人通常的量";
+    }
+    var r = cups / rec, lv;
+    if (r < 0.6) lv = { cls: "bad", label: "明显偏少", tip: "喝水太少容易便秘，建议调高。" };
+    else if (r < 0.85) lv = { cls: "ok", label: "略少", tip: "可以再多喝一两杯。" };
+    else if (r <= 1.15) lv = { cls: "perfect", label: "刚刚好", tip: "这个目标很合适。" };
+    else if (r <= 1.4) lv = { cls: "fine", label: "略多", tip: "运动量大或天热时没问题，平时可以适当减少。" };
+    else lv = { cls: "bad", label: "偏多", tip: "喝得过多会加重肾脏负担，尽量分多次少量喝，有心、肾疾病请先问医生。" };
+    lv.text = basis + "约 " + rec + " 杯（" + rec * CUP_ML + " ml），你设置了 " + cups + " 杯。" + lv.tip;
+    return lv;
+  }
+  function goalEvalHtml(b) {
+    var e = goalEval(b);
+    return '<span class="pill ' + e.cls + '"' + (e.cls ? '' : ' style="color:var(--muted)"') + '>' + e.label + '</span><span class="muted small">' + e.text + '</span>';
+  }
   function suggestedCups(b) {
     if (!b.weight || b.age < 18 || oddity(b).length) return null;
     var ml = b.weight * 30 * (b.age >= 65 ? 0.9 : 1);
@@ -1312,7 +1334,7 @@ button.row:first-child { border-top: 0; }
   var wheelTimer = null;
   document.addEventListener("scroll", function (e) {
     var w = e.target;
-    if (!w.classList || !w.classList.contains("wheel") || Date.now() - (state.wheelLock || 0) < 250) return;
+    if (!w.classList || !w.classList.contains("wheel")) return; // restoring a wheel lands on its own value, which the equality check below ignores
     var key = w.getAttribute("data-wheel"), ctx = w.getAttribute("data-ctx"), vs = WHEELS[key].vals;
     var i = Math.max(0, Math.min(vs.length - 1, Math.round(w.scrollTop / WI)));
     w.setAttribute("data-idx", i);
@@ -1323,6 +1345,7 @@ button.row:first-child { border-top: 0; }
       b.dirty = true;
       if (b.goalAuto) { var cups = suggestedCups(b); if (cups) b.waterGoal = cups; }
       var gl = document.getElementById("goal-num"); if (gl) gl.textContent = b.waterGoal;
+      var ge = document.getElementById("goal-eval"); if (ge) ge.innerHTML = goalEvalHtml(b);
       var gs = document.getElementById("goal-src"); if (gs) gs.textContent = (b.goalAuto && !oddity(b).length ? "根据体重自动推荐" : "手动设置") + "，用于计算饮水得分";
       syncSaveBar();
     }
